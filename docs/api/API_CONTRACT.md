@@ -34,19 +34,7 @@ Create a new meeting record.
     "participant_ids": ["22222222-2222-2222-2222-222222222222"]
   }
   ```
-- **Response `201 Created` (`MeetingResponse`)**:
-  ```json
-  {
-    "id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-    "title": "Sprint Sync Meeting",
-    "meeting_date": "2026-09-05T10:00:00Z",
-    "source": "transcript",
-    "external_source_id": "meet-12345",
-    "created_by": "11111111-1111-1111-1111-111111111111",
-    "created_at": "2026-09-05T10:00:00Z",
-    "updated_at": "2026-09-05T10:00:00Z"
-  }
-  ```
+- **Response `201 Created` (`MeetingResponse`)**
 
 ### `POST /api/v1/meetings/{meeting_id}/transcript`
 Attach meeting transcript text for processing.
@@ -77,11 +65,7 @@ Retrieve detailed meeting record including transcript, participants, and extract
 ## 3. Action Item Endpoints
 
 ### `GET /api/v1/action-items`
-Query action items with optional filters.
-- **Query Parameters**:
-  - `meeting_id` (UUID, optional)
-  - `owner_employee_id` (UUID, optional)
-  - `status` (`pending`, `done`, `overdue`, `cancelled`, optional)
+Query action items with optional filters (`meeting_id`, `owner_employee_id`, `status`).
 - **Response `200 OK` (`List[ActionItemResponse]`)**
 
 ### `GET /api/v1/action-items/{id}`
@@ -90,13 +74,6 @@ Get full detail for an action item including state transition history.
 
 ### `PATCH /api/v1/action-items/{id}`
 Update status, deadline, owner, title, or description of an action item.
-- **Request Body (`ActionItemUpdate`)**:
-  ```json
-  {
-    "status": "done",
-    "deadline": "2026-09-10T18:00:00Z"
-  }
-  ```
 - **Response `200 OK` (`ActionItemResponse`)**
 
 ---
@@ -105,21 +82,53 @@ Update status, deadline, owner, title, or description of an action item.
 
 ### `GET /api/v1/dashboard/overview`
 Get overall system task health metrics.
-- **Response `200 OK` (`DashboardOverviewResponse`)**:
+- **Response `200 OK` (`DashboardOverviewResponse`)**
+
+---
+
+## 5. Google Drive Integration Endpoints
+
+### `GET /api/v1/integrations/google-drive/auth-url`
+Get server-side Google OAuth 2.0 authorization URL.
+- **Response `200 OK`**:
   ```json
   {
-    "total_open_tasks": 5,
-    "overdue_tasks": 1,
-    "completed_tasks": 12,
-    "repeatedly_postponed_tasks": 2,
-    "overloaded_members": [
-      {
-        "employee_id": "22222222-2222-2222-2222-222222222222",
-        "employee_name": "Bob Smith",
-        "open_task_count": 4,
-        "overdue_task_count": 1
-      }
-    ],
-    "upcoming_deadlines": []
+    "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?...",
+    "scopes": ["https://www.googleapis.com/auth/drive.readonly"],
+    "redirect_uri": "http://localhost:8000/api/v1/integrations/google-drive/callback"
   }
   ```
+
+### `GET /api/v1/integrations/google-drive/status`
+Check Google Drive OAuth configuration status.
+- **Response `200 OK`**:
+  ```json
+  {
+    "integration": "Google Drive Transcript Ingestion",
+    "configured": false,
+    "client_id_present": false,
+    "scopes": ["https://www.googleapis.com/auth/drive.readonly"],
+    "redirect_uri": "http://localhost:8000/api/v1/integrations/google-drive/callback"
+  }
+  ```
+
+### `POST /api/v1/integrations/google-drive/sync`
+Trigger Google Drive transcript discovery, duplicate filtering, ingestion, and AI pipeline processing.
+- **Query Parameters**: `folder_id` (optional string)
+- **Response `200 OK` (`GoogleDriveSyncResponse`)**:
+  ```json
+  {
+    "sync_started_at": "2026-09-05T00:50:00Z",
+    "sync_completed_at": "2026-09-05T00:50:05Z",
+    "files_discovered": 2,
+    "files_ingested": 2,
+    "duplicates_skipped": 0,
+    "failed_count": 0,
+    "ingested_meeting_ids": ["a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"],
+    "errors": []
+  }
+  ```
+
+### `POST /api/v1/integrations/google-drive/demo-sync`
+Run hackathon demo ingestion using synthetic Google Meet export transcripts.
+- **Response `200 OK`**
