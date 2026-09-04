@@ -172,3 +172,45 @@ def test_valixis_read_only_boundary():
     # Verify write methods do NOT exist on ValixisRepository
     assert not hasattr(valixis_repo, "create_employee")
     assert not hasattr(valixis_repo, "delete_task")
+
+# 12. Regression test: Owner extraction with preambles and verb guards
+def test_owner_extraction_preambles_and_verb_guards():
+    slm = SLMProvider()
+    
+    # Preamble clause: "Regarding analytics, Rohan will finish..."
+    res1 = slm.extract_action_items("Regarding the analytics module, Rohan will finish the API integration by Friday.")
+    assert len(res1.action_items) > 0
+    assert res1.action_items[0].owner_name == "Rohan"
+    
+    # Verb guard: "for migrating the database" should NOT extract "migrating" as owner
+    res2 = slm.extract_action_items("Action Item for migrating the database by next Monday.")
+    assert len(res2.action_items) > 0
+    assert res2.action_items[0].owner_name == "Unassigned"
+
+    # Proper name with 'for': "Action item for Alice by next Monday."
+    res3 = slm.extract_action_items("Action item for Alice by next Monday.")
+    assert len(res3.action_items) > 0
+    assert res3.action_items[0].owner_name == "Alice"
+
+# 13. Regression test: Deadline extraction before phrases and leading 'to ' cleaning
+def test_deadline_extraction_before_and_leading_to():
+    slm = SLMProvider()
+    
+    # Before phrase
+    res1 = slm.extract_action_items("TODO: Fix login bug assigned to Bob before the end of the week.")
+    assert len(res1.action_items) > 0
+    assert "the end of the week" in res1.action_items[0].deadline or "before" in res1.action_items[0].deadline or "end of the week" in res1.action_items[0].deadline
+
+    # Leading 'to ' string cleaning
+    res2 = slm.extract_action_items("Pushing to next Tuesday for database migration assigned to Charlie.")
+    assert len(res2.action_items) > 0
+    assert res2.action_items[0].deadline == "next Tuesday"
+
+# 14. Heuristic embedding provider fallback labeling
+def test_heuristic_embedding_provider_labeling():
+    from app.ai.embeddings import HeuristicDenseEmbeddingProvider, SemanticDenseEmbeddingProvider
+    provider = HeuristicDenseEmbeddingProvider()
+    assert provider.dimension == 1536
+    vec = provider.generate_embedding("database pool timeout")
+    assert len(vec) == 1536
+    assert SemanticDenseEmbeddingProvider is HeuristicDenseEmbeddingProvider

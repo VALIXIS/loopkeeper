@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     CONFIDENCE_THRESHOLD: float = 0.75
     FALLBACK_ENABLED: bool = True
     MAX_INPUT_LENGTH: int = 8192
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
 
     # Embedding Model settings
     EMBEDDING_MODEL_NAME: str = "text-embedding-3-small"
