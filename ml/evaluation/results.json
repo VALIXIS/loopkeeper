@@ -2,12 +2,12 @@
   "dataset_split": "test",
   "total_samples": 5,
   "metrics": {
-    "action_extraction_precision": 0.6,
+    "action_extraction_precision": 0.75,
     "action_extraction_recall": 0.6,
-    "action_extraction_f1": 0.6,
-    "owner_extraction_accuracy": 0.0,
+    "action_extraction_f1": 0.6667,
+    "owner_extraction_accuracy": 0.4,
     "deadline_extraction_accuracy": 0.2,
-    "status_classification_accuracy": 0.6,
+    "status_classification_accuracy": 0.4,
     "json_validity_rate": 1.0
   },
   "failure_cases": [

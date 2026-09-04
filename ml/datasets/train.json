@@ -25,7 +25,7 @@
         "deadline": "tomorrow morning",
         "status": "pending",
         "evidence": "We need to fix the database connection pool leak by tomorrow morning.",
-        "confidence": 0.90
+        "confidence": 0.9
       }
     ]
   },
@@ -159,7 +159,7 @@
         "deadline": "Wednesday",
         "status": "pending",
         "evidence": "Priya is still working on the payment integration. Pushing deadline to Wednesday.",
-        "confidence": 0.90
+        "confidence": 0.9
       }
     ]
   },
@@ -205,6 +205,87 @@
         "status": "pending",
         "evidence": "Regarding the report we discussed last week, Rahul will finish that by end of day.",
         "confidence": 0.89
+      }
+    ]
+  },
+  {
+    "id": "train-015",
+    "scenario": "A. Explicit commitment (Subject before verb)",
+    "transcript": "Arjun said he will finish the authentication service by Thursday.",
+    "expected_action_items": [
+      {
+        "action": "Finish the authentication service",
+        "owner": "Arjun",
+        "deadline": "Thursday",
+        "status": "pending",
+        "evidence": "Arjun said he will finish the authentication service by Thursday.",
+        "confidence": 0.94
+      }
+    ]
+  },
+  {
+    "id": "train-016",
+    "scenario": "E. Completed tasks",
+    "transcript": "Rahul completed the payment API yesterday.",
+    "expected_action_items": [
+      {
+        "action": "Payment API",
+        "owner": "Rahul",
+        "deadline": "yesterday",
+        "status": "done",
+        "evidence": "Rahul completed the payment API yesterday.",
+        "confidence": 0.96
+      }
+    ]
+  },
+  {
+    "id": "train-017",
+    "scenario": "G. Tentative non-commitment",
+    "transcript": "Maybe we can improve the onboarding flow next week.",
+    "expected_action_items": []
+  },
+  {
+    "id": "train-018",
+    "scenario": "A. Explicit commitment",
+    "transcript": "Kiran will take care of the API documentation by Friday.",
+    "expected_action_items": [
+      {
+        "action": "Take care of the API documentation",
+        "owner": "Kiran",
+        "deadline": "Friday",
+        "status": "pending",
+        "evidence": "Kiran will take care of the API documentation by Friday.",
+        "confidence": 0.93
+      }
+    ]
+  },
+  {
+    "id": "train-019",
+    "scenario": "J. Postponed deadlines",
+    "transcript": "Meera has not finished the dashboard yet. She will have it ready Monday.",
+    "expected_action_items": [
+      {
+        "action": "Finish the dashboard",
+        "owner": "Meera",
+        "deadline": "Monday",
+        "status": "pending",
+        "evidence": "Meera has not finished the dashboard yet. She will have it ready Monday.",
+        "confidence": 0.92
+      }
+    ]
+  },
+  {
+    "id": "train-020",
+    "scenario": "B. Missing owner",
+    "transcript": "Someone needs to investigate the database timeout.",
+    "expected_action_items": [
+      {
+        "action": "Investigate the database timeout",
+        "owner": "Unassigned",
+        "deadline": "Not specified",
+        "status": "pending",
+        "evidence": "Someone needs to investigate the database timeout.",
+        "confidence": 0.88
       }
     ]
   }
