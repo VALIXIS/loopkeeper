@@ -30,7 +30,7 @@ void main() {
       final client = ApiClient();
       final items = await client.getActionItems();
       expect(items.isNotEmpty, isTrue);
-      expect(items.any((i) => i.ownerName.contains('Vignesh')), isTrue);
+      expect(items.any((i) => i.ownerName.contains('Priya')), isTrue);
     });
 
     test('getDashboardOverview returns overloaded members and metrics', () async {

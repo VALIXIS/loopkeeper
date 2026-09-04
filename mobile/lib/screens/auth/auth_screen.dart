@@ -19,6 +19,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   final List<Map<String, String>> _users = [
     {'name': 'Hasitha (Mobile Lead)', 'role': 'Manager', 'id': '11111111-1111-1111-1111-111111111111'},
+    {'name': 'Priya Sharma', 'role': 'Employee', 'id': '44444444-4444-4444-4444-444444444444'},
     {'name': 'Vignesh Kumar', 'role': 'Employee', 'id': '22222222-2222-2222-2222-222222222222'},
     {'name': 'Alice Vance', 'role': 'Employee', 'id': '33333333-3333-3333-3333-333333333333'},
   ];
@@ -76,7 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 6),
                   const Text(
-                    'AI-powered Meeting Accountability Engine',
+                    'From Meeting Promises to Completed Work.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -91,7 +92,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Select Demo Profile',
+                            'Select User Profile',
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 14,

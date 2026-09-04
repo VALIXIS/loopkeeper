@@ -184,7 +184,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.swap_horiz_rounded, color: AppColors.brandAccent),
-                    title: const Text('Switch Demo Profile / Log Out', style: TextStyle(fontSize: 14)),
+                    title: const Text('Switch User Profile / Log Out', style: TextStyle(fontSize: 14)),
                     subtitle: const Text('Change active persona (Manager vs Employee)', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
                     onTap: () {
                       Navigator.of(context).pushAndRemoveUntil(
