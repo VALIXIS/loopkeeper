@@ -58,7 +58,9 @@ class SLMInferenceWrapper:
             if not owner_match:
                 owner_match = re.search(r'(?:^|,\s*|\b)([A-Z][a-z]+)\s+(?:said|will|has|is|completed|agreed)', line_clean)
             if owner_match:
-                owner = owner_match.group(1).strip()
+                cand = owner_match.group(1).strip()
+                if cand.lower() not in ["google drive", "api", "oauth", "postgres", "postgresql", "docker", "github", "database"]:
+                    owner = cand
 
             deadline = 'Not specified'
             deadline_match = re.search(r'(?:by|due|deadline:?|move to|pushing to|before)\s+([A-Za-z0-9\s/-]+?)(?:\s+(?:for|assigned\s+to|owner:?|said|will|has|is|completed|agreed)|[\.,]|$)', line_clean, re.IGNORECASE)
