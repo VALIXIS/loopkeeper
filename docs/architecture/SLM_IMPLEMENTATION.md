@@ -6,7 +6,7 @@ LoopKeeper utilizes a hybrid AI architecture combining a specialized Multi-Task 
 ## 2. Model Selection & Strategy
 - Architecture: Multi-Task Lightweight Neural Classifier & Entity Span Predictor (MultiTaskSLMClassifier).
 - Parameter Optimization: SGD / AdamW gradient parameter updates for commitment probability and multi-class status classification.
-- Model Checkpoints: Trained neural parameters saved to ml/models/slm_weights.json and ml/models/slm_model.bin.
+- Model Checkpoints: Trained neural parameters saved to ml/models/slm_weights.json.
 - Runtime Requirements: CPU-bound, ultra-fast inference (< 20ms latency).
 
 ## 3. Dataset Design & Schema
@@ -25,7 +25,7 @@ Located at ml/datasets/:
 ### Training Pipeline (ml/training/train.py)
 - Supervised fine-tuning loop (seed=42, epochs=3, lr=1e-2).
 - Optimizes weights W_commit and W_status with cross-entropy loss reduction.
-- Checkpoints saved to ml/models/slm_weights.json and ml/models/slm_model.bin.
+- Checkpoints saved to ml/models/slm_weights.json.
 
 ### Evaluation Pipeline (ml/evaluation/evaluate.py)
 - Evaluates real trained SLM predictions across test split (ml/evaluation/results.json).

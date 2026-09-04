@@ -12,7 +12,7 @@ logger = logging.getLogger('app.ai.embeddings')
 class SemanticEmbeddingProvider(EmbeddingProvider):
     def __init__(self, dimension: int = 1536):
         self._dim = dimension
-        self.local_provider = SemanticDenseEmbeddingProvider(dimension=dimension)
+        self.local_provider = HeuristicDenseEmbeddingProvider(dimension=dimension)
 
     @property
     def dimension(self) -> int:
@@ -48,7 +48,12 @@ class SemanticEmbeddingProvider(EmbeddingProvider):
         return self.local_provider.generate_embedding(text)
 
 
-class SemanticDenseEmbeddingProvider(EmbeddingProvider):
+class HeuristicDenseEmbeddingProvider(EmbeddingProvider):
+    """
+    Offline handcrafted heuristic embedding provider.
+    Uses concept groups and token hashing to project text into a dense vector space.
+    This serves as a local offline fallback when Gemini embeddings are unavailable.
+    """
     def __init__(self, dimension: int = 1536):
         self._dim = dimension
         self.concept_groups = [
@@ -87,6 +92,10 @@ class SemanticDenseEmbeddingProvider(EmbeddingProvider):
         if norm > 0:
             vec = [v / norm for v in vec]
         return vec
+
+
+# Alias for backward compatibility
+SemanticDenseEmbeddingProvider = HeuristicDenseEmbeddingProvider
 
 
 class DeterministicEmbeddingProvider(EmbeddingProvider):

@@ -145,16 +145,17 @@ class FallbackLLMProvider(AIProvider):
 
         for clause in clauses:
             owner = "Unassigned"
-            owner_match = re.search(r'(?:assigned to|owner:?|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', clause, re.IGNORECASE)
+            owner_match = re.search(r'(?i:assigned to|owner:?|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', clause)
             if not owner_match:
-                owner_match = re.search(r'^([A-Z][a-z]+)\s+(?:said|will|has|is|completed|agreed)', clause)
+                owner_match = re.search(r'(?:^|,\s*|\b)([A-Z][a-z]+)\s+(?:said|will|has|is|completed|agreed)', clause)
             if owner_match:
                 owner = owner_match.group(1).strip()
             
             deadline = "Not specified"
-            deadline_match = re.search(r'(?:by|due|deadline:?|move to|pushing to)\s+([A-Za-z0-9\s,/-]+?)(?:\.|$)', clause, re.IGNORECASE)
+            deadline_match = re.search(r'(?:by|due|deadline:?|move to|pushing to|before)\s+([A-Za-z0-9\s/-]+?)(?:\s+(?:for|assigned\s+to|owner:?|said|will|has|is|completed|agreed)|[\.,]|$)', clause, re.IGNORECASE)
             if deadline_match:
                 deadline = deadline_match.group(1).strip()
+                deadline = re.sub(r'^(?:to\s+)+', '', deadline, flags=re.IGNORECASE).strip()
 
             status = "pending"
             clause_lower = clause.lower()

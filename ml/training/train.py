@@ -75,7 +75,6 @@ class SLMTrainer:
 
         os.makedirs(self.output_dir, exist_ok=True)
         model_artifact_path = os.path.join(self.output_dir, 'slm_weights.json')
-        binary_weights_path = os.path.join(self.output_dir, 'slm_model.bin')
 
         model_params = self.model.save_model()
 
@@ -93,9 +92,6 @@ class SLMTrainer:
 
         with open(model_artifact_path, 'w', encoding='utf-8') as f:
             json.dump(checkpoint_data, f, indent=2)
-
-        with open(binary_weights_path, 'w', encoding='utf-8') as f:
-            json.dump(model_params, f, indent=2)
 
         logger.info(f'Training completed successfully. Real weights saved to {model_artifact_path}')
         return checkpoint_data
