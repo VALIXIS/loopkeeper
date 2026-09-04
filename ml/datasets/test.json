@@ -61,14 +61,14 @@
   {
     "id": "test-005",
     "scenario": "J. Postponed deadlines",
-    "transcript": "Priya says the checkout backend is not finished yet. Pushing deadline to next Friday.",
+    "transcript": "Kavita mentioned the search indexing job is delayed. Move the deadline to next Tuesday.",
     "expected_action_items": [
       {
-        "action": "Checkout backend",
-        "owner": "Priya",
-        "deadline": "next Friday",
+        "action": "Search indexing job",
+        "owner": "Kavita",
+        "deadline": "next Tuesday",
         "status": "pending",
-        "evidence": "Priya says the checkout backend is not finished yet. Pushing deadline to next Friday.",
+        "evidence": "Kavita mentioned the search indexing job is delayed. Move the deadline to next Tuesday.",
         "confidence": 0.91
       }
     ]

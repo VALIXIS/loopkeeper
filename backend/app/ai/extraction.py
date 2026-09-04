@@ -78,63 +78,108 @@ class SLMProvider(AIProvider):
 class FallbackLLMProvider(AIProvider):
     @property
     def provider_name(self) -> str:
+        if getattr(settings, "GEMINI_API_KEY", "") and getattr(settings, "GEMINI_API_KEY", "").strip():
+            return "gemini"
         return settings.FALLBACK_PROVIDER
 
     @property
     def model_name(self) -> str:
-        return 'gemini-1.5-flash-fallback'
+        if getattr(settings, "GEMINI_API_KEY", "") and getattr(settings, "GEMINI_API_KEY", "").strip():
+            return "gemini-1.5-flash"
+        return "local-rule-fallback"
 
     def extract_action_items(self, transcript: str) -> ExtractionResult:
         start_time = time.time()
-        items: List[ExtractedActionItem] = []
+        import requests
+        import json
+        
+        if getattr(settings, "GEMINI_API_KEY", "") and getattr(settings, "GEMINI_API_KEY", "").strip():
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={getattr(settings, "GEMINI_API_KEY", "")}"
+                prompt = (
+                    "Extract action items from transcript. Respond ONLY with a JSON array of objects: "
+                    "[{\"action\": \"...\", \"owner\": \"...\", \"deadline\": \"...\", \"status\": \"pending\"}].\n"
+                    f"Transcript: {transcript}"
+                )
+                payload = {"contents": [{"parts": [{"text": prompt}]}]}
+                resp = requests.post(url, json=payload, timeout=5.0)
+                if resp.status_code == 200:
+                    text_resp = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+                    match = re.search(r"\[.*\]", text_resp, re.DOTALL)
+                    if match:
+                        parsed = json.loads(match.group(0))
+                        items = []
+                        for obj in parsed:
+                            items.append(ExtractedActionItem(
+                                title=obj.get("action", transcript[:50]),
+                                description=transcript,
+                                owner_name=obj.get("owner", "Unassigned"),
+                                deadline=obj.get("deadline", "Not specified"),
+                                status=obj.get("status", "pending"),
+                                source_text=transcript,
+                                confidence=0.95
+                            ))
+                        return ExtractionResult(
+                            action_items=items,
+                            raw_response="Gemini LLM extraction complete",
+                            confidence=0.95,
+                            provider_used="gemini",
+                            fallback_used=True,
+                            latency_ms=int((time.time() - start_time) * 1000),
+                            model_name="gemini-1.5-flash"
+                        )
+            except Exception as e:
+                pass
 
+        items: List[ExtractedActionItem] = []
+        clauses = []
         for line in transcript.splitlines():
             line_clean = line.strip()
             if not line_clean:
                 continue
+            if " and " in line_clean:
+                parts = line_clean.split(" and ")
+                clauses.extend([p.strip() for p in parts if p.strip()])
+            else:
+                clauses.append(line_clean)
 
-            owner = 'Unassigned'
-            owner_match = re.search(r'(?:assigned to|owner:?|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', line_clean, re.IGNORECASE)
+        for clause in clauses:
+            owner = "Unassigned"
+            owner_match = re.search(r'(?:assigned to|owner:?|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', clause, re.IGNORECASE)
             if not owner_match:
-                owner_match = re.search(r'^([A-Z][a-z]+)\s+(?:said|will|has|is|completed|agreed)', line_clean)
+                owner_match = re.search(r'^([A-Z][a-z]+)\s+(?:said|will|has|is|completed|agreed)', clause)
             if owner_match:
                 owner = owner_match.group(1).strip()
             
-            deadline = 'Not specified'
-            deadline_match = re.search(r'(?:by|due|deadline:?|ready|to)\s+([A-Za-z0-9\s,/-]+?)(?:\.|$)', line_clean, re.IGNORECASE)
+            deadline = "Not specified"
+            deadline_match = re.search(r'(?:by|due|deadline:?|move to|pushing to)\s+([A-Za-z0-9\s,/-]+?)(?:\.|$)', clause, re.IGNORECASE)
             if deadline_match:
                 deadline = deadline_match.group(1).strip()
 
+            status = "pending"
+            clause_lower = clause.lower()
+            if any(k in clause_lower for k in ["completed", "finished", "done"]):
+                status = "done"
+            elif any(k in clause_lower for k in ["abandoning", "cancelled", "dropped"]):
+                status = "cancelled"
+
             items.append(
                 ExtractedActionItem(
-                    title=line_clean[:80],
-                    description=line_clean,
+                    title=clause[:80],
+                    description=clause,
                     owner_name=owner,
                     deadline=deadline,
-                    status='pending',
-                    source_text=line_clean,
-                    confidence=0.95
-                )
-            )
-
-        if not items and transcript.strip():
-            items.append(
-                ExtractedActionItem(
-                    title=f'Action item from transcript: {transcript[:50]}',
-                    description=transcript,
-                    owner_name='Unassigned',
-                    deadline='Not specified',
-                    status='pending',
-                    source_text=transcript[:100],
-                    confidence=0.92
+                    status=status,
+                    source_text=clause,
+                    confidence=0.88
                 )
             )
 
         latency = int((time.time() - start_time) * 1000)
         return ExtractionResult(
             action_items=items,
-            raw_response='Fallback LLM extraction complete',
-            confidence=0.95,
+            raw_response="Local rule fallback extraction complete",
+            confidence=0.88,
             provider_used=self.provider_name,
             fallback_used=True,
             latency_ms=latency,
