@@ -49,7 +49,7 @@ export const QuickIngestCard: React.FC<QuickIngestCardProps> = ({ onOpenCreateMe
             <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
               Instant AI Transcript Pipeline Ingest
               <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-sm">
-                1-Click Demo
+                Preset Ingest
               </span>
             </h3>
             <p className="text-xs text-zinc-400">
@@ -80,7 +80,7 @@ export const QuickIngestCard: React.FC<QuickIngestCardProps> = ({ onOpenCreateMe
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400">
-                    Preset #{index + 1}
+                    Sample {index + 1}
                   </span>
                   <span className="text-[10px] text-zinc-500 font-mono">
                     {preset.content.split('\n').length} speaker turns

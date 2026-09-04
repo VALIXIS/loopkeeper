@@ -18,7 +18,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
 
   return (
     <div className="space-y-6 pb-12">
-      {/* 10-Second Demo Executive Hero Header */}
+      {/* Executive Hero Header */}
       <div className="relative rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-900 to-indigo-950/70 border border-zinc-800 p-6 sm:p-8 shadow-2xl overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
@@ -28,7 +28,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
                 Live Engine Ready
               </span>
               <span className="text-xs text-zinc-400 font-mono">
-                SRM Hackathon Finalist Demo
+                Enterprise Accountability Intelligence
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
@@ -78,7 +78,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
         </div>
       </div>
 
-      {/* 1-Click Fast Ingest Preset Bar */}
+      {/* Preset Ingest Bar */}
       <QuickIngestCard onOpenCreateMeeting={onOpenCreateMeeting} />
 
       {/* Primary 4 Metric Cards */}

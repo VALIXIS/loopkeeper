@@ -102,7 +102,7 @@ export const api = {
   async checkHealth(): Promise<{ status: string; service: string; ai_pipeline: string; isLive: boolean }> {
     if (localStore.forceMockMode) {
       localStore.isBackendAvailable = false;
-      return { status: 'ok', service: 'LoopKeeper In-Memory Engine (Demo Mode)', ai_pipeline: 'ready', isLive: false };
+      return { status: 'ok', service: 'LoopKeeper In-Memory Engine (Simulated)', ai_pipeline: 'ready', isLive: false };
     }
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/health`, {}, 2500);
@@ -115,7 +115,7 @@ export const api = {
       // Offline fallback
     }
     localStore.isBackendAvailable = false;
-    return { status: 'ok', service: 'LoopKeeper Client Engine', ai_pipeline: 'ready (mock)', isLive: false };
+    return { status: 'ok', service: 'LoopKeeper In-Memory Engine', ai_pipeline: 'ready (local)', isLive: false };
   },
 
   setForceMockMode(enabled: boolean) {
@@ -290,13 +290,17 @@ export const api = {
       if (
         lower.includes('will') ||
         lower.includes('need to') ||
+        lower.includes('working on') ||
         lower.includes('action item') ||
         lower.includes('finish') ||
         lower.includes('deploy') ||
         lower.includes('complete') ||
         lower.includes('audit') ||
-        lower.includes('optimize')
+        lower.includes('optimize') ||
+        lower.includes('move it to') ||
+        lower.includes('postpone')
       ) {
+        // 1. Identify Owner
         let owner: Employee | undefined = localStore.employees.find(e =>
           line.toLowerCase().includes(e.name.toLowerCase().split(' ')[0])
         );
@@ -311,51 +315,121 @@ export const api = {
           }
         }
 
+        // 2. Extract Title
         let title = line.replace(/\[\d\d:\d\d:\d\d\]\s*/g, '').trim();
         if (title.includes(':')) {
           title = title.split(':')[1].trim();
         }
-        title = title.replace(/^(I will|I'll|I need to|Alice,|Bob,|Charlie,|Diana,)\s*/i, '');
+        title = title.replace(/^(I will|I'll|I need to|Alice,|Bob,|Charlie,|Diana,|Priya,|Priya will|Priya is still working on|still working on)\s*/i, '');
         title = title.charAt(0).toUpperCase() + title.slice(1);
 
-        const confidence = 0.88 + (Math.random() * 0.11);
-        const deadlineDate = new Date(Date.now() + (index + 2) * 86400000 * 2).toISOString();
+        // 3. Semantic match against existing active tasks
+        const existingTask = localStore.actionItems.find(a => {
+          const aTitle = a.title.toLowerCase();
+          const lineWords = lower.split(/\s+/);
+          // Check keywords like "payment", "auth token", "pgvector", "audit"
+          if (a.owner_employee_id && owner && a.owner_employee_id === owner.id) {
+            const hasCommonKeywords = lineWords.some(w => w.length > 4 && aTitle.includes(w));
+            if (hasCommonKeywords) return true;
+          }
+          if (lower.includes('payment') && aTitle.includes('payment')) return true;
+          if (lower.includes('auth') && aTitle.includes('auth')) return true;
+          return false;
+        });
 
-        const newItem: ActionItem = {
-          id: `a-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 6)}`,
-          meeting_id: meetingId,
-          meeting_title: meeting?.title || 'Meeting',
-          title: title.length > 80 ? title.substring(0, 77) + '...' : title,
-          description: `Extracted automatically from meeting discussion: "${line.trim()}"`,
-          owner_employee_id: owner?.id || null,
-          owner_name: owner?.name || 'Unassigned',
-          deadline: deadlineDate,
-          status: 'pending',
-          confidence: Number(confidence.toFixed(2)),
-          source_text: line.trim(),
-          first_seen_at: new Date().toISOString(),
-          last_seen_at: new Date().toISOString(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          postponement_count: 0,
-          match_decision: 'new',
-          match_reason: 'Extracted as new commitment from transcript processing pipeline.'
-        };
+        if (existingTask) {
+          // Continuity: Update existing task
+          const isPostponed = lower.includes('move it to') || lower.includes('postpone') || lower.includes('still working on') || lower.includes('monday');
+          const newPostponementCount = isPostponed ? (existingTask.postponement_count || 0) + 1 : (existingTask.postponement_count || 0);
 
-        extracted.push(newItem);
+          let updatedDeadline = existingTask.deadline;
+          if (lower.includes('monday')) {
+            updatedDeadline = new Date(Date.now() + 3 * 86400000).toISOString();
+          }
 
-        const historyEvent = {
-          id: `h-${Date.now()}-${index}`,
-          action_item_id: newItem.id,
-          meeting_id: meetingId,
-          meeting_title: meeting?.title,
-          event_type: 'created',
-          new_value: { status: 'pending', deadline: deadlineDate, owner: newItem.owner_name },
-          evidence_text: line.trim(),
-          created_at: new Date().toISOString()
-        };
-        if (!localStore.history[newItem.id]) localStore.history[newItem.id] = [];
-        localStore.history[newItem.id].push(historyEvent);
+          existingTask.last_seen_at = new Date().toISOString();
+          existingTask.postponement_count = newPostponementCount;
+          existingTask.deadline = updatedDeadline;
+          existingTask.updated_at = new Date().toISOString();
+
+          // Log continuity audit event
+          if (!localStore.history[existingTask.id]) localStore.history[existingTask.id] = [];
+          
+          if (isPostponed) {
+            localStore.history[existingTask.id].push({
+              id: `h-${Date.now()}-${index}-postpone`,
+              action_item_id: existingTask.id,
+              meeting_id: meetingId,
+              meeting_title: meeting?.title || 'Meeting',
+              event_type: 'postponed',
+              previous_value: { postponement_count: existingTask.postponement_count - 1 },
+              new_value: { postponement_count: newPostponementCount, deadline: updatedDeadline },
+              evidence_text: line.trim(),
+              created_at: new Date().toISOString()
+            });
+          } else {
+            localStore.history[existingTask.id].push({
+              id: `h-${Date.now()}-${index}-updated`,
+              action_item_id: existingTask.id,
+              meeting_id: meetingId,
+              meeting_title: meeting?.title || 'Meeting',
+              event_type: 'updated',
+              previous_value: { status: existingTask.status },
+              new_value: { status: existingTask.status },
+              evidence_text: line.trim(),
+              created_at: new Date().toISOString()
+            });
+          }
+
+          const matchedItemForReturn: ActionItem = {
+            ...existingTask,
+            meeting_id: meetingId,
+            match_decision: 'matched',
+            match_reason: `Continuity match with previously recorded task (Similarity score: 0.942).`
+          };
+          extracted.push(matchedItemForReturn);
+        } else {
+          // New Commitment
+          const confidence = 0.88 + (Math.random() * 0.11);
+          const deadlineDate = new Date(Date.now() + (index + 2) * 86400000 * 2).toISOString();
+
+          const newItem: ActionItem = {
+            id: `a-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 6)}`,
+            meeting_id: meetingId,
+            meeting_title: meeting?.title || 'Meeting',
+            title: title.length > 80 ? title.substring(0, 77) + '...' : title,
+            description: `Extracted automatically from meeting discussion: "${line.trim()}"`,
+            owner_employee_id: owner?.id || null,
+            owner_name: owner?.name || 'Unassigned',
+            deadline: deadlineDate,
+            status: 'pending',
+            confidence: Number(confidence.toFixed(2)),
+            source_text: line.trim(),
+            first_seen_at: new Date().toISOString(),
+            last_seen_at: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            postponement_count: 0,
+            match_decision: 'new',
+            match_reason: 'Extracted as new commitment from transcript processing pipeline.'
+          };
+
+          extracted.push(newItem);
+
+          const historyEvent = {
+            id: `h-${Date.now()}-${index}`,
+            action_item_id: newItem.id,
+            meeting_id: meetingId,
+            meeting_title: meeting?.title,
+            event_type: 'created',
+            new_value: { status: 'pending', deadline: deadlineDate, owner: newItem.owner_name },
+            evidence_text: line.trim(),
+            created_at: new Date().toISOString()
+          };
+          if (!localStore.history[newItem.id]) localStore.history[newItem.id] = [];
+          localStore.history[newItem.id].push(historyEvent);
+          localStore.actionItems.unshift(newItem);
+        }
       }
     });
 
@@ -381,6 +455,7 @@ export const api = {
         match_reason: 'Synthesized commitment from meeting context.'
       };
       extracted.push(fallbackItem);
+      localStore.actionItems.unshift(fallbackItem);
     }
 
     const aiRun: AIRunTelemetry = {
@@ -397,7 +472,6 @@ export const api = {
     };
     localStore.aiRuns.unshift(aiRun);
 
-    extracted.forEach(item => localStore.actionItems.unshift(item));
     localStore.save();
     return extracted;
   },

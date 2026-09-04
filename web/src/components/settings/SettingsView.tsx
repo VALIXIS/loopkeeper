@@ -110,7 +110,7 @@ export const SettingsView: React.FC = () => {
               >
                 <CheckCircleIcon size={14} />
                 {forceMockMode
-                  ? 'In-Memory Client Engine (Demo Mode)'
+                  ? 'Local Client Engine (Offline)'
                   : backendStatus.isLive
                   ? 'FastAPI Backend Live (/api/v1)'
                   : 'In-Memory Resilient Engine'}
@@ -118,7 +118,7 @@ export const SettingsView: React.FC = () => {
             </div>
 
             <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
-              <span className="text-zinc-400">Simulate Offline / Demo Mode</span>
+              <span className="text-zinc-400">Offline Fallback Mode</span>
               <button
                 onClick={() => setForceMockMode(!forceMockMode)}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
@@ -127,7 +127,7 @@ export const SettingsView: React.FC = () => {
                     : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                {forceMockMode ? 'Demo Mode: ACTIVE' : 'Demo Mode: OFF'}
+                {forceMockMode ? 'Offline Mode: ACTIVE' : 'Offline Mode: OFF'}
               </button>
             </div>
 
@@ -196,13 +196,13 @@ export const SettingsView: React.FC = () => {
 
         <div className="pt-4 border-t border-zinc-800 flex items-center justify-between text-xs">
           <span className="text-zinc-500">
-            Changes persist in active session for continuous hackathon demo stability.
+            Changes persist in active session for continuous runtime stability.
           </span>
           <button
             onClick={() => resetDemoData()}
             className="px-4 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 font-bold border border-rose-600/30 transition-colors"
           >
-            Reset All Demo Data
+            Reset All Sample Data
           </button>
         </div>
       </div>

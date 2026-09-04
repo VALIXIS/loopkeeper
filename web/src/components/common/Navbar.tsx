@@ -35,11 +35,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
                 LOOPKEEPER
               </span>
               <span className="rounded-md bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-bold text-indigo-300 border border-indigo-500/40">
-                SRM HACK
+                AI ENGINE
               </span>
             </div>
             <p className="text-[11px] text-zinc-400 font-medium hidden sm:block">
-              AI-Powered Meeting Accountability Engine
+              From Meeting Promises to Completed Work
             </p>
           </div>
         </div>
@@ -57,17 +57,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
             />
             <span className="text-zinc-300 font-medium">
               {forceMockMode
-                ? 'Mock Mode'
+                ? 'Offline Engine'
                 : backendStatus.isLive
                 ? 'FastAPI Live'
-                : 'Offline Fallback'}
+                : 'Local Engine'}
             </span>
             <button
               onClick={() => setForceMockMode(!forceMockMode)}
               className="text-[10px] text-zinc-400 hover:text-zinc-200 underline ml-1"
-              title="Toggle between Live API and offline demo mock mode"
+              title="Toggle between Live API and offline fallback engine"
             >
-              ({forceMockMode ? 'Switch Live' : 'Simulate Mock'})
+              ({forceMockMode ? 'Connect Live' : 'Use Local'})
             </button>
           </div>
 
@@ -123,7 +123,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
                 onClick={() => setShowUserMenu(false)}
               >
                 <div className="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 border-b border-zinc-800">
-                  Switch User Persona
+                  Switch Active User
                 </div>
                 <div className="mt-1 space-y-1">
                   {employees.map(emp => (
