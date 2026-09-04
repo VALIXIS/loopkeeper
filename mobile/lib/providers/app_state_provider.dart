@@ -1,0 +1,206 @@
+import 'package:flutter/material.dart';
+import '../core/api/api_client.dart';
+import '../core/storage/session_storage.dart';
+import '../models/action_item_model.dart';
+import '../models/ai_model.dart';
+import '../models/dashboard_model.dart';
+import '../models/meeting_model.dart';
+import '../models/auth_model.dart';
+
+class AppStateProvider extends ChangeNotifier {
+  final ApiClient _apiClient = ApiClient();
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
+  bool _isOffline = false;
+  bool get isOffline => _isOffline;
+
+  String _baseUrl = SessionStorage.defaultBaseUrl;
+  String get baseUrl => _baseUrl;
+
+  UserProfile _currentUser = UserProfile(
+    id: '11111111-1111-1111-1111-111111111111',
+    name: 'Hasitha (Mobile Lead)',
+    email: 'hasitha@loopkeeper.ai',
+    role: 'Manager',
+    department: 'Mobile Engineering',
+    avatarUrl: '',
+  );
+  UserProfile get currentUser => _currentUser;
+
+  DashboardOverviewModel? _dashboard;
+  DashboardOverviewModel? get dashboard => _dashboard;
+
+  List<MeetingModel> _meetings = [];
+  List<MeetingModel> get meetings => _meetings;
+
+  List<ActionItemModel> _actionItems = [];
+  List<ActionItemModel> get actionItems => _actionItems;
+
+  AiHealthModel? _aiHealth;
+  AiHealthModel? get aiHealth => _aiHealth;
+
+  int _unreadAlertsCount = 3;
+  int get unreadAlertsCount => _unreadAlertsCount;
+
+  Future<void> init() async {
+    _isLoading = true;
+    notifyListeners();
+
+    _baseUrl = await SessionStorage.getBaseUrl();
+    _isOffline = await SessionStorage.isOfflineMode();
+    final session = await SessionStorage.getUserSession();
+    
+    _currentUser = UserProfile(
+      id: session['userId']!,
+      name: session['name']!,
+      email: '${session['name']!.toLowerCase().replaceAll(' ', '.')}@loopkeeper.ai',
+      role: session['role']!,
+      department: 'Engineering',
+      avatarUrl: '',
+    );
+
+    await refreshAll();
+  }
+
+  Future<void> refreshAll() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _aiHealth = await _apiClient.checkHealth();
+      _dashboard = await _apiClient.getDashboardOverview();
+      _meetings = await _apiClient.getMeetings();
+      _actionItems = await _apiClient.getActionItems();
+    } catch (e) {
+      _errorMessage = 'Failed to connect to backend. Operating in resilient offline mode.';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> setBaseUrl(String url) async {
+    _baseUrl = url;
+    await SessionStorage.setBaseUrl(url);
+    await refreshAll();
+  }
+
+  Future<void> toggleOfflineMode(bool offline) async {
+    _isOffline = offline;
+    await SessionStorage.setOfflineMode(offline);
+    await refreshAll();
+  }
+
+  Future<void> switchUser(String role, String name, String id) async {
+    await SessionStorage.saveUserSession(
+      token: 'mock-token',
+      userId: id,
+      name: name,
+      role: role,
+    );
+    _currentUser = UserProfile(
+      id: id,
+      name: name,
+      email: '${name.toLowerCase().replaceAll(' ', '.')}@loopkeeper.ai',
+      role: role,
+      department: 'Engineering',
+      avatarUrl: '',
+    );
+    await refreshAll();
+  }
+
+  Future<void> updateItemStatus(String id, String newStatus) async {
+    try {
+      final updated = await _apiClient.updateActionItem(id, {'status': newStatus});
+      final index = _actionItems.indexWhere((item) => item.id == id);
+      if (index != -1) {
+        _actionItems[index] = updated;
+      }
+      await refreshDashboard();
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Could not update item status.';
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateItemDeadline(String id, DateTime newDeadline) async {
+    try {
+      final updated = await _apiClient.updateActionItem(id, {'deadline': newDeadline.toIso8601String()});
+      final index = _actionItems.indexWhere((item) => item.id == id);
+      if (index != -1) {
+        _actionItems[index] = updated;
+      }
+      await refreshDashboard();
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Could not update deadline.';
+      notifyListeners();
+    }
+  }
+
+  Future<void> processMeeting(String meetingId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _apiClient.processMeeting(meetingId);
+      await refreshAll();
+    } catch (e) {
+      _errorMessage = 'Processing completed with fallback results.';
+      await refreshAll();
+    }
+  }
+
+  Future<MeetingModel?> createMeeting(String title, DateTime date, {String? transcriptText}) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final meeting = await _apiClient.createMeeting(title: title, meetingDate: date);
+      if (transcriptText != null && transcriptText.trim().isNotEmpty) {
+        await _apiClient.attachTranscript(meetingId: meeting.id, content: transcriptText);
+        await _apiClient.processMeeting(meeting.id);
+      }
+      await refreshAll();
+      return meeting;
+    } catch (e) {
+      _errorMessage = 'Failed to create meeting.';
+      return null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshDashboard() async {
+    _dashboard = await _apiClient.getDashboardOverview();
+    notifyListeners();
+  }
+
+  void markAlertsAsRead() {
+    _unreadAlertsCount = 0;
+    notifyListeners();
+  }
+
+  // Filtered helper getters
+  List<ActionItemModel> get myOpenTasks {
+    return _actionItems.where((i) =>
+      i.ownerEmployeeId == _currentUser.id &&
+      i.status != 'done' &&
+      i.status != 'cancelled'
+    ).toList();
+  }
+
+  List<ActionItemModel> get overdueTasks {
+    return _actionItems.where((i) => i.isOverdue).toList();
+  }
+
+  List<ActionItemModel> get completedTasks {
+    return _actionItems.where((i) => i.status == 'done').toList();
+  }
+}

@@ -1,0 +1,260 @@
+import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/utils/date_formatter.dart';
+import '../../models/action_item_model.dart';
+
+class TaskHistoryScreen extends StatelessWidget {
+  final ActionItemModel item;
+
+  const TaskHistoryScreen({
+    super.key,
+    required this.item,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final history = item.history;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Task State & Audit History'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Task Summary Banner
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.bgSurface,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.borderSubtle),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Assigned to ${item.ownerName} • Created ${DateFormatter.formatShortDate(item.createdAt)}',
+                    style: const TextStyle(
+                      color: AppColors.textTertiary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            const Text(
+              'Chronological Event Audit Trail',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            if (history.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.bgSurface,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.borderSubtle),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Initial creation event recorded. No deadline postponements detected.',
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                  ),
+                ),
+              )
+            else
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: history.length,
+                itemBuilder: (context, index) {
+                  final event = history[index];
+                  final isLast = index == history.length - 1;
+                  return _TimelineStep(
+                    event: event,
+                    isLast: isLast,
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TimelineStep extends StatelessWidget {
+  final ActionItemHistory event;
+  final bool isLast;
+
+  const _TimelineStep({
+    required this.event,
+    required this.isLast,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    IconData icon;
+    Color iconColor;
+    String title;
+
+    switch (event.eventType) {
+      case 'created':
+        icon = Icons.add_circle_outline_rounded;
+        iconColor = AppColors.brandPrimary;
+        title = 'Commitment Extracted';
+        break;
+      case 'postponed':
+      case 'deadline_updated':
+        icon = Icons.warning_amber_rounded;
+        iconColor = AppColors.statusPending;
+        title = 'Deadline Postponed';
+        break;
+      case 'status_changed':
+        icon = Icons.sync_alt_rounded;
+        iconColor = AppColors.brandAccent;
+        title = 'Status Modified';
+        break;
+      default:
+        icon = Icons.edit_note_rounded;
+        iconColor = AppColors.textSecondary;
+        title = 'Task Updated';
+        break;
+    }
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: iconColor.withAlpha(25),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: iconColor.withAlpha(80)),
+                ),
+                child: Icon(icon, size: 16, color: iconColor),
+              ),
+              if (!isLast)
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: AppColors.borderSubtle,
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: Card(
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            DateFormatter.formatDateTime(event.createdAt),
+                            style: const TextStyle(
+                              color: AppColors.textTertiary,
+                              fontSize: 11,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (event.previousValue != null || event.newValue != null) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            if (event.previousValue != null)
+                              Text(
+                                '${event.previousValue}',
+                                style: const TextStyle(
+                                  color: AppColors.textTertiary,
+                                  fontSize: 12,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                            if (event.previousValue != null && event.newValue != null)
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 6.0),
+                                child: Icon(Icons.arrow_forward_rounded, size: 12, color: AppColors.textTertiary),
+                              ),
+                            if (event.newValue != null)
+                              Text(
+                                '${event.newValue}',
+                                style: const TextStyle(
+                                  color: AppColors.brandPrimary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                      if (event.evidenceText != null) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.bgApp,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Evidence: "${event.evidenceText}"',
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
