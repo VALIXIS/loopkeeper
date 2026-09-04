@@ -5,9 +5,10 @@ import '../../models/ai_model.dart';
 
 class MockData {
   static const String currentUserId = '11111111-1111-1111-1111-111111111111';
+  static const String priyaId = '44444444-4444-4444-4444-444444444444';
   static const String vigneshId = '22222222-2222-2222-2222-222222222222';
   static const String aliceId = '33333333-3333-3333-3333-333333333333';
-  static const String bobId = '44444444-4444-4444-4444-444433333333';
+  static const String bobId = '55555555-5555-5555-5555-555555555555';
 
   static List<ActionItemModel> getMockActionItems() {
     final now = DateTime.now();
@@ -15,20 +16,20 @@ class MockData {
       ActionItemModel(
         id: 'item-101',
         meetingId: 'meet-001',
-        title: 'Fix authentication screen login bug',
-        description: 'Resolve OAuth token refresh failure on Android mobile devices.',
-        ownerEmployeeId: vigneshId,
-        ownerName: 'Vignesh Kumar',
+        title: 'Payment API Integration',
+        description: 'Integrate Payment API endpoints for billing and subscription management.',
+        ownerEmployeeId: priyaId,
+        ownerName: 'Priya Sharma',
         deadline: now.subtract(const Duration(days: 1)), // Overdue
         status: 'overdue',
-        confidence: 0.94,
-        sourceText: 'Vignesh: "I will fix the authentication screen login bug by Friday."',
+        confidence: 0.96,
+        sourceText: 'Priya: "I will complete the Payment API integration by Friday."',
         firstSeenAt: now.subtract(const Duration(days: 7)),
         lastSeenAt: now.subtract(const Duration(days: 2)),
         createdAt: now.subtract(const Duration(days: 7)),
         updatedAt: now.subtract(const Duration(days: 1)),
-        similarityScore: 0.887,
-        matchReason: 'Matched with "finish authentication screen" from Sprint Sync 1 via vector similarity.',
+        similarityScore: 0.92,
+        matchReason: 'Matched with "Payment API integration" across Meeting 1, Meeting 2, and Meeting 3 via vector similarity.',
         history: [
           ActionItemHistory(
             id: 'h-1',
@@ -36,7 +37,7 @@ class MockData {
             meetingId: 'meet-001',
             eventType: 'created',
             newValue: 'pending',
-            evidenceText: 'Extracted from Sprint Planning transcript.',
+            evidenceText: 'Meeting 1: Extracted initial commitment for Friday.',
             createdAt: now.subtract(const Duration(days: 7)),
           ),
           ActionItemHistory(
@@ -44,9 +45,9 @@ class MockData {
             actionItemId: 'item-101',
             meetingId: 'meet-002',
             eventType: 'postponed',
-            previousValue: '2026-09-03T18:00:00Z',
-            newValue: '2026-09-04T18:00:00Z',
-            evidenceText: 'Meeting 2: "Can we get login work completed by Friday instead?"',
+            previousValue: 'Friday',
+            newValue: 'Monday',
+            evidenceText: 'Meeting 2: "Can we extend Payment API delivery to Monday?"',
             createdAt: now.subtract(const Duration(days: 4)),
           ),
           ActionItemHistory(
@@ -54,9 +55,9 @@ class MockData {
             actionItemId: 'item-101',
             meetingId: 'meet-003',
             eventType: 'deadline_updated',
-            previousValue: '2026-09-04T18:00:00Z',
-            newValue: '2026-09-05T18:00:00Z',
-            evidenceText: 'Meeting 3: "Auth work needs another day for regression testing."',
+            previousValue: 'Monday',
+            newValue: 'Unresolved',
+            evidenceText: 'Meeting 3: Payment API remains unresolved. Repeated postponement warning triggered.',
             createdAt: now.subtract(const Duration(days: 2)),
           ),
         ],
@@ -98,7 +99,7 @@ class MockData {
         deadline: now.add(const Duration(days: 4)),
         status: 'pending',
         confidence: 0.91,
-        sourceText: 'Alice: "I will deploy the backend API updates to staging before the demo."',
+        sourceText: 'Alice: "I will deploy the backend API updates to staging before the release review."',
         firstSeenAt: now.subtract(const Duration(days: 2)),
         lastSeenAt: now.subtract(const Duration(days: 1)),
         createdAt: now.subtract(const Duration(days: 2)),
@@ -195,7 +196,7 @@ Alice: Sounds good. Let's make sure uncertainty is flagged clearly when confiden
           meetingId: 'meet-002',
           content: '''Alice: Updating everyone on the AI pipeline. The SLM inference runs locally under 150ms.
 Vignesh: Can we get login work completed by Friday instead?
-Alice: Yes, I will deploy the backend API updates to staging before the demo.
+Alice: Yes, I will deploy the backend API updates to staging before the release review.
 Bob: I will complete the VALIXIS audit API integration specs.''',
           sourceFileName: 'backend_review.txt',
           transcriptFormat: 'txt',
