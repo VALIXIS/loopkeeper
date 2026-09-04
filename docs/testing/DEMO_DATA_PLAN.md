@@ -1,7 +1,7 @@
 # LoopKeeper Demonstration Data Plan & Privacy Audit
 
 ## Executive Overview
-This document specifies the synthetic dataset, realistic organizational setup, demonstration scenarios, privacy protection boundaries, and executable SQL seed scripts required to demonstrate the full lifecycle of **LoopKeeper** during hackathon evaluation.
+This document specifies the synthetic dataset, realistic organizational setup, demonstration scenarios, privacy protection boundaries, and executable SQL seed scripts required to demonstrate the full lifecycle of **LoopKeeper** during system evaluation.
 
 ---
 

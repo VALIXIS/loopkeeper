@@ -14,7 +14,7 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "
 DEMO_DATA_DIR = os.path.join(BASE_DIR, "demo_data", "google_drive")
 
 class GoogleDriveDemoRunner:
-    """Runs a deterministic hackathon demo simulating Google Drive transcript ingestion across 3 consecutive meetings."""
+    """Runs a deterministic demo simulating Google Drive transcript ingestion across 3 consecutive meetings."""
 
     def __init__(self):
         self.meeting_repo = MeetingRepository()

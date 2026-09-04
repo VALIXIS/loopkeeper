@@ -233,7 +233,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addToast({
       type: 'info',
       title: 'Demo Data Reset',
-      message: 'Restored initial SRM Hackathon sample meetings and action items.'
+      message: 'Restored initial sample meetings and action items.'
     });
     await refreshData();
   };

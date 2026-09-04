@@ -1,3 +1,12 @@
+import sys
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BACKEND_DIR = os.path.join(BASE_DIR, "backend")
+for path in [BASE_DIR, BACKEND_DIR]:
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
 import json
 from uuid import uuid4
 from datetime import datetime, timedelta

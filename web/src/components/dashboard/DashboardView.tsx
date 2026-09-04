@@ -28,7 +28,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
                 Live Engine Ready
               </span>
               <span className="text-xs text-zinc-400 font-mono">
-                SRM Hackathon Finalist Demo
+                LoopKeeper Enterprise Overview
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">

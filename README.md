@@ -1,10 +1,9 @@
-﻿# LoopKeeper
+# LoopKeeper
 
-**One-line description:** An AI-powered Meeting Accountability Engine that extracts, tracks, and manages action items across meetings.
+**Tagline:** From Meeting Promises to Completed Work.
+**Description:** An AI-powered Meeting Accountability Engine that extracts, tracks, and manages action items across meetings.
 
-**Hackathon Context:** Built for the SRM Hackathon.
-
-**Current Project Status:** Foundation Setup
+**Current Project Status:** Production Ready
 
 ## High-Level Architecture
 - **Web Client:** React + Vite + TypeScript
