@@ -1,0 +1,27 @@
+{
+  "dataset_split": "test",
+  "total_samples": 5,
+  "metrics": {
+    "action_extraction_precision": 0.6,
+    "action_extraction_recall": 0.6,
+    "action_extraction_f1": 0.6,
+    "owner_extraction_accuracy": 0.0,
+    "deadline_extraction_accuracy": 0.2,
+    "status_classification_accuracy": 0.6,
+    "json_validity_rate": 1.0
+  },
+  "failure_cases": [
+    {
+      "sample_id": "test-002",
+      "transcript": "The frontend CSS layout bug needs to be fixed by tomorrow.",
+      "expected": "Fix the frontend CSS layout bug",
+      "reason": "Extraction mismatch or non-commitment misclassification"
+    },
+    {
+      "sample_id": "test-004",
+      "transcript": "Divya will design the settings screen by Tuesday and Sameer will hook up the API by Wednesday.",
+      "expected": "Hook up the API",
+      "reason": "Extraction mismatch or non-commitment misclassification"
+    }
+  ]
+}

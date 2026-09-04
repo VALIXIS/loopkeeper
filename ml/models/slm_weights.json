@@ -1,0 +1,24 @@
+{
+  "model_name": "loopkeeper-slm-v1",
+  "epochs": 1,
+  "learning_rate": 0.0001,
+  "seed": 42,
+  "num_training_samples": 14,
+  "status": "trained",
+  "vocabulary": [
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nRahul will finish the payment API integration by Friday.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nWe need to fix the database connection pool leak by tomorrow morning.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nPriya is assigned to refactor the OAuth2 authentication module.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nAmit will deploy the staging environment by next Monday.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nNeha has completed the Docker setup for the backend service.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nWe are dropping the legacy XML parser work since we moved to JSON.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nIt might be cool if we add dark mode support later when we have time.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nRahul will update the user model by Wednesday and Priya will write the unit tests by Thursday.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nRahul is working on the payment endpoint refactor.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nPriya says the checkout backend is not finished yet. Move the deadline to Monday.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nPriya is still working on the payment integration. Pushing deadline to Wednesday.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nSomeone from backend team needs to audit the API rate limits.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nKaran and Vikram discussed the Redis caching layer. Vikram agreed to take ownership and complete it by Friday.\n\nExtracted Action Items:",
+    "Extract all action items from the following meeting transcript into a structured format.\nIf an owner is not mentioned, use 'Unassigned'. If a deadline is not mentioned, use 'Not specified'.\n\nTranscript:\nRegarding the report we discussed last week, Rahul will finish that by end of day.\n\nExtracted Action Items:"
+  ]
+}
