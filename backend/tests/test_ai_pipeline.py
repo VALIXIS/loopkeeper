@@ -164,7 +164,7 @@ def test_ai_run_logging():
 # 11. VALIXIS read-only access boundary
 def test_valixis_read_only_boundary():
     valixis_repo = ValixisRepository()
-    emp = valixis_repo.get_employee_by_name("Alice Johnson")
+    emp = valixis_repo.get_employee_by_name("Adithya")
     assert emp is not None
     assert "id" in emp
     assert "name" in emp
