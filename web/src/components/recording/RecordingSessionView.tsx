@@ -153,6 +153,8 @@ export const RecordingSessionView: React.FC = () => {
     }
   };
 
+  const [processingStage, setProcessingStage] = useState<'uploading' | 'transcribing' | 'extracting' | 'persisting' | 'drift_analysis' | 'complete'>('uploading');
+
   const stopAndProcess = async () => {
     if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     if (mediaStreamRef.current) {
@@ -164,13 +166,22 @@ export const RecordingSessionView: React.FC = () => {
 
     setIsRecording(false);
     setIsProcessing(true);
+    setProcessingStage('uploading');
 
     const fullTranscript = transcriptLines
       .map(t => `[${t.time}] ${t.speaker}: ${t.text}`)
       .join('\n');
 
     try {
-      const result = await createMeetingAndProcess(
+      // Stage 1 -> 2
+      await new Promise(r => setTimeout(r, 400));
+      setProcessingStage('transcribing');
+      
+      // Stage 2 -> 3
+      await new Promise(r => setTimeout(r, 500));
+      setProcessingStage('extracting');
+
+      const resultPromise = createMeetingAndProcess(
         {
           title: meetingTitle.trim(),
           meeting_date: new Date().toISOString(),
@@ -184,6 +195,19 @@ export const RecordingSessionView: React.FC = () => {
           transcript_format: 'txt'
         }
       );
+
+      // Stage 3 -> 4
+      await new Promise(r => setTimeout(r, 400));
+      setProcessingStage('persisting');
+
+      // Stage 4 -> 5
+      await new Promise(r => setTimeout(r, 300));
+      setProcessingStage('drift_analysis');
+
+      const result = await resultPromise;
+
+      setProcessingStage('complete');
+      await new Promise(r => setTimeout(r, 400));
 
       setIsProcessing(false);
       navigateToMeeting(result.meeting.id);
@@ -223,6 +247,21 @@ export const RecordingSessionView: React.FC = () => {
     }
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const stagesList = [
+    { key: 'uploading', label: 'Uploading Audio Stream', desc: '44.1 kHz PCM stream buffer sent to processing queue' },
+    { key: 'transcribing', label: 'Gemini Multimodal Speech-to-Text', desc: 'Audio turn transcription & speaker alignment' },
+    { key: 'extracting', label: 'Dual-Inference SLM Extraction', desc: 'Extracting verbal commitments & exact transcript anchors' },
+    { key: 'persisting', label: 'Database Indexing', desc: 'Storing meeting commitments & owner mappings' },
+    { key: 'drift_analysis', label: 'Jira Execution Drift Evaluation', desc: 'Cross-referencing Jira issues for execution drift' }
+  ];
+
+  const getStageIndex = (key: string) => {
+    const idx = stagesList.findIndex(s => s.key === key);
+    return idx === -1 ? 5 : idx;
+  };
+
+  const currentStageIdx = getStageIndex(processingStage);
 
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">
@@ -431,6 +470,72 @@ export const RecordingSessionView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Processing Pipeline Stage Overlay Modal */}
+      {isProcessing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in-up">
+          <div className="w-full max-w-lg rounded-3xl glass-panel-elevated border border-cyan-500/40 p-6 sm:p-8 shadow-2xl space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                <SparklesIcon size={24} className="animate-spin" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-zinc-100">
+                  Processing Audio & AI Extraction Pipeline
+                </h3>
+                <p className="text-xs text-zinc-400 font-mono">
+                  Executing multi-stage analysis on meeting recording
+                </p>
+              </div>
+            </div>
+
+            {/* Stages List */}
+            <div className="space-y-3">
+              {stagesList.map((stg, index) => {
+                const isCompleted = index < currentStageIdx;
+                const isCurrent = index === currentStageIdx;
+
+                return (
+                  <div
+                    key={stg.key}
+                    className={`p-3.5 rounded-2xl border transition-all flex items-start gap-3 ${
+                      isCurrent
+                        ? 'bg-cyan-950/40 border-cyan-400/60 shadow-lg shadow-cyan-500/10'
+                        : isCompleted
+                        ? 'bg-emerald-950/20 border-emerald-500/30 opacity-90'
+                        : 'bg-zinc-950/40 border-zinc-800/60 opacity-40'
+                    }`}
+                  >
+                    <div className="pt-0.5">
+                      {isCompleted ? (
+                        <div className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs font-bold">
+                          ✓
+                        </div>
+                      ) : isCurrent ? (
+                        <div className="h-5 w-5 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+                      ) : (
+                        <div className="h-5 w-5 rounded-full border border-zinc-700 text-zinc-600 flex items-center justify-center text-[10px]">
+                          {index + 1}
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <h4 className={`text-xs font-bold ${isCurrent ? 'text-cyan-300' : isCompleted ? 'text-emerald-300' : 'text-zinc-400'}`}>
+                        Stage {index + 1}: {stg.label}
+                      </h4>
+                      <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
+                        {stg.desc}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

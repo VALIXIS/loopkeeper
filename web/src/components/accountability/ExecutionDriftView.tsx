@@ -66,7 +66,7 @@ export const ExecutionDriftView: React.FC = () => {
     },
     {
       id: 'drift-3',
-      commitmentTitle: 'pgvector Cosine Indexing for 1536-dim embeddings',
+      commitmentTitle: 'Vector Search & Transcript Indexing Engine',
       ownerName: 'Charlie Lee',
       spokenStatement: 'Migration script executed on staging database.',
       meetingTitle: 'Engineering Standup & Delivery Sync',
