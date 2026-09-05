@@ -24,17 +24,17 @@ export const AccountabilityInsights: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Sleek Compact Header Bar */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-950/40 via-zinc-900 to-zinc-950 border border-indigo-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="relative overflow-hidden rounded-2xl glass-panel border border-indigo-500/30 dark:border-indigo-500/40 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
-            <BrainIcon size={14} className="text-cyan-400" />
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
+            <BrainIcon size={14} className="text-cyan-600 dark:text-cyan-400" />
             AI Analytics & Velocity
           </span>
-          <h1 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
+          <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
             Executive Accountability Intelligence
           </h1>
         </div>
-        <p className="text-xs text-zinc-400 font-medium">
+        <p className="text-xs text-slate-600 dark:text-zinc-400 font-medium">
           Follow-through reliability curves, deadline drift rates & SLM model telemetry.
         </p>
       </div>

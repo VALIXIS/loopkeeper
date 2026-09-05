@@ -186,19 +186,19 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
 
           {/* GitHub Proof-of-Work Banner */}
           {detail.proof_of_work && detail.proof_of_work.length > 0 && (
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-zinc-900 to-zinc-950 border border-emerald-500/30 space-y-2">
+            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 space-y-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs tracking-wide">
+                <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold text-xs tracking-wide">
                   <span className="text-base">⚡</span>
                   <span>Auto-resolved via GitHub PR #{detail.proof_of_work[0].pr_number}</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono font-bold">
                   {detail.proof_of_work[0].resolution_method === 'explicit_key'
                     ? 'Explicit LK Key Match'
                     : `Semantic Match — ${Math.round((detail.proof_of_work[0].similarity_score || 0) * 100)}%`}
                 </span>
               </div>
-              <div className="text-xs text-zinc-300 font-medium">
+              <div className="text-xs text-slate-700 dark:text-zinc-300 font-medium">
                 <a
                   href={detail.proof_of_work[0].pr_url}
                   target="_blank"

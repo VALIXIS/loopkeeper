@@ -36,23 +36,23 @@ export const QuickIngestCard: React.FC<QuickIngestCardProps> = ({ onOpenCreateMe
   };
 
   return (
-    <div className="rounded-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-slate-950 border border-indigo-500/30 p-4 shadow-lg relative overflow-hidden backdrop-blur-xl space-y-3">
+    <div className="rounded-2xl glass-panel border border-indigo-500/30 dark:border-indigo-500/40 p-4 shadow-lg relative overflow-hidden backdrop-blur-xl space-y-3">
       {/* Decorative Glow Orb */}
       <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/[0.08]">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30">
-            <SparklesIcon size={16} className="text-cyan-400 animate-pulse-glow" />
+          <div className="p-2 rounded-xl bg-indigo-600/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
+            <SparklesIcon size={16} className="text-cyan-600 dark:text-cyan-400 animate-pulse-glow" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-white flex items-center gap-2">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
               Instant AI Transcript Ingest & Extraction
               <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-gradient-to-r from-indigo-500 to-cyan-500 text-white font-mono">
                 Preset Ingest
               </span>
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-600 dark:text-slate-400">
               Select a sample standup transcript to run extraction and drift detection.
             </p>
           </div>
