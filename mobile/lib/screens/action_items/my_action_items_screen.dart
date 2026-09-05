@@ -50,7 +50,7 @@ class _MyActionItemsScreenState extends State<MyActionItemsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
+      backgroundColor: AppColors.bgAppOf(context),
       appBar: AppBar(
         title: const Text('Action Items'),
         elevation: 0,
@@ -64,17 +64,17 @@ class _MyActionItemsScreenState extends State<MyActionItemsScreen> {
               child: GlassContainer(
                 borderRadius: 14,
                 padding: EdgeInsets.zero,
-                backgroundColor: AppColors.bgSurface.withAlpha(200),
+                backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(200),
                 child: TextField(
                   controller: _searchController,
                   onChanged: (val) => setState(() => _searchQuery = val),
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textTertiary),
+                    prefixIcon: Icon(Icons.search_rounded, color: AppColors.textTertiaryOf(context)),
                     hintText: 'Search action items by title or owner...',
                     border: InputBorder.none,
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear_rounded, color: AppColors.textTertiary),
+                            icon: Icon(Icons.clear_rounded, color: AppColors.textTertiaryOf(context)),
                             onPressed: () {
                               _searchController.clear();
                               setState(() => _searchQuery = '');
@@ -104,18 +104,18 @@ class _MyActionItemsScreenState extends State<MyActionItemsScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.brandPrimary.withAlpha(50)
-                              : AppColors.bgSurface.withAlpha(180),
+                              ? AppColors.brandPrimaryOf(context).withAlpha(50)
+                              : AppColors.bgSurfaceOf(context).withAlpha(180),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: isSelected ? AppColors.brandPrimary : const Color(0x1FFFFFFF),
+                            color: isSelected ? AppColors.brandPrimaryOf(context) : AppColors.borderSubtleOf(context),
                             width: 1,
                           ),
                         ),
                         child: Text(
                           filter,
                           style: TextStyle(
-                            color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
+                            color: isSelected ? AppColors.textPrimaryOf(context) : AppColors.textSecondaryOf(context),
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                             fontSize: 13,
                           ),
@@ -132,8 +132,8 @@ class _MyActionItemsScreenState extends State<MyActionItemsScreen> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => provider.refreshAll(),
-                color: AppColors.brandPrimary,
-                backgroundColor: AppColors.bgSurface,
+                color: AppColors.brandPrimaryOf(context),
+                backgroundColor: AppColors.bgSurfaceOf(context),
                 child: provider.isLoading
                     ? const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.0),

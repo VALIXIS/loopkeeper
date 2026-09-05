@@ -30,7 +30,7 @@ class MetricCard extends StatelessWidget {
       blur: 12,
       onTap: onTap,
       borderColor: accentColor.withAlpha(50),
-      backgroundColor: AppColors.bgSurface.withAlpha(200),
+      backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(200),
       boxShadow: [
         BoxShadow(
           color: accentColor.withAlpha(15),
@@ -51,8 +51,8 @@ class MetricCard extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: AppColors.textTertiary,
+                  style: TextStyle(
+                    color: AppColors.textTertiaryOf(context),
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -73,8 +73,8 @@ class MetricCard extends StatelessWidget {
           if (parsedValue != null)
             AnimatedCounter(
               value: parsedValue,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: AppColors.textPrimaryOf(context),
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5,
@@ -83,8 +83,8 @@ class MetricCard extends StatelessWidget {
           else
             Text(
               value,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: AppColors.textPrimaryOf(context),
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5,

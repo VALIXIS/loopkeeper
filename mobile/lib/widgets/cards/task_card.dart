@@ -26,7 +26,7 @@ class TaskCard extends StatelessWidget {
 
     final borderColor = isHighRisk
         ? AppColors.statusOverdue.withAlpha(120)
-        : AppColors.borderSubtle;
+        : AppColors.borderSubtleOf(context);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
@@ -36,8 +36,8 @@ class TaskCard extends StatelessWidget {
         onTap: onTap,
         borderColor: borderColor,
         backgroundColor: isHighRisk
-            ? AppColors.bgSurface.withAlpha(225)
-            : AppColors.bgSurface.withAlpha(190),
+            ? AppColors.bgSurfaceOf(context).withAlpha(225)
+            : AppColors.bgSurfaceOf(context).withAlpha(190),
         boxShadow: isHighRisk
             ? [
                 BoxShadow(
@@ -57,8 +57,8 @@ class TaskCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     item.title,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
+                    style: TextStyle(
+                      color: AppColors.textPrimaryOf(context),
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       height: 1.3,
@@ -75,8 +75,8 @@ class TaskCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 item.description!,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: AppColors.textSecondaryOf(context),
                   fontSize: 13,
                   height: 1.3,
                 ),
@@ -113,9 +113,9 @@ class TaskCard extends StatelessWidget {
                   ),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(height: 1, color: Color(0x1FFFFFFF)),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Divider(height: 1, color: AppColors.dividerColorOf(context)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -147,8 +147,8 @@ class TaskCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       item.ownerName,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
+                      style: TextStyle(
+                        color: AppColors.textSecondaryOf(context),
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -160,13 +160,13 @@ class TaskCard extends StatelessWidget {
                     Icon(
                       Icons.schedule_rounded,
                       size: 13,
-                      color: item.isOverdue ? AppColors.statusOverdue : AppColors.textTertiary,
+                      color: item.isOverdue ? AppColors.statusOverdue : AppColors.textTertiaryOf(context),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       DateFormatter.formatRelativeDate(item.deadline),
                       style: TextStyle(
-                        color: item.isOverdue ? AppColors.statusOverdue : AppColors.textTertiary,
+                        color: item.isOverdue ? AppColors.statusOverdue : AppColors.textTertiaryOf(context),
                         fontSize: 12,
                         fontWeight: item.isOverdue ? FontWeight.w700 : FontWeight.w500,
                       ),

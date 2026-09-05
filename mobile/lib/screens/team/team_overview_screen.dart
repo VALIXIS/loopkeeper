@@ -21,7 +21,7 @@ class TeamOverviewScreen extends StatelessWidget {
     final overloadedMembers = dashboard?.overloadedMembers ?? [];
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
+      backgroundColor: AppColors.bgAppOf(context),
       appBar: AppBar(
         title: const Text('Team Workload & Capacity'),
         elevation: 0,
@@ -30,8 +30,8 @@ class TeamOverviewScreen extends StatelessWidget {
       body: AmbientBackground(
         child: RefreshIndicator(
           onRefresh: () => provider.refreshAll(),
-          color: AppColors.brandPrimary,
-          backgroundColor: AppColors.bgSurface,
+          color: AppColors.brandPrimaryOf(context),
+          backgroundColor: AppColors.bgSurfaceOf(context),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 10.0, bottom: 90.0),
@@ -70,10 +70,10 @@ class TeamOverviewScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              const Text(
+                              Text(
                                 'LoopKeeper flagged members with high active commitments or overdue tasks.',
                                 style: TextStyle(
-                                  color: AppColors.textSecondary,
+                                  color: AppColors.textSecondaryOf(context),
                                   fontSize: 12,
                                 ),
                               ),
@@ -86,10 +86,10 @@ class TeamOverviewScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                 ],
 
-                const Text(
+                Text(
                   'Team Workload Distribution',
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimaryOf(context),
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),

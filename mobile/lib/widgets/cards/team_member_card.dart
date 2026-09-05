@@ -26,8 +26,8 @@ class TeamMemberCard extends StatelessWidget {
         borderRadius: 16,
         blur: 12,
         onTap: onTap,
-        borderColor: isOverloaded ? AppColors.statusOverdue.withAlpha(120) : AppColors.borderSubtle,
-        backgroundColor: AppColors.bgSurface.withAlpha(200),
+        borderColor: isOverloaded ? AppColors.statusOverdue.withAlpha(120) : AppColors.borderSubtleOf(context),
+        backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(200),
         boxShadow: isOverloaded
             ? [
                 BoxShadow(
@@ -71,8 +71,8 @@ class TeamMemberCard extends StatelessWidget {
                     children: [
                       Text(
                         member.employeeName,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
+                        style: TextStyle(
+                          color: AppColors.textPrimaryOf(context),
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
@@ -80,8 +80,8 @@ class TeamMemberCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         '$total active tasks • $overdue overdue',
-                        style: const TextStyle(
-                          color: AppColors.textTertiary,
+                        style: TextStyle(
+                          color: AppColors.textTertiaryOf(context),
                           fontSize: 12,
                         ),
                       ),
@@ -117,9 +117,9 @@ class TeamMemberCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Workload Capacity',
-                  style: TextStyle(color: AppColors.textTertiary, fontSize: 11),
+                  style: TextStyle(color: AppColors.textTertiaryOf(context), fontSize: 11),
                 ),
                 Text(
                   '${(loadPercentage * 100).toInt()}%',
@@ -137,7 +137,7 @@ class TeamMemberCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               child: LinearProgressIndicator(
                 value: loadPercentage,
-                backgroundColor: AppColors.bgSurfaceHover,
+                backgroundColor: AppColors.bgSurfaceHoverOf(context),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   isOverloaded ? AppColors.statusOverdue : AppColors.brandPrimary,
                 ),

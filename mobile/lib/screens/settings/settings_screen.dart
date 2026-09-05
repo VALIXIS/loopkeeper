@@ -49,7 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return GlassContainer(
           borderRadius: 24,
           blur: 20,
-          backgroundColor: AppColors.bgSurface.withAlpha(245),
+          backgroundColor: AppColors.bgSurfaceOf(ctx).withAlpha(245),
           borderColor: AppColors.brandPrimary.withAlpha(90),
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
@@ -65,55 +65,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Edit User Profile Details',
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimaryOf(ctx),
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close_rounded, color: AppColors.textTertiary),
+                      icon: Icon(Icons.close_rounded, color: AppColors.textTertiaryOf(ctx)),
                       onPressed: () => Navigator.of(ctx).pop(),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
-                _buildFieldLabel('Full Name'),
+                _buildFieldLabel(ctx, 'Full Name'),
                 TextField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(prefixIcon: Icon(Icons.person_rounded, size: 20)),
                 ),
                 const SizedBox(height: 12),
-                _buildFieldLabel('Age'),
+                _buildFieldLabel(ctx, 'Age'),
                 TextField(
                   controller: ageCtrl,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(prefixIcon: Icon(Icons.cake_rounded, size: 20)),
                 ),
                 const SizedBox(height: 12),
-                _buildFieldLabel('Email Address'),
+                _buildFieldLabel(ctx, 'Email Address'),
                 TextField(
                   controller: emailCtrl,
                   decoration: const InputDecoration(prefixIcon: Icon(Icons.email_rounded, size: 20)),
                 ),
                 const SizedBox(height: 12),
-                _buildFieldLabel('Contact Phone Number'),
+                _buildFieldLabel(ctx, 'Contact Phone Number'),
                 TextField(
                   controller: contactCtrl,
                   keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(prefixIcon: Icon(Icons.phone_rounded, size: 20)),
                 ),
                 const SizedBox(height: 12),
-                _buildFieldLabel('Address Location'),
+                _buildFieldLabel(ctx, 'Address Location'),
                 TextField(
                   controller: addressCtrl,
                   maxLines: 2,
                   decoration: const InputDecoration(prefixIcon: Icon(Icons.location_on_rounded, size: 20)),
                 ),
                 const SizedBox(height: 12),
-                _buildFieldLabel('Designation / Role'),
+                _buildFieldLabel(ctx, 'Designation / Role'),
                 TextField(
                   controller: roleCtrl,
                   decoration: const InputDecoration(prefixIcon: Icon(Icons.badge_rounded, size: 20)),
@@ -148,12 +148,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildFieldLabel(String label) {
+  Widget _buildFieldLabel(BuildContext context, String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Text(
         label,
-        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+        style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 12, fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -164,7 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final user = provider.currentUser;
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
+      backgroundColor: AppColors.bgAppOf(context),
       appBar: AppBar(
         title: const Text('User Profile & Settings'),
         elevation: 0,
@@ -181,7 +181,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 borderRadius: 20,
                 blur: 16,
                 borderColor: AppColors.brandPrimary.withAlpha(90),
-                backgroundColor: AppColors.bgSurface.withAlpha(220),
+                backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(220),
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
@@ -220,8 +220,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             children: [
                               Text(
                                 user.name,
-                                style: const TextStyle(
-                                  color: AppColors.textPrimary,
+                                style: TextStyle(
+                                  color: AppColors.textPrimaryOf(context),
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -252,7 +252,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ],
                     ),
-                    const Divider(height: 24, color: Color(0x1FFFFFFF)),
+                    Divider(height: 24, color: AppColors.dividerColorOf(context)),
                     // Detailed Profile Properties Grid
                     _ProfileInfoRow(icon: Icons.cake_rounded, label: 'Age', value: '${user.age} years old'),
                     const SizedBox(height: 10),
@@ -261,7 +261,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _ProfileInfoRow(icon: Icons.phone_rounded, label: 'Contact', value: user.contactNumber),
                     const SizedBox(height: 10),
                     _ProfileInfoRow(icon: Icons.location_on_rounded, label: 'Address', value: user.address),
-                    const Divider(height: 24, color: Color(0x1FFFFFFF)),
+                    Divider(height: 24, color: AppColors.dividerColorOf(context)),
                     // Integrated Theme Switcher Inside Profile Card
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -272,7 +272,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               provider.themeMode == ThemeMode.dark
                                   ? Icons.dark_mode_rounded
                                   : Icons.light_mode_rounded,
-                              color: AppColors.brandPrimary,
+                              color: AppColors.brandPrimaryOf(context),
                               size: 22,
                             ),
                             const SizedBox(width: 10),
@@ -283,15 +283,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   provider.themeMode == ThemeMode.dark
                                       ? 'Futuristic Dark Theme'
                                       : 'Enterprise Light Theme',
-                                  style: const TextStyle(
-                                    color: AppColors.textPrimary,
+                                  style: TextStyle(
+                                    color: AppColors.textPrimaryOf(context),
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const Text(
+                                Text(
                                   'Applies theme across all views',
-                                  style: TextStyle(color: AppColors.textTertiary, fontSize: 11),
+                                  style: TextStyle(color: AppColors.textTertiaryOf(context), fontSize: 11),
                                 ),
                               ],
                             ),
@@ -299,7 +299,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         Switch(
                           value: provider.themeMode == ThemeMode.dark,
-                          activeTrackColor: AppColors.brandPrimary,
+                          activeTrackColor: AppColors.brandPrimaryOf(context),
                           onChanged: (isDark) {
                             provider.setThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
                           },
@@ -312,10 +312,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 'Backend & Network Settings',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: AppColors.textPrimaryOf(context),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -329,21 +329,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('FastAPI Endpoint Base URL', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                    Text('FastAPI Endpoint Base URL', style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 13)),
                     const SizedBox(height: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.bgApp.withAlpha(200),
+                        color: AppColors.bgAppOf(context).withAlpha(200),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.borderSubtle),
+                        border: Border.all(color: AppColors.borderSubtleOf(context)),
                       ),
                       child: TextField(
                         controller: _baseUrlController,
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.dns_rounded, color: AppColors.textTertiary),
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.dns_rounded, color: AppColors.textTertiaryOf(context)),
                           hintText: 'http://localhost:8000/api/v1',
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
                         ),
                       ),
                     ),
@@ -362,15 +362,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: const Text('Save Base URL', style: TextStyle(color: AppColors.brandAccent, fontWeight: FontWeight.bold)),
                       ),
                     ),
-                    const Divider(height: 24, color: Color(0x1FFFFFFF)),
+                    Divider(height: 24, color: AppColors.dividerColorOf(context)),
                     Material(
                       color: Colors.transparent,
                       child: SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Demo Fixture Mode [OFFLINE]', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
-                        subtitle: const Text('Isolates local mock fixtures for offline testing.', style: TextStyle(color: AppColors.textTertiary, fontSize: 12)),
+                        title: Text('Demo Fixture Mode [OFFLINE]', style: TextStyle(color: AppColors.textPrimaryOf(context), fontSize: 14, fontWeight: FontWeight.w600)),
+                        subtitle: Text('Isolates local mock fixtures for offline testing.', style: TextStyle(color: AppColors.textTertiaryOf(context), fontSize: 12)),
                         value: provider.isOffline,
-                        activeTrackColor: AppColors.brandPrimary,
+                        activeTrackColor: AppColors.brandPrimaryOf(context),
                         onChanged: (val) {
                           provider.toggleOfflineMode(val);
                         },
@@ -382,10 +382,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 'Integrations & Diagnostics',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: AppColors.textPrimaryOf(context),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -402,18 +402,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.hub_rounded, color: AppColors.brandAccent),
-                        title: const Text('External Integrations', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-                        subtitle: const Text('Google Meet, MS Teams, Zoom, Jira status', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
-                        trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
+                        title: Text('External Integrations', style: TextStyle(fontSize: 14, color: AppColors.textPrimaryOf(context), fontWeight: FontWeight.w600)),
+                        subtitle: Text('Google Meet, MS Teams, Zoom, Jira status', style: TextStyle(fontSize: 12, color: AppColors.textTertiaryOf(context))),
+                        trailing: Icon(Icons.chevron_right_rounded, color: AppColors.textTertiaryOf(context)),
                         onTap: () {
                           Navigator.pushNamed(context, '/integrations');
                         },
                       ),
-                      const Divider(height: 1, color: Color(0x1FFFFFFF)),
+                      Divider(height: 1, color: AppColors.dividerColorOf(context)),
                       ListTile(
-                        leading: const Icon(Icons.refresh_rounded, color: AppColors.brandPrimary),
-                        title: const Text('Refresh Application State', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-                        subtitle: const Text('Sync meetings, action items, and telemetry', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+                        leading: Icon(Icons.refresh_rounded, color: AppColors.brandPrimaryOf(context)),
+                        title: Text('Refresh Application State', style: TextStyle(fontSize: 14, color: AppColors.textPrimaryOf(context), fontWeight: FontWeight.w600)),
+                        subtitle: Text('Sync meetings, action items, and telemetry', style: TextStyle(fontSize: 12, color: AppColors.textTertiaryOf(context))),
                         onTap: () async {
                           await provider.refreshAll();
                           if (context.mounted) {
@@ -423,11 +423,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           }
                         },
                       ),
-                      const Divider(height: 1, color: Color(0x1FFFFFFF)),
+                      Divider(height: 1, color: AppColors.dividerColorOf(context)),
                       ListTile(
                         leading: const Icon(Icons.swap_horiz_rounded, color: AppColors.statusOverdue),
-                        title: const Text('Switch User Profile / Log Out', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-                        subtitle: const Text('Change active persona (Manager vs Employee)', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+                        title: Text('Switch User Profile / Log Out', style: TextStyle(fontSize: 14, color: AppColors.textPrimaryOf(context), fontWeight: FontWeight.w600)),
+                        subtitle: Text('Change active persona (Manager vs Employee)', style: TextStyle(fontSize: 12, color: AppColors.textTertiaryOf(context))),
                         onTap: () {
                           Navigator.of(context).pushAndRemoveUntil(
                             FadeSlidePageRoute(page: const AuthScreen()),
@@ -441,11 +441,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
 
               const SizedBox(height: 32),
-              const Center(
+              Center(
                 child: Text(
                   'LoopKeeper Mobile v1.0.0 (Build 2)\nBuilt with Flutter & Dart',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.textTertiary, fontSize: 12),
+                  style: TextStyle(color: AppColors.textTertiaryOf(context), fontSize: 12),
                 ),
               ),
               const SizedBox(height: 16),
@@ -473,19 +473,19 @@ class _ProfileInfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: AppColors.brandPrimary),
+        Icon(icon, size: 18, color: AppColors.brandPrimaryOf(context)),
         const SizedBox(width: 10),
         SizedBox(
           width: 70,
           child: Text(
             label,
-            style: const TextStyle(color: AppColors.textTertiary, fontSize: 12),
+            style: TextStyle(color: AppColors.textTertiaryOf(context), fontSize: 12),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(color: AppColors.textPrimaryOf(context), fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ),
       ],

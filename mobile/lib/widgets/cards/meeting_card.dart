@@ -25,8 +25,8 @@ class MeetingCard extends StatelessWidget {
         borderRadius: 16,
         blur: 12,
         onTap: onTap,
-        borderColor: isProcessing ? AppColors.brandAccent.withAlpha(120) : AppColors.borderSubtle,
-        backgroundColor: AppColors.bgSurface.withAlpha(200),
+        borderColor: isProcessing ? AppColors.brandAccent.withAlpha(120) : AppColors.borderSubtleOf(context),
+        backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(200),
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
@@ -58,8 +58,8 @@ class MeetingCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           meeting.title,
-                          style: const TextStyle(
-                            color: AppColors.textPrimary,
+                          style: TextStyle(
+                            color: AppColors.textPrimaryOf(context),
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
@@ -104,12 +104,12 @@ class MeetingCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.schedule_rounded, size: 12, color: AppColors.textTertiary),
+                      Icon(Icons.schedule_rounded, size: 12, color: AppColors.textTertiaryOf(context)),
                       const SizedBox(width: 4),
                       Text(
                         DateFormatter.formatDateTime(meeting.meetingDate),
-                        style: const TextStyle(
-                          color: AppColors.textTertiary,
+                        style: TextStyle(
+                          color: AppColors.textTertiaryOf(context),
                           fontSize: 12,
                         ),
                       ),
@@ -122,9 +122,9 @@ class MeetingCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.bgSurfaceHover.withAlpha(200),
+                color: AppColors.bgSurfaceHoverOf(context).withAlpha(200),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0x1FFFFFFF)),
+                border: Border.all(color: AppColors.borderSubtleOf(context)),
               ),
               child: Row(
                 children: [
@@ -132,8 +132,8 @@ class MeetingCard extends StatelessWidget {
                   const SizedBox(width: 5),
                   Text(
                     '$commitmentCount',
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
+                    style: TextStyle(
+                      color: AppColors.textPrimaryOf(context),
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       fontFamily: 'monospace',

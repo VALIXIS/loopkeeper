@@ -38,6 +38,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return PopScope(
 
       canPop: _currentIndex == 0,
@@ -49,7 +50,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.bgApp,
+        backgroundColor: AppColors.bgAppOf(context),
         body: Stack(
           children: [
             IndexedStack(
@@ -63,11 +64,11 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
               child: GlassContainer(
                 borderRadius: 24,
                 blur: 16,
-                backgroundColor: AppColors.bgSurface.withAlpha(235),
+                backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(235),
                 borderColor: const Color(0x336366F1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(90),
+                    color: Colors.black.withAlpha(isDark ? 90 : 25),
                     blurRadius: 20,
                     spreadRadius: 2,
                     offset: const Offset(0, 8),
@@ -101,11 +102,11 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.brandPrimary.withAlpha(45)
+                              ? AppColors.brandPrimaryOf(context).withAlpha(45)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                           border: isSelected
-                              ? Border.all(color: AppColors.brandPrimary.withAlpha(120), width: 1)
+                              ? Border.all(color: AppColors.brandPrimaryOf(context).withAlpha(120), width: 1)
                               : Border.all(color: Colors.transparent),
                         ),
                         child: Column(
@@ -121,8 +122,8 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                                     isSelected ? item.activeIcon : item.icon,
                                     size: 20,
                                     color: isSelected
-                                        ? AppColors.textPrimary
-                                        : AppColors.textTertiary,
+                                        ? AppColors.brandPrimaryOf(context)
+                                        : AppColors.textTertiaryOf(context),
                                   ),
                                 ),
                               ],
@@ -133,8 +134,8 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                               item.label,
                               style: TextStyle(
                                 color: isSelected
-                                    ? AppColors.textPrimary
-                                    : AppColors.textTertiary,
+                                    ? AppColors.textPrimaryOf(context)
+                                    : AppColors.textTertiaryOf(context),
                                 fontSize: 11,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                               ),

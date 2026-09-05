@@ -40,8 +40,35 @@ class GlassContainer extends StatelessWidget {
         ? const Color(0x1FFFFFFF)
         : AppColors.borderSubtleLight;
 
-    final effectiveBg = backgroundColor ?? defaultBg;
-    final effectiveBorder = borderColor ?? defaultBorder;
+    Color? resolvedBg = backgroundColor;
+    if (!isDark && resolvedBg != null) {
+      final val = resolvedBg.value;
+      if (val == AppColors.bgSurface.value ||
+          val == AppColors.bgSurface.withAlpha(245).value ||
+          val == AppColors.bgSurface.withAlpha(235).value ||
+          val == AppColors.bgSurface.withAlpha(225).value ||
+          val == AppColors.bgSurface.withAlpha(220).value ||
+          val == AppColors.bgSurface.withAlpha(210).value ||
+          val == AppColors.bgSurface.withAlpha(200).value ||
+          val == AppColors.bgSurface.withAlpha(190).value) {
+        final alpha = resolvedBg.alpha;
+        resolvedBg = AppColors.bgSurfaceLight.withAlpha(alpha);
+      } else if (val == AppColors.bgApp.value ||
+          val == AppColors.bgApp.withAlpha(200).value) {
+        final alpha = resolvedBg.alpha;
+        resolvedBg = AppColors.bgAppLight.withAlpha(alpha);
+      }
+    }
+
+    Color? resolvedBorder = borderColor;
+    if (!isDark && resolvedBorder != null) {
+      if (resolvedBorder == const Color(0x1FFFFFFF) || resolvedBorder == AppColors.borderSubtle) {
+        resolvedBorder = AppColors.borderSubtleLight;
+      }
+    }
+
+    final effectiveBg = resolvedBg ?? defaultBg;
+    final effectiveBorder = resolvedBorder ?? defaultBorder;
 
 
     Widget content = ClipRRect(
