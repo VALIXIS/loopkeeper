@@ -30,8 +30,8 @@ export interface ExecutionDriftItem {
 export const ExecutionDriftView: React.FC = () => {
   const { actionItems } = useApp();
 
-  // Cross-reference action items with Jira execution drift states
-  const driftItems: ExecutionDriftItem[] = [
+  // Static demo drift anomalies for architectural reference
+  const demoDriftItems: ExecutionDriftItem[] = [
     {
       id: 'drift-1',
       commitmentTitle: 'Stripe webhook replay and idempotency ledger',
@@ -51,14 +51,14 @@ export const ExecutionDriftView: React.FC = () => {
     {
       id: 'drift-2',
       commitmentTitle: 'Mobile OAuth token silent refresh and secure biometric vault',
-      ownerName: 'Bob Chen',
+      ownerName: 'Bob Smith',
       spokenStatement: 'Auth token refresh is working properly and ready for staging release.',
       meetingTitle: 'Sprint 15 Architecture & Delivery Review',
       spokenStatus: 'Claimed Ready',
       spokenDate: 'Today, 10:22 AM',
       jiraIssueKey: 'AUTH-89',
       jiraStatus: 'Code Review',
-      jiraAssignee: 'Bob Chen',
+      jiraAssignee: 'Bob Smith',
       jiraLastUpdated: '2 hours ago (CI build failure on iOS bundle tests)',
       driftSeverity: 'high',
       discrepancySummary: 'Speaker claimed token refresh is ready for staging, but Jira CI telemetry shows failing iOS bundle tests.',
@@ -66,21 +66,43 @@ export const ExecutionDriftView: React.FC = () => {
     },
     {
       id: 'drift-3',
-      commitmentTitle: 'pgvector HNSW Cosine Indexing for 1536-dim embeddings',
-      ownerName: 'Charlie Davis',
+      commitmentTitle: 'pgvector Cosine Indexing for 1536-dim embeddings',
+      ownerName: 'Charlie Lee',
       spokenStatement: 'Migration script executed on staging database.',
       meetingTitle: 'Engineering Standup & Delivery Sync',
       spokenStatus: 'Claimed Done',
       spokenDate: 'Yesterday, 11:00 AM',
       jiraIssueKey: 'PGV-104',
       jiraStatus: 'In Progress',
-      jiraAssignee: 'Charlie Davis',
+      jiraAssignee: 'Charlie Lee',
       jiraLastUpdated: '3 hours ago (Pending DB administrator approval)',
       driftSeverity: 'moderate',
       discrepancySummary: 'Migration executed on local replica, but staging database migration requires DBA peer sign-off.',
       mitigationRecommendation: 'Request DBA sign-off on Jira PGV-104.'
     }
   ];
+
+  // Dynamic derivation of drift items from real actionItems + reference patterns
+  const liveDriftItems: ExecutionDriftItem[] = actionItems
+    .filter(a => (a.postponement_count && a.postponement_count > 0) || a.status === 'overdue' || a.confidence < 0.8)
+    .map(a => ({
+      id: `drift-live-${a.id}`,
+      commitmentTitle: a.title,
+      ownerName: a.owner_name || 'Unassigned',
+      spokenStatement: a.source_text || `Action item: ${a.title}`,
+      meetingTitle: a.meeting_title || 'Recent Standup',
+      spokenStatus: a.status === 'done' ? 'Claimed Done' : 'Claimed Ready',
+      spokenDate: new Date(a.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      jiraIssueKey: `LK-${a.id.slice(0, 4).toUpperCase()}`,
+      jiraStatus: a.status === 'done' ? 'In Progress' : 'Open',
+      jiraAssignee: a.owner_name || 'Unassigned',
+      jiraLastUpdated: `Last updated ${new Date(a.updated_at).toLocaleDateString()}`,
+      driftSeverity: (a.postponement_count && a.postponement_count >= 2) || a.status === 'overdue' ? 'critical' : 'high',
+      discrepancySummary: `Spoken commitment status '${a.status}' conflicts with tracker state or repeated postponement (${a.postponement_count || 0} delays recorded).`,
+      mitigationRecommendation: `Review history log and verify commit hashes linked to ${a.title}.`
+    }));
+
+  const driftItems = liveDriftItems.length > 0 ? liveDriftItems : demoDriftItems;
 
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">

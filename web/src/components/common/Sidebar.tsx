@@ -170,7 +170,7 @@ export const Sidebar: React.FC = () => {
         </div>
         <div className="flex items-center justify-between">
           <span className="text-slate-400">Vector Dedupe</span>
-          <span className="font-mono text-emerald-400 text-[10px] font-bold">1536-dim HNSW</span>
+          <span className="font-mono text-emerald-400 text-[10px] font-bold">1536-dim Cosine</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-slate-400">Jira Execution</span>

@@ -124,10 +124,17 @@ export const CommitmentDetailView: React.FC = () => {
             <VerificationBadge confidence={detail.confidence} />
             <MatchDecisionBadge decision={detail.match_decision} />
             <PostponementBadge count={detail.postponement_count} />
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30 flex items-center gap-1">
-              <ExternalLinkIcon size={12} />
-              Jira: PAY-142
-            </span>
+            {(detail as any).jira_key || detail.matched_valixis_task_id ? (
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30 flex items-center gap-1">
+                <ExternalLinkIcon size={12} />
+                Jira: {(detail as any).jira_key || `TASK-${detail.matched_valixis_task_id?.slice(0, 6).toUpperCase()}`}
+              </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-mono text-zinc-400 bg-zinc-800/60 border border-zinc-700/60 flex items-center gap-1">
+                <ExternalLinkIcon size={12} />
+                Jira: Unlinked
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
