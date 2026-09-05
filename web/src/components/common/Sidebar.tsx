@@ -6,11 +6,9 @@ import {
   CalendarIcon,
   CheckSquareIcon,
   ShieldAlertIcon,
-  UsersIcon,
-  BrainIcon,
   SettingsIcon,
-  RadioIcon,
   NetworkIcon
+
 } from './Icons';
 
 interface SidebarItem {
@@ -34,7 +32,7 @@ export const Sidebar: React.FC = () => {
     {
       id: 'dashboard',
       path: '/dashboard',
-      label: 'Dashboard',
+      label: 'Home',
       icon: GaugeIcon
     },
     {
@@ -54,33 +52,15 @@ export const Sidebar: React.FC = () => {
     {
       id: 'accountability',
       path: '/accountability',
-      label: 'Accountability Hub',
+      label: 'Accountability',
       icon: ShieldAlertIcon,
       badge: postponedCount > 0 ? postponedCount : undefined,
       badgeColor: 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
     },
     {
-      id: 'recording',
-      path: '/recording',
-      label: 'Recording Studio',
-      icon: RadioIcon
-    },
-    {
-      id: 'workload',
-      path: '/workload',
-      label: 'Team Workload',
-      icon: UsersIcon
-    },
-    {
-      id: 'insights',
-      path: '/insights',
-      label: 'AI Insights',
-      icon: BrainIcon
-    },
-    {
       id: 'integrations',
       path: '/integrations',
-      label: 'Integrations & Jira',
+      label: 'Integrations',
       icon: NetworkIcon
     },
     {
@@ -90,6 +70,7 @@ export const Sidebar: React.FC = () => {
       icon: SettingsIcon
     }
   ];
+
 
   return (
     <aside className="w-64 shrink-0 border-r border-white/[0.08] bg-[#07090e]/60 backdrop-blur-xl hidden md:flex flex-col justify-between p-4 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto">

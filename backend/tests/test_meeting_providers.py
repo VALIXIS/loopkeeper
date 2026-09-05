@@ -126,3 +126,29 @@ def test_integration_api_endpoints():
     data = res_sync.json()
     assert data["provider"] == "google_meet"
     assert "meetings_discovered" in data
+
+def test_create_meeting_endpoints():
+    # Google Meet create meeting
+    res_gm = client.post(
+        "/api/v1/integrations/google_meet/create-meeting",
+        json={"title": "Q3 Architecture Review", "duration_minutes": 45},
+        headers=AUTH_HEADERS
+    )
+    assert res_gm.status_code == 200
+    gm_data = res_gm.json()
+    assert gm_data["provider"] == "google_meet"
+    assert "join_url" in gm_data["meeting"]
+    assert "meet.google.com" in gm_data["meeting"]["join_url"]
+
+    # Zoom create meeting
+    res_zoom = client.post(
+        "/api/v1/integrations/zoom/create-meeting",
+        json={"title": "Sync with Finance Team", "duration_minutes": 30},
+        headers=AUTH_HEADERS
+    )
+    assert res_zoom.status_code == 200
+    zoom_data = res_zoom.json()
+    assert zoom_data["provider"] == "zoom"
+    assert "join_url" in zoom_data["meeting"]
+    assert "zoom.us" in zoom_data["meeting"]["join_url"]
+

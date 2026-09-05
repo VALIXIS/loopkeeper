@@ -27,6 +27,7 @@ export const RecordingSessionView: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Live transcript stream buffer
+  // Live transcript stream buffer
   const [transcriptLines, setTranscriptLines] = useState<Array<{ speaker: string; text: string; time: string }>>([
     {
       speaker: 'Jyothsna',
@@ -34,12 +35,12 @@ export const RecordingSessionView: React.FC = () => {
       time: '00:01:05'
     },
     {
-      speaker: 'Alice',
+      speaker: 'Adithya',
       text: 'I will finalize the pgvector cosine distance indexing and test the migration script by Friday 5 PM.',
       time: '00:01:24'
     },
     {
-      speaker: 'Bob',
+      speaker: 'Vignesh',
       text: 'The auth token refresh bug in mobile needs attention. I will deploy a fix tomorrow morning.',
       time: '00:02:10'
     }
@@ -47,11 +48,14 @@ export const RecordingSessionView: React.FC = () => {
 
   const [simulatedTurnIndex, setSimulatedTurnIndex] = useState(0);
 
-  // Audio Visualizer Canvas
+  // Audio Visualizer Canvas & Recording Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
+  const recognitionRef = useRef<any>(null);
   const animationFrameRef = useRef<number | null>(null);
 
   // Timer Effect
@@ -111,6 +115,7 @@ export const RecordingSessionView: React.FC = () => {
   };
 
   const startRecording = async () => {
+    recordedChunksRef.current = [];
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -124,9 +129,52 @@ export const RecordingSessionView: React.FC = () => {
 
         const source = audioCtx.createMediaStreamSource(stream);
         source.connect(analyser);
+
+        // MediaRecorder for real audio capture
+        try {
+          const recorder = new MediaRecorder(stream);
+          recorder.ondataavailable = (e) => {
+            if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+          };
+          recorder.start(1000);
+          mediaRecorderRef.current = recorder;
+        } catch (e) {
+          console.warn('MediaRecorder not available or failed:', e);
+        }
+
+        // Web Speech API for real-time speech recognition
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          try {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            recognition.onresult = (event: any) => {
+              for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                  const speechText = event.results[i][0].transcript.trim();
+                  if (speechText) {
+                    const speakerName = currentUser?.name || 'Jyothsna';
+                    const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+                    const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
+                    setTranscriptLines(prev => [
+                      ...prev,
+                      { speaker: speakerName, text: speechText, time: `00:${mins}:${secs}` }
+                    ]);
+                  }
+                }
+              }
+            };
+            recognition.start();
+            recognitionRef.current = recognition;
+          } catch (e) {
+            console.warn('Web Speech API failed to start:', e);
+          }
+        }
       }
     } catch {
-      console.warn('Microphone permission not granted or unavailable, using high-precision audio simulation.');
+      console.warn('Microphone permission not granted or unavailable, using audio simulation.');
     }
 
     setIsRecording(true);
@@ -157,6 +205,12 @@ export const RecordingSessionView: React.FC = () => {
 
   const stopAndProcess = async () => {
     if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop(); } catch {}
+    }
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach(track => track.stop());
     }
@@ -167,6 +221,20 @@ export const RecordingSessionView: React.FC = () => {
     setIsRecording(false);
     setIsProcessing(true);
     setProcessingStage('uploading');
+
+    // Send audio blob if available
+    if (recordedChunksRef.current.length > 0) {
+      try {
+        const audioBlob = new Blob(recordedChunksRef.current, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('recording_id', '00000000-0000-0000-0000-000000000001');
+        formData.append('file', audioBlob, 'live_recording.webm');
+        await fetch('http://localhost:8000/api/v1/recordings/upload', {
+          method: 'POST',
+          body: formData
+        }).catch(() => {});
+      } catch {}
+    }
 
     const fullTranscript = transcriptLines
       .map(t => `[${t.time}] ${t.speaker}: ${t.text}`)
@@ -218,7 +286,7 @@ export const RecordingSessionView: React.FC = () => {
   };
 
   const addSimulatedSpeechTurn = () => {
-    const speakers = ['Alice', 'Bob', 'Charlie', 'Diana', 'Jyothsna', 'Priya'];
+    const speakers = ['Adithya', 'Vaseem', 'Krishna', 'Vignesh', 'Jyothsna', 'Hasitha', 'Subhash'];
     const commitments = [
       'I will run the end-to-end integration test suite on the staging deployment by Friday.',
       'I will review the mobile auth PR and merge it by tomorrow morning 10 AM.',

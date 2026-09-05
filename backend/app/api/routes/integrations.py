@@ -3,22 +3,34 @@ import hashlib
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Query, Request, Header, Depends, status
 from pydantic import BaseModel
+from datetime import datetime
 from app.integrations.providers.google_meet import GoogleMeetProvider
 from app.integrations.providers.ms_teams import MicrosoftTeamsProvider
 from app.integrations.providers.zoom import ZoomProvider
+from app.integrations.xero.provider import XeroProvider
 from app.core.security import get_current_user
+
+class CreateMeetingRequest(BaseModel):
+    title: str = "LoopKeeper Meeting"
+    start_time: Optional[str] = None
+    duration_minutes: int = 30
+    user_id: Optional[str] = None
+
 
 router = APIRouter(prefix="/integrations", tags=["Meeting Platform Integrations"])
 
 google_meet_provider = GoogleMeetProvider()
 ms_teams_provider = MicrosoftTeamsProvider()
 zoom_provider = ZoomProvider()
+xero_provider = XeroProvider()
 
 providers = {
     "google_meet": google_meet_provider,
     "ms_teams": ms_teams_provider,
-    "zoom": zoom_provider
+    "zoom": zoom_provider,
+    "xero": xero_provider
 }
+
 
 class SyncResponse(BaseModel):
     provider: str
@@ -91,6 +103,46 @@ def sync_integration(provider_id: str, current_user: dict = Depends(get_current_
         return provider.sync_meetings(user_id=user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Synchronization failed for {prov_key}: {str(e)}")
+
+@router.post("/{provider_id}/create-meeting")
+def create_meeting(
+    provider_id: str,
+    req: CreateMeetingRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    prov_key = provider_id.lower().replace("-", "_")
+    provider = providers.get(prov_key)
+    if not provider:
+        raise HTTPException(status_code=404, detail=f"Provider '{provider_id}' not recognized.")
+    user_id = req.user_id or (current_user.get("id") if isinstance(current_user, dict) else None)
+    if not hasattr(provider, "create_meeting"):
+        raise HTTPException(status_code=400, detail=f"Provider '{prov_key}' does not support meeting creation.")
+    
+    start_dt = None
+    if req.start_time:
+        try:
+            start_dt = datetime.fromisoformat(req.start_time.replace("Z", "+00:00"))
+        except Exception:
+            start_dt = datetime.utcnow()
+    try:
+        if prov_key == "zoom":
+            meeting_data = provider.create_meeting(
+                topic=req.title,
+                start_time=start_dt,
+                duration_minutes=req.duration_minutes,
+                user_id=user_id
+            )
+        else:
+            meeting_data = provider.create_meeting(
+                title=req.title,
+                start_time=start_dt,
+                duration_minutes=req.duration_minutes,
+                user_id=user_id
+            )
+        return {"provider": prov_key, "meeting": meeting_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create meeting with {prov_key}: {str(e)}")
+
 
 @router.post("/zoom/webhook")
 async def zoom_webhook_receiver(

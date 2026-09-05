@@ -14,7 +14,8 @@ from app.api.routes import (
     integrations,
     jira,
     recordings,
-    transcripts
+    transcripts,
+    xero
 )
 
 api_router = APIRouter()
@@ -38,3 +39,4 @@ api_router.include_router(integrations.router, dependencies=protected_deps)
 api_router.include_router(jira.router, dependencies=protected_deps)
 api_router.include_router(recordings.router, dependencies=protected_deps)
 api_router.include_router(transcripts.router, dependencies=protected_deps)
+api_router.include_router(xero.router, dependencies=protected_deps)

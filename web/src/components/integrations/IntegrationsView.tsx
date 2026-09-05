@@ -72,8 +72,20 @@ export const IntegrationsView: React.FC = () => {
       status: 'not_connected',
       features: ['Cloud recording webhook', 'VTT subtitle parsing', 'Auto-invite LoopKeeper AI'],
       externalUrl: 'https://zoom.us'
+    },
+    {
+      id: 'xero',
+      name: 'Xero Accounting & Invoicing',
+      category: 'Issue Tracker & Execution',
+      description: 'Verifies financial execution, invoice payment statuses, and budget commitments against spoken meeting decisions.',
+      iconBg: 'bg-teal-600',
+      iconText: 'Xero',
+      status: 'not_connected',
+      features: ['Financial evidence verification', 'Invoice status linking', 'Overdue payment drift tracking', 'OAuth 2.0 REST API'],
+      externalUrl: 'https://xero.com'
     }
   ]);
+
 
   const [selectedIntegration, setSelectedIntegration] = useState<IntegrationItem | null>(null);
   

@@ -1,8 +1,11 @@
 import os
+import logging
 from typing import List, Optional
 from uuid import UUID
 from app.models.models import Employee, Task
 from app.core.database import SessionLocal
+
+logger = logging.getLogger("app.repositories.valixis_repository")
 
 class ValixisRepository:
     def __init__(self, db_session=None):
@@ -108,6 +111,7 @@ class ValixisRepository:
         if SessionLocal is not None:
             try:
                 session = SessionLocal()
+                session.connection()
                 return session, True
             except Exception:
                 return None, False

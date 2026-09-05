@@ -20,7 +20,8 @@ import {
   MOCK_TRANSCRIPTS
 } from './mockData';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+
 
 class LocalStateStore {
   meetings: Meeting[] = [];
@@ -343,7 +344,7 @@ export const api = {
         if (title.includes(':')) {
           title = title.split(':')[1].trim();
         }
-        title = title.replace(/^(I will|I'll|I need to|Alice,|Bob,|Charlie,|Diana,|Priya,|Priya will|Priya is still working on|still working on)\s*/i, '');
+        title = title.replace(/^(I will|I'll|I need to|Adithya,|Vaseem,|Krishna,|Hasitha,|Vignesh,|Jyothsna,|Subhash,|still working on)\s*/i, '');
         title = title.charAt(0).toUpperCase() + title.slice(1);
 
         // 3. Semantic match against existing active tasks
@@ -852,7 +853,70 @@ export const api = {
     return { provider: providerId, status: 'authorization_required', auth_url: `https://auth.loopkeeper.ai/oauth/${providerId}` };
   },
 
+  async getXeroStatus(): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/integrations/xero/status`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (err) {
+        console.warn('Backend getXeroStatus failed', err);
+      }
+    }
+    return {
+      provider: 'xero',
+      provider_name: 'Xero Accounting & Financial Execution',
+      status: 'READY FOR EXTERNAL OAUTH VERIFICATION',
+      is_connected: false,
+      status_message: 'READY FOR EXTERNAL OAUTH VERIFICATION. Please configure XERO_CLIENT_ID and XERO_CLIENT_SECRET.'
+    };
+  },
+
+  async getXeroSummary(): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/integrations/xero/summary`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (err) {
+        console.warn('Backend getXeroSummary failed', err);
+      }
+    }
+    return {
+      provider: 'xero',
+      is_connected: false,
+      status_message: 'Xero is not connected. Connect Xero to view real financial execution evidence.'
+    };
+  },
+
+  async createExternalMeeting(providerId: string, title: string, durationMinutes: number = 30): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/integrations/${providerId}/create-meeting`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ title, duration_minutes: durationMinutes })
+        });
+        if (res.ok) return await res.json();
+      } catch (err) {
+        console.warn('Backend createExternalMeeting failed', err);
+      }
+    }
+    const isZoom = providerId === 'zoom';
+    const id = Math.random().toString(36).substring(2, 9);
+    const joinUrl = isZoom
+      ? `https://zoom.us/j/${Math.floor(1000000000 + Math.random() * 9000000000)}?pwd=${id}`
+      : `https://meet.google.com/lk-${id}`;
+    return {
+      provider: providerId,
+      meeting: {
+        title,
+        join_url: joinUrl,
+        provider: providerId
+      }
+    };
+  },
+
   resetStore() {
     localStore.resetToDefaults();
   }
 };
+

@@ -23,12 +23,16 @@ if db_url:
             pool_pre_ping=True,
             pool_size=10,
             max_overflow=20,
-            connect_args={"connect_timeout": 10} if "postgresql" in db_url else {}
+            connect_args={"connect_timeout": 3} if "postgresql" in db_url else {}
         )
+        with engine.connect() as conn:
+            pass
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         logger.info("SQLAlchemy Database engine initialized successfully.")
     except Exception as e:
         logger.warning(f"Could not connect to database at {db_url}: {e}. Local fallback active.")
+        engine = None
+        SessionLocal = None
 
 def get_db() -> Generator[Session, None, None]:
     """Dependency for obtaining a database session per API request."""

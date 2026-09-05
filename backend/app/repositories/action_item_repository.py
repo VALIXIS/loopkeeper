@@ -18,8 +18,12 @@ class ActionItemRepository:
         if self.db is not None:
             return self.db, False
         if SessionLocal is not None:
-            session = SessionLocal()
-            return session, True
+            try:
+                session = SessionLocal()
+                session.connection()
+                return session, True
+            except Exception:
+                return None, False
         return None, False
 
     def create_action_item(

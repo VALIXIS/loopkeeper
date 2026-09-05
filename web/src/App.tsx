@@ -24,8 +24,10 @@ import {
   CalendarIcon,
   CheckSquareIcon,
   ShieldAlertIcon,
-  RadioIcon,
+  NetworkIcon,
   SettingsIcon
+
+
 } from './components/common/Icons';
 
 const MainLayout: React.FC = () => {
@@ -98,13 +100,14 @@ const MainLayout: React.FC = () => {
       {/* Mobile Bottom Navigation Bar */}
       <div className="md:hidden sticky bottom-0 z-40 w-full border-t border-white/[0.08] bg-zinc-950/95 backdrop-blur-md px-2 py-2 flex items-center justify-around text-[10px]">
         {[
-          { path: '/dashboard', id: 'dashboard', label: 'Dashboard', icon: GaugeIcon },
+          { path: '/dashboard', id: 'dashboard', label: 'Home', icon: GaugeIcon },
           { path: '/meetings', id: 'meetings', label: 'Meetings', icon: CalendarIcon },
-          { path: '/commitments', id: 'commitments', label: 'Tasks', icon: CheckSquareIcon },
+          { path: '/commitments', id: 'commitments', label: 'Commitments', icon: CheckSquareIcon },
           { path: '/accountability', id: 'accountability', label: 'Accountability', icon: ShieldAlertIcon },
-          { path: '/recording', id: 'recording', label: 'Record', icon: RadioIcon },
+          { path: '/integrations', id: 'integrations', label: 'Integrations', icon: NetworkIcon },
           { path: '/settings', id: 'settings', label: 'Settings', icon: SettingsIcon }
         ].map(nav => {
+
           const Icon = nav.icon;
           const isActive =
             route.path === nav.id ||

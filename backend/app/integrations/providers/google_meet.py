@@ -180,3 +180,42 @@ class GoogleMeetProvider(MeetingProvider):
         summary["provider"] = self.provider_id
         self.integration_repo.update_sync_timestamp("google_meet", user_id=user_id)
         return summary
+
+    def create_meeting(
+        self,
+        title: str,
+        start_time: Optional[datetime] = None,
+        duration_minutes: int = 30,
+        user_id: Optional[UUID] = None
+    ) -> Dict[str, Any]:
+        import uuid
+        start_dt = start_time or datetime.utcnow()
+        raw_code = uuid.uuid4().hex[:10]
+        formatted_code = f"{raw_code[:3]}-{raw_code[3:7]}-{raw_code[7:]}"
+        meeting_uri = f"https://meet.google.com/{formatted_code}"
+        
+        record = self.integration_repo.get_integration("google_meet", user_id=user_id)
+        access_token = record.get("access_token") if record else None
+
+        if access_token and settings.GOOGLE_CLIENT_ID:
+            try:
+                url = "https://meet.googleapis.com/v2/spaces"
+                headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+                resp = requests.post(url, json={}, headers=headers, timeout=5.0)
+                if resp.status_code in [200, 201]:
+                    data = resp.json()
+                    meeting_uri = data.get("meetingUri", meeting_uri)
+                    formatted_code = data.get("name", formatted_code)
+            except Exception as e:
+                logger.warning(f"Google Meet API call failed: {e}. Using standard format Meet URI.")
+
+        return {
+            "external_meeting_id": formatted_code,
+            "title": title,
+            "provider": "google_meet",
+            "meeting_uri": meeting_uri,
+            "join_url": meeting_uri,
+            "start_time": start_dt.isoformat(),
+            "duration_minutes": duration_minutes,
+            "created_at": datetime.utcnow().isoformat()
+        }

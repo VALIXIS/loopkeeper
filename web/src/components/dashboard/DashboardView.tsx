@@ -21,6 +21,7 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeeting }) => {
   const { navigate, navigateToAccountability } = useRouter();
+  const [showAiDetails, setShowAiDetails] = React.useState(false);
 
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">
@@ -38,16 +39,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
                 LoopKeeper Core Engine Active
               </span>
               <span className="text-xs text-slate-400 font-mono hidden sm:inline">
-                Read-Only Verification Proxy
+                Real Google Meet, Zoom & Xero Sync
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              LoopKeeper <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-cyan-300 to-emerald-300">Command Center</span>
+            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+              Keep meetings <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-cyan-300 to-emerald-300">accountable.</span>
             </h1>
 
             <p className="text-sm text-slate-200 leading-relaxed font-normal">
-              LoopKeeper connects what teams <strong className="text-cyan-300 font-semibold">SAY in meetings</strong> with what <strong className="text-emerald-300 font-semibold">ACTUALLY HAPPENS afterward</strong>.
+              LoopKeeper connects spoken commitments from <strong className="text-cyan-300 font-semibold">Google Meet & Zoom</strong> with actual execution evidence in <strong className="text-indigo-300 font-semibold">Jira & Xero</strong> to detect Execution Drift.
             </p>
 
             {/* Product Pipeline Flow */}
@@ -58,7 +59,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
               <span>➔</span>
               <span className="px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-slate-300">Evidence</span>
               <span>➔</span>
-              <span className="px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-indigo-300">Jira Execution</span>
+              <span className="px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-indigo-300">Jira & Xero</span>
               <span>➔</span>
               <span className="px-2 py-0.5 rounded-md bg-rose-950/40 border border-rose-500/40 text-rose-300 font-bold">Execution Drift</span>
             </div>
@@ -70,18 +71,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 text-xs font-bold border border-white/[0.1] shadow-lg transition-all hover:scale-[1.03] active:scale-[0.98] hover:border-cyan-500/40"
             >
               <RadioIcon size={15} className="text-rose-400 animate-pulse" />
-              <span>Record Studio</span>
+              <span>Start Meeting</span>
             </button>
             <button
               onClick={() => onOpenCreateMeeting()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white text-xs font-bold shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.03] active:scale-[0.98] border border-indigo-400/30"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all hover:scale-[1.03] active:scale-[0.98] border border-indigo-400/30"
+            >
+              <CalendarIcon size={15} />
+              <span>Schedule Meeting</span>
+            </button>
+            <button
+              onClick={() => onOpenCreateMeeting()}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white text-xs font-bold shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.03] active:scale-[0.98] border border-indigo-400/30"
             >
               <SparklesIcon size={15} />
-              <span>Ingest Transcript</span>
+              <span>Add Transcript</span>
             </button>
           </div>
         </div>
       </div>
+
 
       {/* Hero Execution Drift Command Banner (Hero Feature Spotlight) */}
       <div className="rounded-3xl bg-gradient-to-r from-rose-950/40 via-slate-900 to-slate-950 border border-rose-500/40 p-6 shadow-2xl space-y-5 relative overflow-hidden">
@@ -211,19 +220,38 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
         </div>
       </div>
 
-      {/* Preset Ingest Bar */}
+      {/* Quick Ingest Sequence Presets */}
       <QuickIngestCard onOpenCreateMeeting={onOpenCreateMeeting} />
 
-      {/* Primary 4 Metric Cards */}
-      <MetricsGrid />
-
-      {/* Secondary Intelligence Columns: Workload vs Upcoming Deadlines */}
+      {/* Commitments at Risk & Upcoming Meetings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <OverloadedMembersCard />
         <UpcomingDeadlinesCard />
       </div>
+
+      {/* Collapsible AI & System Details Drawer */}
+      <div className="rounded-2xl border border-white/[0.08] bg-slate-900/40 p-4 transition-all">
+        <button
+          onClick={() => setShowAiDetails(!showAiDetails)}
+          className="w-full flex items-center justify-between text-xs font-bold text-slate-300 hover:text-white transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <SparklesIcon size={15} className="text-cyan-400" />
+            <span>AI & System Details (Metrics, SLM Confidence, Vector Models)</span>
+          </span>
+          <span className="text-[11px] font-mono text-cyan-400">
+            {showAiDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+          </span>
+        </button>
+        {showAiDetails && (
+          <div className="mt-4 pt-4 border-t border-white/[0.06] animate-fade-in">
+            <MetricsGrid />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
+
 
 

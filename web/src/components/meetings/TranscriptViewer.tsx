@@ -38,11 +38,12 @@ export const TranscriptViewer: React.FC<TranscriptViewerProps> = ({
   const getSpeakerColor = (speaker: string) => {
     const s = speaker.toLowerCase();
     if (s.includes('jyothsna')) return 'text-amber-400 bg-amber-500/10 border-amber-500/30';
-    if (s.includes('alice')) return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
-    if (s.includes('bob')) return 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30';
-    if (s.includes('charlie')) return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30';
-    if (s.includes('diana')) return 'text-purple-400 bg-purple-500/10 border-purple-500/30';
-    if (s.includes('priya')) return 'text-rose-400 bg-rose-500/10 border-rose-500/30';
+    if (s.includes('subhash')) return 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30';
+    if (s.includes('adithya')) return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+    if (s.includes('vaseem')) return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30';
+    if (s.includes('krishna')) return 'text-purple-400 bg-purple-500/10 border-purple-500/30';
+    if (s.includes('vignesh')) return 'text-rose-400 bg-rose-500/10 border-rose-500/30';
+    if (s.includes('hasitha')) return 'text-teal-400 bg-teal-500/10 border-teal-500/30';
     return 'text-slate-300 bg-slate-800 border-slate-700';
   };
 
