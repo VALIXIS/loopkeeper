@@ -121,6 +121,75 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 20),
 
               const Text(
+                'Appearance & Theme Mode',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              GlassContainer(
+                borderRadius: 16,
+                blur: 12,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              provider.themeMode == ThemeMode.dark
+                                  ? Icons.dark_mode_rounded
+                                  : Icons.light_mode_rounded,
+                              color: AppColors.brandPrimary,
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  provider.themeMode == ThemeMode.dark
+                                      ? 'Futuristic Dark Theme'
+                                      : 'Enterprise Light Theme',
+                                  style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  provider.themeMode == ThemeMode.dark
+                                      ? 'Deep midnight palette with neon glows'
+                                      : 'Clean slate palette with dark headers',
+                                  style: const TextStyle(
+                                    color: AppColors.textTertiary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Switch(
+                          value: provider.themeMode == ThemeMode.dark,
+                          activeTrackColor: AppColors.brandPrimary,
+                          onChanged: (isDark) {
+                            provider.setThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
                 'Backend API & Network Configuration',
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -149,7 +218,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         controller: _baseUrlController,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.dns_rounded, color: AppColors.textTertiary),
-                          hintText: 'http://127.0.0.1:8001/api/v1',
+                          hintText: 'http://localhost:8000/api/v1',
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
                         ),
@@ -183,8 +252,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const Divider(height: 24, color: Color(0x1FFFFFFF)),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Resilient Offline Mode', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Forces fallback to mock dataset when backend API is unreachable.', style: TextStyle(color: AppColors.textTertiary, fontSize: 12)),
+                      title: const Text('Demo Fixture Mode [OFFLINE FIXTURES]', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+                      subtitle: const Text('Explicitly isolate mock fixtures for offline testing. Disables real production backend calls.', style: TextStyle(color: AppColors.textTertiary, fontSize: 12)),
                       value: provider.isOffline,
                       activeTrackColor: AppColors.brandPrimary,
                       onChanged: (val) {
@@ -198,7 +267,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 20),
 
               const Text(
-                'Data & Diagnostics',
+                'Integrations & Diagnostics',
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -214,6 +283,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     ListTile(
+                      leading: const Icon(Icons.hub_rounded, color: AppColors.brandAccent),
+                      title: const Text('External Integrations', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                      subtitle: const Text('Google Meet, MS Teams, Zoom, Jira status', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/integrations');
+                      },
+                    ),
+                    const Divider(height: 1, color: Color(0x1FFFFFFF)),
+                    ListTile(
                       leading: const Icon(Icons.refresh_rounded, color: AppColors.brandPrimary),
                       title: const Text('Refresh Application State', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
                       subtitle: const Text('Sync meetings, action items, and telemetry', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
@@ -228,7 +307,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const Divider(height: 1, color: Color(0x1FFFFFFF)),
                     ListTile(
-                      leading: const Icon(Icons.swap_horiz_rounded, color: AppColors.brandAccent),
+                      leading: const Icon(Icons.swap_horiz_rounded, color: AppColors.statusOverdue),
                       title: const Text('Switch User Profile / Log Out', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
                       subtitle: const Text('Change active persona (Manager vs Employee)', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
                       onTap: () {
@@ -241,6 +320,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
+
 
               const SizedBox(height: 32),
               const Center(

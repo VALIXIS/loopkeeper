@@ -47,12 +47,21 @@ class AppStateProvider extends ChangeNotifier {
   int _unreadAlertsCount = 3;
   int get unreadAlertsCount => _unreadAlertsCount;
 
+  ThemeMode _themeMode = ThemeMode.dark;
+  ThemeMode get themeMode => _themeMode;
+
+  List<Map<String, dynamic>> _employees = [];
+  List<Map<String, dynamic>> get employees => _employees;
+
   Future<void> init() async {
     _isLoading = true;
     notifyListeners();
 
     _baseUrl = await SessionStorage.getBaseUrl();
     _isOffline = await SessionStorage.isOfflineMode();
+    final storedTheme = await SessionStorage.getThemeMode();
+    _themeMode = storedTheme == 'light' ? ThemeMode.light : ThemeMode.dark;
+
     final session = await SessionStorage.getUserSession();
     
     _currentUser = UserProfile(
@@ -77,12 +86,23 @@ class AppStateProvider extends ChangeNotifier {
       _dashboard = await _apiClient.getDashboardOverview();
       _meetings = await _apiClient.getMeetings();
       _actionItems = await _apiClient.getActionItems();
+      _employees = await _apiClient.getEmployees();
     } catch (e) {
-      _errorMessage = 'Failed to connect to backend. Operating in resilient offline mode.';
+      if (_isOffline) {
+        _errorMessage = 'Operating in Demo Fixture Mode.';
+      } else {
+        _errorMessage = 'Backend connection error to $_baseUrl';
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    _themeMode = mode;
+    await SessionStorage.setThemeMode(mode == ThemeMode.light ? 'light' : 'dark');
+    notifyListeners();
   }
 
   Future<void> setBaseUrl(String url) async {
@@ -96,6 +116,7 @@ class AppStateProvider extends ChangeNotifier {
     await SessionStorage.setOfflineMode(offline);
     await refreshAll();
   }
+
 
   Future<void> switchUser(String role, String name, String id) async {
     await SessionStorage.saveUserSession(

@@ -3,12 +3,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SessionStorage {
   static const String _keyBaseUrl = 'loopkeeper_base_url';
   static const String _keyOfflineMode = 'loopkeeper_offline_mode';
+  static const String _keyThemeMode = 'loopkeeper_theme_mode';
   static const String _keyUserToken = 'loopkeeper_user_token';
   static const String _keyUserId = 'loopkeeper_user_id';
   static const String _keyUserName = 'loopkeeper_user_name';
   static const String _keyUserRole = 'loopkeeper_user_role';
 
-  static const String defaultBaseUrl = 'http://127.0.0.1:8001/api/v1';
+  static const String defaultBaseUrl = 'http://localhost:8000/api/v1';
 
   static Future<String> getBaseUrl() async {
     final prefs = await SharedPreferences.getInstance();
@@ -28,6 +29,16 @@ class SessionStorage {
   static Future<void> setOfflineMode(bool offline) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyOfflineMode, offline);
+  }
+
+  static Future<String> getThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyThemeMode) ?? 'dark';
+  }
+
+  static Future<void> setThemeMode(String theme) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyThemeMode, theme);
   }
 
   static Future<String?> getUserToken() async {
@@ -65,3 +76,4 @@ class SessionStorage {
     await prefs.remove(_keyUserRole);
   }
 }
+

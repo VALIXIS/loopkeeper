@@ -39,4 +39,16 @@ class AppColors {
 
   // Postponement Warning Glow
   static const Color warningRoseGlow = Color(0xFFEF4444);
+
+  // Enterprise Light Mode Palette
+  static const Color bgAppLight = Color(0xFFF8FAFC);
+  static const Color bgSurfaceLight = Color(0xFFFFFFFF);
+  static const Color bgSurfaceHoverLight = Color(0xFFF1F5F9);
+  static const Color borderSubtleLight = Color(0xFFE2E8F0);
+  static const Color borderDefaultLight = Color(0xFFCBD5E1);
+  static const Color textPrimaryLight = Color(0xFF0F172A);
+  static const Color textSecondaryLight = Color(0xFF475569);
+  static const Color textTertiaryLight = Color(0xFF94A3B8);
+  static const Color brandPrimaryLight = Color(0xFF4F46E5);
 }
+

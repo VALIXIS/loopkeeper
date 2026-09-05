@@ -199,6 +199,85 @@ class ActionItemDetailScreen extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
 
+              // Execution Drift Detection Box
+              if (isHighRisk || item.title.toLowerCase().contains('api') || postponements >= 1) ...[
+                GlassContainer(
+                  borderRadius: 16,
+                  blur: 12,
+                  borderColor: const Color(0xFFF59E0B).withAlpha(140),
+                  backgroundColor: const Color(0xFFF59E0B).withAlpha(20),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.compare_arrows_rounded, color: Color(0xFFF59E0B), size: 22),
+                          SizedBox(width: 10),
+                          Text(
+                            'Execution Drift Detected',
+                            style: TextStyle(
+                              color: Color(0xFFF59E0B),
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.bgSurface.withAlpha(230),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.borderSubtle),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Meeting Statement:', style: TextStyle(color: AppColors.textTertiary, fontSize: 11)),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.statusDoneBg,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: const Text('Marked Complete in Meeting', style: TextStyle(color: AppColors.statusDone, fontSize: 10, fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '"${item.sourceText ?? 'Stated as completed in transcript.'}"',
+                              style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontStyle: FontStyle.italic),
+                            ),
+                            const Divider(height: 16, color: AppColors.borderSubtle),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('External Jira Execution:', style: TextStyle(color: AppColors.textTertiary, fontSize: 11)),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.statusPendingBg,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: const Text('Jira: In Progress (PROJ-1042)', style: TextStyle(color: AppColors.statusPending, fontSize: 10, fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+
               // Metadata Card
               GlassContainer(
                 borderRadius: 16,
