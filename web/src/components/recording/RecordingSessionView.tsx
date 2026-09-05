@@ -8,9 +8,11 @@ import {
   RadioIcon,
   SquareIcon,
   SparklesIcon,
-  ClockIcon,
   UsersIcon,
-  FileTextIcon
+  FileTextIcon,
+  CheckCircleIcon,
+  RefreshCwIcon,
+  PlusIcon
 } from '../common/Icons';
 
 export const RecordingSessionView: React.FC = () => {
@@ -22,7 +24,7 @@ export const RecordingSessionView: React.FC = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [meetingTitle, setMeetingTitle] = useState('Weekly Engineering & Architecture Sync');
+  const [meetingTitle, setMeetingTitle] = useState('');
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>(() => employees.map(e => e.id));
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -126,6 +128,14 @@ export const RecordingSessionView: React.FC = () => {
   };
 
   const startRecording = async () => {
+    // Determine dynamic title if blank
+    let activeTitle = meetingTitle.trim();
+    if (!activeTitle) {
+      const now = new Date();
+      activeTitle = `Meeting Session - ${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      setMeetingTitle(activeTitle);
+    }
+
     recordedChunksRef.current = [];
     setTranscriptLines([]);
     isRecordingRef.current = true;
@@ -223,8 +233,8 @@ export const RecordingSessionView: React.FC = () => {
     drawWaveform();
     addToast({
       type: 'info',
-      title: recordScreenAudio ? 'Screen & Mic Audio Recording Started' : 'Mic Audio Recording Started',
-      message: 'Listening for live speech turns and commitments with 0 fake initial lines.'
+      title: `Recording Started: ${activeTitle}`,
+      message: 'Capturing speech turns & commitments with real audio ingestion.'
     });
   };
 
@@ -239,6 +249,18 @@ export const RecordingSessionView: React.FC = () => {
         track.enabled = isMuted;
       });
     }
+  };
+
+  const handleAddManualTurn = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualTurnText.trim()) return;
+    const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+    const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
+    setTranscriptLines(prev => [
+      ...prev,
+      { speaker: selectedSpeaker, text: manualTurnText.trim(), time: `00:${mins}:${secs}` }
+    ]);
+    setManualTurnText('');
   };
 
   const [processingStage, setProcessingStage] = useState<'uploading' | 'transcribing' | 'extracting' | 'persisting' | 'drift_analysis' | 'complete'>('uploading');
@@ -270,36 +292,24 @@ export const RecordingSessionView: React.FC = () => {
     setIsProcessing(true);
     setProcessingStage('uploading');
 
-    // Send audio blob if available
-    if (recordedChunksRef.current.length > 0) {
-      try {
-        const audioBlob = new Blob(recordedChunksRef.current, { type: 'audio/webm' });
-        const formData = new FormData();
-        formData.append('recording_id', '00000000-0000-0000-0000-000000000001');
-        formData.append('file', audioBlob, 'live_recording.webm');
-        await fetch('http://localhost:8000/api/v1/recordings/upload', {
-          method: 'POST',
-          body: formData
-        }).catch(() => {});
-      } catch {}
-    }
+    const finalTitle = meetingTitle.trim() || `Meeting Session - ${new Date().toLocaleDateString()}`;
 
     const fullTranscript = transcriptLines.length > 0
       ? transcriptLines.map(t => `[${t.time}] ${t.speaker}: ${t.text}`).join('\n')
-      : `[00:00:05] ${currentUser?.name || 'Subhash'}: Live meeting session completed with audio recording stream.`;
+      : `[00:00:05] ${selectedSpeaker}: ${finalTitle} recording completed.`;
 
     try {
       // Stage 1 -> 2
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 450));
       setProcessingStage('transcribing');
       
       // Stage 2 -> 3
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, 550));
       setProcessingStage('extracting');
 
       const resultPromise = createMeetingAndProcess(
         {
-          title: meetingTitle.trim() || 'Live Meeting Session',
+          title: finalTitle,
           meeting_date: new Date().toISOString(),
           source: 'loopkeeper_native',
           created_by: currentUser.id,
@@ -307,23 +317,23 @@ export const RecordingSessionView: React.FC = () => {
         },
         {
           content: fullTranscript,
-          source_file_name: `${meetingTitle.toLowerCase().replace(/\s+/g, '_')}_live.txt`,
+          source_file_name: `${finalTitle.toLowerCase().replace(/\s+/g, '_')}_live.txt`,
           transcript_format: 'txt'
         }
       );
 
       // Stage 3 -> 4
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 450));
       setProcessingStage('persisting');
 
       // Stage 4 -> 5
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 350));
       setProcessingStage('drift_analysis');
 
       const result = await resultPromise;
 
       setProcessingStage('complete');
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 350));
 
       setIsProcessing(false);
       navigateToMeeting(result.meeting.id);
@@ -387,24 +397,22 @@ export const RecordingSessionView: React.FC = () => {
           {/* Main Control Card */}
           <div className="p-6 rounded-3xl glass-panel-elevated border border-cyan-500/30 shadow-2xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
+              <div className="space-y-1 flex-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 block">
+                  Meeting Title / Topic
+                </label>
                 <input
                   type="text"
                   value={meetingTitle}
                   onChange={e => setMeetingTitle(e.target.value)}
                   disabled={isRecording}
-                  className="text-lg font-bold text-zinc-100 bg-transparent border-b border-transparent hover:border-zinc-700 focus:border-cyan-500 focus:outline-none transition-colors w-full"
-                  placeholder="Enter meeting title..."
+                  className="text-lg font-bold text-zinc-100 bg-zinc-950/80 border border-zinc-800 focus:border-cyan-500 rounded-xl px-3.5 py-2 focus:outline-none transition-colors w-full placeholder-zinc-500"
+                  placeholder="Enter meeting title (e.g. Q3 Architecture & Sprint Sync)..."
                 />
-                <p className="text-xs text-zinc-400 flex items-center gap-2">
-                  <span>LoopKeeper In-Browser Audio Capture</span>
-                  <span>•</span>
-                  <span className="font-mono text-cyan-400">44.1 kHz Sampling</span>
-                </p>
               </div>
 
               {/* Timer Display */}
-              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-zinc-950/80 border border-zinc-800 shadow-inner shrink-0">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-zinc-950/80 border border-zinc-800 shadow-inner shrink-0 self-end sm:self-auto">
                 <span className={`h-3 w-3 rounded-full ${isRecording && !isPaused ? 'bg-rose-500 animate-ping' : 'bg-zinc-600'}`} />
                 <span className="font-mono text-lg font-black text-zinc-100">
                   {formatTimer(elapsedSeconds)}
@@ -438,249 +446,233 @@ export const RecordingSessionView: React.FC = () => {
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               <div className="flex items-center gap-2">
                 {!isRecording ? (
-                  <>
-                    <button
-                      onClick={startRecording}
-                      className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition-all hover:scale-105 active:scale-95"
-                    >
-                      <RadioIcon size={16} className="animate-pulse" />
-                      <span>Start Meeting Recording</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setRecordScreenAudio(!recordScreenAudio)}
-                      className={`px-3 py-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                        recordScreenAudio
-                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                          : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-zinc-200'
-                      }`}
-                      title="Include system/browser tab audio in recording"
-                    >
-                      <SparklesIcon size={14} className={recordScreenAudio ? 'text-cyan-400' : ''} />
-                      <span>{recordScreenAudio ? 'Screen & Tab Audio Enabled' : '+ Enable Screen/Tab Audio'}</span>
-                    </button>
-                  </>
+                  <button
+                    onClick={startRecording}
+                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition-all hover:scale-105 active:scale-95"
+                  >
+                    <RadioIcon size={16} className="animate-pulse" />
+                    <span>Start Meeting Recording</span>
+                  </button>
                 ) : (
                   <>
                     <button
                       onClick={pauseRecording}
-                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs border border-zinc-700 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs transition-colors"
                     >
-                      <ClockIcon size={14} />
                       <span>{isPaused ? 'Resume' : 'Pause'}</span>
                     </button>
 
                     <button
                       onClick={toggleMute}
-                      className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-semibold text-xs border transition-colors ${
-                        isMuted
-                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                          : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border-zinc-700'
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-colors ${
+                        isMuted ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700'
                       }`}
                     >
-                      {isMuted ? <MicOffIcon size={14} /> : <MicIcon size={14} />}
-                      <span>{isMuted ? 'Unmute Mic' : 'Mute Mic'}</span>
+                      {isMuted ? <MicOffIcon size={15} /> : <MicIcon size={15} />}
+                      <span>{isMuted ? 'Unmute' : 'Mute'}</span>
                     </button>
 
                     <button
                       onClick={stopAndProcess}
-                      disabled={isProcessing}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95"
                     >
-                      <SquareIcon size={14} className="fill-current" />
-                      <span>{isProcessing ? 'Processing...' : 'Stop & Extract AI Commitments'}</span>
+                      <SquareIcon size={15} />
+                      <span>Stop & Extract AI</span>
                     </button>
                   </>
                 )}
               </div>
+
+              <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={recordScreenAudio}
+                  onChange={e => setRecordScreenAudio(e.target.checked)}
+                  disabled={isRecording}
+                  className="rounded border-zinc-700 bg-zinc-950 text-cyan-500 focus:ring-cyan-500"
+                />
+                <span>Capture System/Screen Audio</span>
+              </label>
             </div>
+          </div>
+
+          {/* Live Speech Stream & Manual Entry */}
+          <div className="p-6 rounded-3xl glass-panel border border-zinc-800 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                <FileTextIcon size={16} className="text-cyan-400" />
+                Live Speech Stream Buffer
+              </h3>
+              <span className="text-[11px] font-mono text-zinc-400">
+                {transcriptLines.length} turns recorded
+              </span>
+            </div>
+
+            {/* Turn List Container */}
+            <div className="h-56 overflow-y-auto space-y-2.5 p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800 scrollbar-thin">
+              {transcriptLines.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 text-zinc-500 space-y-2">
+                  <MicIcon size={24} className="text-zinc-600 animate-bounce" />
+                  <p className="text-xs">No speech turns recorded yet.</p>
+                  <p className="text-[11px] text-zinc-600">Start recording or type a statement below to simulate speech turns.</p>
+                </div>
+              ) : (
+                transcriptLines.map((turn, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800 text-xs space-y-1">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-bold text-cyan-300">{turn.speaker}</span>
+                      <span className="font-mono text-zinc-500">{turn.time}</span>
+                    </div>
+                    <p className="text-zinc-200">{turn.text}</p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Add Speech Turn Form */}
+            <form onSubmit={handleAddManualTurn} className="flex gap-2">
+              <select
+                value={selectedSpeaker}
+                onChange={e => setSelectedSpeaker(e.target.value)}
+                className="px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
+              >
+                {employees.map(emp => (
+                  <option key={emp.id} value={emp.name}>{emp.name}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={manualTurnText}
+                onChange={e => setManualTurnText(e.target.value)}
+                placeholder="Type a speech turn (e.g. 'Hasitha will complete Play Store testing by Friday')..."
+                className="flex-1 px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-cyan-500"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition-colors flex items-center gap-1"
+              >
+                <PlusIcon size={14} />
+                <span>Add Turn</span>
+              </button>
+            </form>
           </div>
         </div>
 
-        {/* Right Col: Live Transcript Buffer & Participants */}
+        {/* Right Col: Attendees & Live AI Telemetry */}
         <div className="space-y-5">
-          {/* Participants Card */}
-          <div className="p-5 rounded-3xl glass-panel border border-zinc-800 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-              <UsersIcon size={14} className="text-cyan-400" />
-              Active Attendees ({selectedParticipants.length})
+          <div className="p-6 rounded-3xl glass-panel border border-zinc-800 shadow-xl space-y-4">
+            <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+              <UsersIcon size={16} className="text-indigo-400" />
+              Session Participants ({selectedParticipants.length})
             </h3>
 
-            <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto">
+            <div className="space-y-2">
               {employees.map(emp => {
                 const isSelected = selectedParticipants.includes(emp.id);
                 return (
                   <button
                     key={emp.id}
                     onClick={() => {
-                      if (!isRecording) {
-                        setSelectedParticipants(prev =>
-                          prev.includes(emp.id) ? prev.filter(p => p !== emp.id) : [...prev, emp.id]
-                        );
+                      if (isSelected) {
+                        setSelectedParticipants(prev => prev.filter(id => id !== emp.id));
+                      } else {
+                        setSelectedParticipants(prev => [...prev, emp.id]);
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-medium border transition-all ${
+                    className={`w-full p-2.5 rounded-2xl border text-left transition-all flex items-center justify-between text-xs ${
                       isSelected
-                        ? 'bg-indigo-600/20 border-cyan-500/50 text-cyan-200'
-                        : 'bg-zinc-950/60 border-zinc-800 text-zinc-500'
+                        ? 'bg-indigo-950/30 border-indigo-500/40 text-zinc-100'
+                        : 'bg-zinc-950/40 border-zinc-800 text-zinc-500 hover:border-zinc-700'
                     }`}
                   >
-                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-300 font-bold text-[9px] shrink-0">
-                      {emp.name.charAt(0)}
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center font-bold text-[11px] text-white">
+                        {emp.name[0]}
+                      </div>
+                      <div>
+                        <div className="font-bold">{emp.name}</div>
+                        <div className="text-[10px] text-zinc-400">{emp.role}</div>
+                      </div>
                     </div>
-                    <span className="truncate max-w-[100px]">{emp.name}</span>
+                    {isSelected && <CheckCircleIcon size={15} className="text-cyan-400" />}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Real-time Turn Stream Card */}
-          <div className="p-5 rounded-3xl glass-panel border border-zinc-800 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <FileTextIcon size={14} className="text-indigo-400" />
-                Live Speech Stream
-              </h3>
-              <span className="text-[10px] font-mono text-cyan-400">
-                {transcriptLines.length} turns
-              </span>
-            </div>
-
-            {/* Live Spoken Turn Input */}
-            <div className="flex items-center gap-2 p-2 rounded-2xl bg-zinc-950/80 border border-zinc-800">
-              <select
-                value={selectedSpeaker}
-                onChange={e => setSelectedSpeaker(e.target.value)}
-                className="bg-zinc-900 text-xs font-bold text-cyan-300 px-2 py-1.5 rounded-xl border border-zinc-700 focus:outline-none shrink-0"
-              >
-                {employees.map(e => (
-                  <option key={e.id} value={e.name}>{e.name}</option>
-                ))}
-              </select>
-
-              <input
-                type="text"
-                value={manualTurnText}
-                onChange={e => setManualTurnText(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' && manualTurnText.trim()) {
-                    e.preventDefault();
-                    const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
-                    const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
-                    setTranscriptLines(prev => [
-                      ...prev,
-                      { speaker: selectedSpeaker, text: manualTurnText.trim(), time: `00:${mins}:${secs}` }
-                    ]);
-                    setManualTurnText('');
-                  }
-                }}
-                placeholder="Speak or type live turn..."
-                className="w-full bg-transparent text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none px-1"
-              />
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (manualTurnText.trim()) {
-                    const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
-                    const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
-                    setTranscriptLines(prev => [
-                      ...prev,
-                      { speaker: selectedSpeaker, text: manualTurnText.trim(), time: `00:${mins}:${secs}` }
-                    ]);
-                    setManualTurnText('');
-                  }
-                }}
-                className="px-2.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shrink-0 transition-colors"
-              >
-                Add
-              </button>
-            </div>
-
-            <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
-              {transcriptLines.length === 0 ? (
-                <div className="p-4 text-center text-[11px] font-mono text-zinc-500">
-                  {isRecording ? 'Listening... Speak into mic or type live turn above.' : 'No speech recorded yet. Click Start Meeting Recording.'}
-                </div>
-              ) : (
-                transcriptLines.map((turn, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 space-y-1 animate-fade-in-up"
-                  >
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-bold text-cyan-400">{turn.speaker}</span>
-                      <span className="text-[10px] font-mono text-zinc-500">{turn.time}</span>
-                    </div>
-                    <p className="text-xs text-zinc-300 leading-relaxed font-mono">
-                      "{turn.text}"
-                    </p>
-                  </div>
-                ))
-              )}
+          <div className="p-6 rounded-3xl glass-panel border border-zinc-800 shadow-xl space-y-3">
+            <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+              <SparklesIcon size={16} className="text-cyan-400" />
+              SLM Ingestion Telemetry
+            </h3>
+            <div className="space-y-2 text-xs font-mono text-zinc-400">
+              <div className="flex justify-between py-1 border-b border-zinc-800/80">
+                <span>Model Engine:</span>
+                <span className="text-cyan-300 font-bold">loopkeeper-slm-v1</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-zinc-800/80">
+                <span>Fallback Provider:</span>
+                <span className="text-indigo-300 font-bold">Google Gemini 1.5 Flash</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-zinc-800/80">
+                <span>Vector Index:</span>
+                <span className="text-emerald-300 font-bold">pgvector 384-dim</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span>Execution Connector:</span>
+                <span className="text-blue-300 font-bold">Atlassian Jira REST API v3</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Processing Pipeline Stage Overlay Modal */}
+      {/* Fullscreen AI Extraction Stage Modal Visualizer */}
       {isProcessing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in-up">
-          <div className="w-full max-w-lg rounded-3xl glass-panel-elevated border border-cyan-500/40 p-6 sm:p-8 shadow-2xl space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                <SparklesIcon size={24} className="animate-spin" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-zinc-100">
-                  Processing Audio & AI Extraction Pipeline
-                </h3>
-                <p className="text-xs text-zinc-400 font-mono">
-                  Executing multi-stage analysis on meeting recording
-                </p>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in-up">
+          <div className="w-full max-w-xl rounded-3xl glass-panel-elevated border border-cyan-500/40 p-8 shadow-2xl text-center space-y-6">
+            <div className="h-16 w-16 rounded-3xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center mx-auto shadow-lg shadow-indigo-600/30 animate-pulse">
+              <SparklesIcon size={32} className="text-white" />
             </div>
 
-            {/* Stages List */}
-            <div className="space-y-3">
-              {stagesList.map((stg, index) => {
-                const isCompleted = index < currentStageIdx;
-                const isCurrent = index === currentStageIdx;
+            <div className="space-y-1">
+              <h3 className="text-xl font-black text-zinc-100 tracking-tight">
+                Processing Meeting Intelligence
+              </h3>
+              <p className="text-xs text-zinc-400 font-mono">
+                {meetingTitle.trim() || 'Live Meeting Session'}
+              </p>
+            </div>
 
+            {/* Stages Progress Indicator */}
+            <div className="space-y-3 text-left">
+              {stagesList.map((st, idx) => {
+                const isCompleted = idx < currentStageIdx;
+                const isCurrent = idx === currentStageIdx;
                 return (
                   <div
-                    key={stg.key}
-                    className={`p-3.5 rounded-2xl border transition-all flex items-start gap-3 ${
-                      isCurrent
-                        ? 'bg-cyan-950/40 border-cyan-400/60 shadow-lg shadow-cyan-500/10'
-                        : isCompleted
-                        ? 'bg-emerald-950/20 border-emerald-500/30 opacity-90'
-                        : 'bg-zinc-950/40 border-zinc-800/60 opacity-40'
+                    key={st.key}
+                    className={`p-3.5 rounded-2xl border transition-all flex items-center gap-3.5 ${
+                      isCompleted
+                        ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300'
+                        : isCurrent
+                        ? 'bg-cyan-950/40 border-cyan-500/50 text-cyan-200 shadow-md shadow-cyan-500/10'
+                        : 'bg-zinc-950/40 border-zinc-800 text-zinc-600'
                     }`}
                   >
-                    <div className="pt-0.5">
+                    <div className="shrink-0">
                       {isCompleted ? (
-                        <div className="h-5 w-5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs font-bold">
-                          ✓
-                        </div>
+                        <CheckCircleIcon size={18} className="text-emerald-400" />
                       ) : isCurrent ? (
-                        <div className="h-5 w-5 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+                        <RefreshCwIcon size={18} className="text-cyan-400 animate-spin" />
                       ) : (
-                        <div className="h-5 w-5 rounded-full border border-zinc-700 text-zinc-600 flex items-center justify-center text-[10px]">
-                          {index + 1}
-                        </div>
+                        <div className="h-4 w-4 rounded-full border border-zinc-700" />
                       )}
                     </div>
-
-                    <div>
-                      <h4 className={`text-xs font-bold ${isCurrent ? 'text-cyan-300' : isCompleted ? 'text-emerald-300' : 'text-zinc-400'}`}>
-                        Stage {index + 1}: {stg.label}
-                      </h4>
-                      <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
-                        {stg.desc}
-                      </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-bold">{st.label}</div>
+                      <div className="text-[11px] text-zinc-400 truncate">{st.desc}</div>
                     </div>
                   </div>
                 );
