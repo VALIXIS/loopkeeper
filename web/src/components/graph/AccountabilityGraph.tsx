@@ -8,16 +8,12 @@ import {
   ClockIcon,
   UsersIcon,
   CalendarIcon,
-  ZoomInIcon,
-  ZoomOutIcon,
-  Maximize2Icon,
   ArrowRightIcon
 } from '../common/Icons';
 
 export const AccountabilityGraph: React.FC = () => {
   const { actionItems, meetings, navigateToTask } = useApp();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(actionItems[0]?.id || null);
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [filterOwner, setFilterOwner] = useState<string>('all');
 
   const filteredItems = actionItems.filter(item => {
@@ -43,30 +39,6 @@ export const AccountabilityGraph: React.FC = () => {
             <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
               Cross-Meeting Node Lineage & Commitment Evolution
             </h1>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => setZoomLevel(prev => Math.min(prev + 0.15, 1.3))}
-              className="p-2 rounded-xl bg-slate-200 dark:bg-slate-800/90 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/[0.08] transition-colors shadow-sm"
-              title="Zoom In"
-            >
-              <ZoomInIcon size={15} />
-            </button>
-            <button
-              onClick={() => setZoomLevel(prev => Math.max(prev - 0.15, 0.75))}
-              className="p-2 rounded-xl bg-slate-200 dark:bg-slate-800/90 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/[0.08] transition-colors shadow-sm"
-              title="Zoom Out"
-            >
-              <ZoomOutIcon size={15} />
-            </button>
-            <button
-              onClick={() => setZoomLevel(1)}
-              className="p-2 rounded-xl bg-slate-200 dark:bg-slate-800/90 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/[0.08] transition-colors shadow-sm"
-              title="Reset View"
-            >
-              <Maximize2Icon size={15} />
-            </button>
           </div>
         </div>
 
@@ -112,10 +84,7 @@ export const AccountabilityGraph: React.FC = () => {
       </div>
 
       {/* Main Interactive Graph Canvas */}
-      <div
-        className="rounded-3xl bg-slate-100/90 dark:bg-slate-950/90 border border-slate-200 dark:border-white/[0.08] p-6 overflow-x-auto shadow-2xl relative backdrop-blur-xl transition-transform duration-300"
-        style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top left' }}
-      >
+      <div className="rounded-3xl bg-slate-100/90 dark:bg-slate-950/90 border border-slate-200 dark:border-white/[0.08] p-6 overflow-x-auto shadow-2xl relative backdrop-blur-xl transition-transform duration-300">
         {/* Step Columns Headers */}
         <div className="min-w-[1000px] grid grid-cols-6 gap-4 pb-4 border-b border-slate-200 dark:border-white/[0.08] text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center font-mono">
           <div className="flex items-center justify-center gap-1.5 text-indigo-600 dark:text-indigo-400">
