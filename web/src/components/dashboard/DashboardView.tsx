@@ -3,10 +3,18 @@ import { MetricsGrid } from './MetricsGrid';
 import { QuickIngestCard } from './QuickIngestCard';
 import { OverloadedMembersCard } from './OverloadedMembersCard';
 import { UpcomingDeadlinesCard } from './UpcomingDeadlinesCard';
-import { RecentActivityFeed } from './RecentActivityFeed';
 import { useAuth } from '../../context/AuthContext';
-import { SparklesIcon, NetworkIcon, CheckCircleIcon } from '../common/Icons';
-import { useApp } from '../../context/AppContext';
+import { useRouter } from '../../context/RouterContext';
+import {
+  SparklesIcon,
+  NetworkIcon,
+  CheckCircleIcon,
+  RadioIcon,
+  ShieldAlertIcon,
+  AlertTriangleIcon,
+  CalendarIcon,
+  ArrowRightIcon
+} from '../common/Icons';
 
 interface DashboardViewProps {
   onOpenCreateMeeting: (presetIndex?: number) => void;
@@ -14,7 +22,7 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeeting }) => {
   const { currentUser } = useAuth();
-  const { setActiveTab } = useApp();
+  const { navigate, navigateToAccountability } = useRouter();
 
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">
@@ -32,7 +40,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
                 Live Engine Active
               </span>
               <span className="text-xs text-slate-400 font-mono">
-                Enterprise Accountability Intelligence
+                Executive Accountability Intelligence
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
@@ -45,7 +53,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              onClick={() => setActiveTab('graph')}
+              onClick={() => navigate('/recording')}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 text-xs font-bold border border-white/[0.1] shadow-lg transition-all hover:scale-[1.03] active:scale-[0.98] hover:border-cyan-500/40"
+            >
+              <RadioIcon size={15} className="text-rose-400 animate-pulse" />
+              <span>Record Live</span>
+            </button>
+            <button
+              onClick={() => navigateToAccountability('graph')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 text-xs font-bold border border-white/[0.1] shadow-lg transition-all hover:scale-[1.03] active:scale-[0.98] hover:border-cyan-500/40"
             >
               <NetworkIcon size={16} className="text-cyan-400" />
@@ -56,32 +71,89 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white text-xs font-bold shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.03] active:scale-[0.98] border border-indigo-400/30"
             >
               <SparklesIcon size={15} />
-              <span>Ingest & Process Transcript</span>
+              <span>Ingest Transcript</span>
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Executive Quick Stats Ribbon */}
-        <div className="mt-6 pt-5 border-t border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.04]">
-            <span className="text-slate-400 font-medium block text-[11px]">Cross-Meeting Linking</span>
-            <span className="text-white font-bold text-sm block mt-0.5">Vector-Matched</span>
-            <span className="text-slate-400 font-mono text-[10px] block mt-0.5">Cosine Similarity Score</span>
+      {/* 3 Executive Accountability Pillars: What Happened? What Needs Attention? What is Going Wrong? */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Pillar 1: What Happened? */}
+        <div
+          onClick={() => navigate('/meetings')}
+          className="cursor-pointer p-5 rounded-3xl glass-panel-elevated border border-indigo-500/30 hover:border-indigo-500/60 shadow-lg transition-all hover:-translate-y-0.5 group flex flex-col justify-between gap-3"
+        >
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-indigo-400 font-bold uppercase tracking-wider">
+              <span className="flex items-center gap-1.5">
+                <CalendarIcon size={14} />
+                1. What Happened?
+              </span>
+              <span className="text-[10px] font-mono text-zinc-500">Recap</span>
+            </div>
+            <h3 className="text-sm font-bold text-zinc-100 group-hover:text-cyan-300 transition-colors">
+              Ingested Meetings & Extracted Promises
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Full speaker-tagged transcript archives, automatic owner assignment, and verbatim evidence snippets.
+            </p>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.04]">
-            <span className="text-slate-400 font-medium block text-[11px]">Inference Speed</span>
-            <span className="text-indigo-300 font-bold text-sm block mt-0.5">Sub-500ms Engine</span>
-            <span className="text-indigo-400/80 font-mono text-[10px] block mt-0.5">Dual SLM + Fallback LLM</span>
+          <div className="flex items-center justify-between pt-2 border-t border-zinc-800 text-xs text-cyan-400 font-semibold">
+            <span>Review Meetings</span>
+            <ArrowRightIcon size={14} className="group-hover:translate-x-1 transition-transform" />
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.04]">
-            <span className="text-slate-400 font-medium block text-[11px]">Commitment Matching</span>
-            <span className="text-emerald-300 font-bold text-sm block mt-0.5">Cross-Standup Sync</span>
-            <span className="text-emerald-400/80 font-mono text-[10px] block mt-0.5">1536-dim Vector Cosine</span>
+        </div>
+
+        {/* Pillar 2: What Needs Attention? */}
+        <div
+          onClick={() => navigate('/commitments')}
+          className="cursor-pointer p-5 rounded-3xl glass-panel-elevated border border-amber-500/30 hover:border-amber-500/60 shadow-lg transition-all hover:-translate-y-0.5 group flex flex-col justify-between gap-3"
+        >
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-amber-400 font-bold uppercase tracking-wider">
+              <span className="flex items-center gap-1.5">
+                <AlertTriangleIcon size={14} />
+                2. What Needs Attention?
+              </span>
+              <span className="text-[10px] font-mono text-zinc-500">Deadlines</span>
+            </div>
+            <h3 className="text-sm font-bold text-zinc-100 group-hover:text-amber-300 transition-colors">
+              Upcoming Deadlines & Workload Peaks
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Active commitments due this sprint and single slippage warnings under active monitoring.
+            </p>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.04]">
-            <span className="text-slate-400 font-medium block text-[11px]">Enterprise Governance</span>
-            <span className="text-cyan-300 font-bold text-sm block mt-0.5">VALIXIS Read-Only</span>
-            <span className="text-cyan-400/80 font-mono text-[10px] block mt-0.5">RLS Security Enforced</span>
+          <div className="flex items-center justify-between pt-2 border-t border-zinc-800 text-xs text-amber-400 font-semibold">
+            <span>Inspect Commitments</span>
+            <ArrowRightIcon size={14} className="group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+
+        {/* Pillar 3: What is Going Wrong? */}
+        <div
+          onClick={() => navigateToAccountability('drift')}
+          className="cursor-pointer p-5 rounded-3xl glass-panel-elevated border border-rose-500/30 hover:border-rose-500/60 shadow-lg transition-all hover:-translate-y-0.5 group flex flex-col justify-between gap-3"
+        >
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-rose-400 font-bold uppercase tracking-wider">
+              <span className="flex items-center gap-1.5">
+                <ShieldAlertIcon size={14} className="animate-pulse" />
+                3. What is Going Wrong?
+              </span>
+              <span className="text-[10px] font-mono text-rose-400 font-bold">Execution Drift</span>
+            </div>
+            <h3 className="text-sm font-bold text-zinc-100 group-hover:text-rose-300 transition-colors">
+              Chronic Postponements & Jira Drift
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Items postponed across 2+ standups and verbal claims conflicting with Jira / external tracker states.
+            </p>
+          </div>
+          <div className="flex items-center justify-between pt-2 border-t border-zinc-800 text-xs text-rose-400 font-semibold">
+            <span>View Drift Radar</span>
+            <ArrowRightIcon size={14} className="group-hover:translate-x-1 transition-transform" />
           </div>
         </div>
       </div>
@@ -97,9 +169,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
         <OverloadedMembersCard />
         <UpcomingDeadlinesCard />
       </div>
-
-      {/* Live Activity & AI Processing Telemetry Feed */}
-      <RecentActivityFeed />
     </div>
   );
 };
+

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
+import { useTheme } from '../../context/ThemeContext';
+import { useRouter } from '../../context/RouterContext';
 import {
   BrainIcon,
   SparklesIcon,
   RefreshCwIcon,
   PlusIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  SunIcon,
+  MoonIcon,
+  RadioIcon
 } from './Icons';
 
 interface NavbarProps {
@@ -17,14 +22,19 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
   const { currentUser, employees, switchUser } = useAuth();
   const { backendStatus, forceMockMode, setForceMockMode, refreshData, loading } = useApp();
+  const { theme, toggleTheme } = useTheme();
+  const { navigate } = useRouter();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-[#07090e]/80 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between px-4 sm:px-6 max-w-7xl mx-auto">
         {/* Left Branding */}
-        <div className="flex items-center gap-3.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1.5px] shadow-lg shadow-indigo-500/25">
+        <div
+          onClick={() => navigate('/dashboard')}
+          className="flex items-center gap-3.5 cursor-pointer group"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1.5px] shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
             <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[#090d16]">
               <BrainIcon size={20} className="text-cyan-400 animate-pulse-glow" />
             </div>
@@ -45,7 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
         </div>
 
         {/* Right Controls & Profile */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           {/* Backend Status Pill */}
           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-white/[0.08] text-xs shadow-inner">
             <span
@@ -70,6 +80,29 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
               ({forceMockMode ? 'Connect Live' : 'Use Local'})
             </button>
           </div>
+
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-white/[0.08] hover:border-cyan-500/40 transition-all hover:shadow-md"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} theme`}
+          >
+            {theme === 'dark' ? (
+              <SunIcon size={16} className="text-amber-400 transition-transform hover:rotate-45" />
+            ) : (
+              <MoonIcon size={16} className="text-indigo-400 transition-transform hover:-rotate-12" />
+            )}
+          </button>
+
+          {/* Live Recording Direct Trigger */}
+          <button
+            onClick={() => navigate('/recording')}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-white/[0.08] hover:border-rose-500/40 text-xs font-semibold transition-all hover:text-rose-400"
+            title="Open live meeting recorder"
+          >
+            <RadioIcon size={14} className="text-rose-400 animate-pulse" />
+            <span className="hidden md:inline">Record</span>
+          </button>
 
           {/* Refresh Button */}
           <button
@@ -97,11 +130,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/[0.08] hover:border-slate-700 transition-all"
             >
-              <img
-                src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-                alt={currentUser.name}
-                className="h-7 w-7 rounded-full object-cover ring-1 ring-cyan-500/50"
-              />
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white font-bold text-xs ring-1 ring-cyan-500/50 shrink-0">
+                {currentUser.name.charAt(0)}
+              </div>
               <div className="text-left hidden lg:block">
                 <div className="text-xs font-semibold text-slate-200 flex items-center gap-1">
                   {currentUser.name}
@@ -137,11 +168,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
                           : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                       }`}
                     >
-                      <img
-                        src={emp.avatar_url}
-                        alt={emp.name}
-                        className="h-6 w-6 rounded-full object-cover ring-1 ring-white/10"
-                      />
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-700 text-slate-200 font-bold text-[10px] ring-1 ring-white/10 shrink-0">
+                        {emp.name.charAt(0)}
+                      </div>
                       <div className="flex-1 truncate">
                         <div className="font-medium flex items-center justify-between">
                           {emp.name}
@@ -164,3 +193,4 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
     </header>
   );
 };
+

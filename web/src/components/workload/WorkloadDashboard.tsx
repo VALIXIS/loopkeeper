@@ -70,11 +70,9 @@ export const WorkloadDashboard: React.FC = () => {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="relative">
-                      <img
-                        src={emp.avatar_url}
-                        alt={emp.name}
-                        className="h-11 w-11 rounded-full object-cover ring-2 ring-zinc-700 group-hover:ring-cyan-400 transition-all shadow-md"
-                      />
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-800 text-cyan-300 font-bold text-base ring-2 ring-zinc-700 group-hover:ring-cyan-400 transition-all shadow-md shrink-0">
+                        {emp.name.charAt(0)}
+                      </div>
                       {isOverloaded && (
                         <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-rose-500 rounded-full border-2 border-zinc-950 flex items-center justify-center animate-ping" />
                       )}
@@ -156,11 +154,9 @@ export const WorkloadDashboard: React.FC = () => {
         <div className="p-6 rounded-3xl glass-panel-elevated border border-cyan-500/40 space-y-4 shadow-2xl animate-in fade-in duration-200">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
             <div className="flex items-center gap-3">
-              <img
-                src={selectedMember.avatar_url}
-                alt={selectedMember.name}
-                className="h-10 w-10 rounded-full object-cover ring-2 ring-cyan-400 shadow-md"
-              />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-cyan-300 font-bold text-sm ring-2 ring-cyan-400 shadow-md shrink-0">
+                {selectedMember.name.charAt(0)}
+              </div>
               <div>
                 <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
                   Assigned Commitments for {selectedMember.name}
