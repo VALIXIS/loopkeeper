@@ -113,23 +113,19 @@ export const ExecutionDriftView: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-950/40 via-zinc-900 to-zinc-950 border border-rose-500/30 p-6 sm:p-8 shadow-2xl space-y-3">
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 shadow-sm">
+      {/* Sleek Compact Header Bar */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-rose-950/40 via-zinc-900 to-zinc-950 border border-rose-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
             <ShieldAlertIcon size={14} className="animate-pulse" />
             Execution Drift Radar
           </span>
-          <span className="text-xs font-mono text-zinc-400 hidden sm:inline">
-            Meeting Statements vs External Tracker Reality
-          </span>
+          <h1 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
+            Verbal Commitments vs Tracker Discrepancies
+          </h1>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
-          Verbal Commitments vs Tracker Discrepancies
-        </h1>
-        <p className="text-sm text-zinc-300 max-w-3xl leading-relaxed">
-          LoopKeeper's execution engine cross-references verbal claims made in meetings against issue tracker states (Jira, GitHub PRs). When a speaker says "It's done" while Jira remains "In Progress", LoopKeeper flags the drift before it cascades into delayed deliverables.
+        <p className="text-xs text-zinc-400 font-medium">
+          Cross-referencing spoken meeting claims against Jira & GitHub PR states.
         </p>
       </div>
 

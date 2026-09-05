@@ -121,13 +121,13 @@ export const AccountabilityHub: React.FC = () => {
 
       {activeSubTab === 'timeline' && (
         <div className="space-y-6">
-          <div className="p-6 rounded-3xl glass-panel-elevated border border-indigo-500/30 space-y-3">
-            <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
-              <HistoryIcon size={20} className="text-amber-400" />
+          <div className="p-4 sm:px-5 sm:py-3.5 rounded-2xl glass-panel-elevated border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h2 className="text-sm sm:text-base font-bold text-zinc-100 flex items-center gap-2">
+              <HistoryIcon size={18} className="text-amber-400" />
               Global Cross-Meeting State Evolution Timeline
             </h2>
-            <p className="text-xs text-zinc-300 leading-relaxed max-w-3xl">
-              Chronological state changes recorded by the LoopKeeper State Engine across all meetings. Tracks creation, deadline shifts, owner reassignments, and final verified completion.
+            <p className="text-xs text-zinc-400 font-medium">
+              Recorded chronological state changes across all meeting sessions.
             </p>
           </div>
 
