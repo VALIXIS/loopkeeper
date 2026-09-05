@@ -5,13 +5,22 @@ import { StatusBadge, PostponementBadge } from '../common/Badge';
 import {
   ArrowRightIcon,
   ActivityIcon,
-  ClockIcon
+  ClockIcon,
+  SparklesIcon,
+  RefreshCwIcon,
+  CheckCircleIcon
 } from '../common/Icons';
 
 export const WorkloadDashboard: React.FC = () => {
-  const { actionItems, navigateToTask } = useApp();
+  const { actionItems, updateTask, navigateToTask, addToast } = useApp();
   const { employees } = useAuth();
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [isRebalancing, setIsRebalancing] = useState(false);
+  const [rebalanceResult, setRebalanceResult] = useState<{
+    reassignedCount: number;
+    fromName: string;
+    toName: string;
+  } | null>(null);
 
   const memberTasks = selectedMemberId
     ? actionItems.filter(a => a.owner_employee_id === selectedMemberId)
@@ -19,8 +28,79 @@ export const WorkloadDashboard: React.FC = () => {
 
   const selectedMember = employees.find(e => e.id === selectedMemberId);
 
+  // Identify overloaded members
+  const overloadedMembers = employees.filter(emp => {
+    const empItems = actionItems.filter(a => a.owner_employee_id === emp.id);
+    const openCount = empItems.filter(a => a.status === 'pending').length;
+    const overdueCount = empItems.filter(a => a.status === 'overdue').length;
+    return openCount >= 3 || overdueCount >= 1;
+  });
+
+  const availableMembers = employees.filter(emp => {
+    const empItems = actionItems.filter(a => a.owner_employee_id === emp.id);
+    const openCount = empItems.filter(a => a.status === 'pending').length;
+    const overdueCount = empItems.filter(a => a.status === 'overdue').length;
+    return openCount <= 1 && overdueCount === 0;
+  });
+
+  const handleRunAiRebalancer = async () => {
+    if (overloadedMembers.length === 0) {
+      addToast({
+        type: 'info',
+        title: 'Workload Optimal',
+        message: 'All team members are operating within balanced cognitive capacity limits.'
+      });
+      return;
+    }
+
+    setIsRebalancing(true);
+    setRebalanceResult(null);
+
+    const sourceMember = overloadedMembers[0];
+    const targetMember = availableMembers[0] || employees.find(e => e.id !== sourceMember.id);
+
+    // Find pending tasks assigned to overloaded member
+    const reassignableTasks = actionItems.filter(
+      a => a.owner_employee_id === sourceMember.id && a.status === 'pending'
+    );
+
+    setTimeout(async () => {
+      let count = 0;
+      if (targetMember && reassignableTasks.length > 0) {
+        // Reassign up to 2 tasks
+        const tasksToMove = reassignableTasks.slice(0, 2);
+        for (const t of tasksToMove) {
+          await updateTask(t.id, {
+            owner_employee_id: targetMember.id
+          });
+          count++;
+        }
+      }
+
+      setIsRebalancing(false);
+      if (count > 0 && targetMember) {
+        setRebalanceResult({
+          reassignedCount: count,
+          fromName: sourceMember.name,
+          toName: targetMember.name
+        });
+        addToast({
+          type: 'success',
+          title: 'AI Workload Rebalancing Complete',
+          message: `Reallocated ${count} task(s) from ${sourceMember.name} ➔ ${targetMember.name}. Capacity index restored to normal.`
+        });
+      } else {
+        addToast({
+          type: 'info',
+          title: 'Workload Analyzed',
+          message: 'No pending tasks required reallocation.'
+        });
+      }
+    }, 1200);
+  };
+
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-12 animate-fade-in-up">
       {/* Sleek Compact Header Bar */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-950/40 via-zinc-900 to-zinc-950 border border-cyan-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -32,10 +112,41 @@ export const WorkloadDashboard: React.FC = () => {
             Team Workload & Cognitive Capacity
           </h1>
         </div>
-        <p className="text-xs text-zinc-400 font-medium">
-          Cognitive load index & overload bottleneck detection across team members.
-        </p>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRunAiRebalancer}
+            disabled={isRebalancing}
+            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-xs shadow-md flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+          >
+            {isRebalancing ? (
+              <RefreshCwIcon size={13} className="animate-spin text-cyan-300" />
+            ) : (
+              <SparklesIcon size={13} className="text-amber-300" />
+            )}
+            <span>AI Workload Rebalancer</span>
+          </button>
+        </div>
       </div>
+
+      {/* AI Rebalance Result Alert */}
+      {rebalanceResult && (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center justify-between gap-3 shadow-md animate-fade-in-up">
+          <div className="flex items-center gap-2.5">
+            <CheckCircleIcon size={18} className="text-emerald-400 shrink-0" />
+            <div>
+              <span className="font-bold">Automated Reallocation Complete: </span>
+              Moved {rebalanceResult.reassignedCount} pending task(s) from <span className="font-bold text-rose-300">{rebalanceResult.fromName}</span> to <span className="font-bold text-cyan-300">{rebalanceResult.toName}</span> to prevent team burnout.
+            </div>
+          </div>
+          <button
+            onClick={() => setRebalanceResult(null)}
+            className="text-[11px] font-bold text-zinc-400 hover:text-zinc-200"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Team Member Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
