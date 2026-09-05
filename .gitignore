@@ -54,3 +54,8 @@ build/
 Thumbs.db
 storage/
 
+# ML artifacts
+backend/ml/datasets/
+backend/ml/models/
+
+
