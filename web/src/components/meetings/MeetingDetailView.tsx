@@ -17,8 +17,12 @@ import {
   HistoryIcon
 } from '../common/Icons';
 
+import { useRouter } from '../../context/RouterContext';
+
 export const MeetingDetailView: React.FC = () => {
-  const { selectedMeetingId, setActiveTab, navigateToTask } = useApp();
+  const { route, navigate } = useRouter();
+  const { selectedMeetingId, navigateToTask } = useApp();
+  const meetingId = selectedMeetingId || route.params.meetingId;
   const [meeting, setMeeting] = useState<MeetingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveDetailTab] = useState<'items' | 'transcript' | 'telemetry'>('items');
@@ -26,10 +30,10 @@ export const MeetingDetailView: React.FC = () => {
   const [selectedEvidenceSnippet, setSelectedEvidenceSnippet] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!selectedMeetingId) return;
+    if (!meetingId) return;
     setLoading(true);
     api
-      .getMeetingDetail(selectedMeetingId)
+      .getMeetingDetail(meetingId)
       .then(data => {
         setMeeting(data);
         if (data.action_items && data.action_items.length > 0) {
@@ -42,7 +46,7 @@ export const MeetingDetailView: React.FC = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [selectedMeetingId]);
+  }, [meetingId]);
 
   if (loading || !meeting) {
     return (
@@ -67,9 +71,7 @@ export const MeetingDetailView: React.FC = () => {
 
   const handleInspectSnippet = (sourceText: string | null) => {
     setSelectedEvidenceSnippet(sourceText);
-    if (viewLayout === 'tabs') {
-      setActiveDetailTab('transcript');
-    }
+    setActiveDetailTab('transcript');
   };
 
   return (
@@ -77,14 +79,14 @@ export const MeetingDetailView: React.FC = () => {
       {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs text-zinc-400">
         <button
-          onClick={() => setActiveTab('dashboard')}
+          onClick={() => navigate('/dashboard')}
           className="hover:text-zinc-200 transition-colors"
         >
           Dashboard
         </button>
         <ChevronRightIcon size={12} />
         <button
-          onClick={() => setActiveTab('meetings')}
+          onClick={() => navigate('/meetings')}
           className="hover:text-zinc-200 transition-colors"
         >
           Meetings
@@ -110,7 +112,7 @@ export const MeetingDetailView: React.FC = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {meeting.title}
+              {meeting?.title}
             </h1>
           </div>
 
@@ -120,11 +122,11 @@ export const MeetingDetailView: React.FC = () => {
                 Commitments
               </span>
               <span className="text-xl font-bold font-mono text-cyan-400">
-                {meeting.action_items.length}
+                {meeting?.action_items.length || 0}
               </span>
             </div>
             <button
-              onClick={() => setActiveTab('graph')}
+              onClick={() => navigate('/accountability')}
               className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 text-xs font-bold border border-indigo-500/40 transition-all hover:scale-[1.03] active:scale-[0.98] shadow-md"
             >
               <NetworkIcon size={16} className="text-cyan-400" />
@@ -164,7 +166,9 @@ export const MeetingDetailView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-2">
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setActiveDetailTab('items')}
+            onClick={() => {
+              setActiveDetailTab('items');
+            }}
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all ${
               activeTab === 'items'
                 ? 'border-cyan-400 text-cyan-400'
@@ -176,7 +180,10 @@ export const MeetingDetailView: React.FC = () => {
           </button>
 
           <button
-            onClick={() => setActiveDetailTab('transcript')}
+            onClick={() => {
+              setActiveDetailTab('transcript');
+              setViewLayout('tabs');
+            }}
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all ${
               activeTab === 'transcript'
                 ? 'border-cyan-400 text-cyan-400'
@@ -188,7 +195,10 @@ export const MeetingDetailView: React.FC = () => {
           </button>
 
           <button
-            onClick={() => setActiveDetailTab('telemetry')}
+            onClick={() => {
+              setActiveDetailTab('telemetry');
+              setViewLayout('tabs');
+            }}
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all ${
               activeTab === 'telemetry'
                 ? 'border-cyan-400 text-cyan-400'
@@ -203,7 +213,10 @@ export const MeetingDetailView: React.FC = () => {
         {/* View Layout Toggle */}
         <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950 border border-white/[0.08] self-start sm:self-auto">
           <button
-            onClick={() => setViewLayout('split')}
+            onClick={() => {
+              setViewLayout('split');
+              setActiveDetailTab('items');
+            }}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               viewLayout === 'split'
                 ? 'bg-indigo-600 text-white shadow-md'

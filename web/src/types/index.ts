@@ -20,7 +20,6 @@ export interface Employee {
   email: string;
   role: string;
   department: string;
-  avatar_url?: string;
   is_manager: boolean;
 }
 
@@ -61,6 +60,15 @@ export interface TranscriptCreate {
   transcript_format?: string;
 }
 
+export interface TaskComment {
+  id: string;
+  task_id: string;
+  author_name: string;
+  text: string;
+  type: 'comment' | 'warning' | 'instruction';
+  created_at: string;
+}
+
 export interface ActionItem {
   id: string;
   meeting_id: string;
@@ -82,6 +90,7 @@ export interface ActionItem {
   match_decision?: MatchDecisionType;
   match_reason?: string;
   matched_valixis_task_id?: string | null;
+  comments?: TaskComment[];
 }
 
 export interface ActionItemCreate {

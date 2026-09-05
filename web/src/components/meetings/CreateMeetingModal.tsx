@@ -5,7 +5,8 @@ import { useApp } from '../../context/AppContext';
 import { SAMPLE_TRANSCRIPTS } from '../../services/mockData';
 import { AIPipelineVisualizer } from './AIPipelineVisualizer';
 import type { PipelineStep } from './AIPipelineVisualizer';
-import { SparklesIcon, PlayIcon, CalendarIcon, UsersIcon, FileTextIcon } from '../common/Icons';
+import { useRouter } from '../../context/RouterContext';
+import { SparklesIcon, PlayIcon, CalendarIcon, UsersIcon, FileTextIcon, RadioIcon, ExternalLinkIcon } from '../common/Icons';
 
 
 
@@ -67,6 +68,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 }) => {
   const { currentUser, employees } = useAuth();
   const { createMeetingAndProcess, navigateToMeeting } = useApp();
+  const { navigate } = useRouter();
 
   const [modalTab, setModalTab] = useState<'schedule' | 'ingest'>('schedule');
   const [selectedProvider, setSelectedProvider] = useState<'google_meet' | 'zoom' | 'ms_teams'>('google_meet');
@@ -82,21 +84,25 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
 
   useEffect(() => {
-    if (initialPresetIndex !== undefined && SAMPLE_TRANSCRIPTS[initialPresetIndex]) {
-      setModalTab('ingest');
-      const preset = SAMPLE_TRANSCRIPTS[initialPresetIndex];
-      setTitle(preset.title);
-      setTranscriptContent(preset.content);
-      setSelectedParticipants(employees.map(e => e.id));
-    } else {
-      setTitle('');
-      setTranscriptContent('');
-      setModalTab('schedule');
+    if (isOpen) {
+      if (initialPresetIndex !== undefined && SAMPLE_TRANSCRIPTS[initialPresetIndex]) {
+        setModalTab('ingest');
+        const preset = SAMPLE_TRANSCRIPTS[initialPresetIndex];
+        setTitle(preset.title);
+        setTranscriptContent(preset.content);
+      } else {
+        setTitle('');
+        setTranscriptContent('');
+        setModalTab('schedule');
+      }
+      if (employees.length > 0) {
+        setSelectedParticipants(employees.map(e => e.id));
+      }
+      setCreatedJoinUrl(null);
+      setSteps(DEFAULT_PIPELINE_STEPS);
+      setIsProcessing(false);
+      setCurrentStepIndex(0);
     }
-    setCreatedJoinUrl(null);
-    setSteps(DEFAULT_PIPELINE_STEPS);
-    setIsProcessing(false);
-    setCurrentStepIndex(0);
   }, [isOpen, initialPresetIndex, employees]);
 
   const loadPreset = (index: number) => {
@@ -120,12 +126,22 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     try {
       let joinUrl = '';
       if (selectedProvider === 'google_meet') {
-        joinUrl = `https://meet.google.com/lk-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 6)}`;
+        // Strictly generate 3-4-3 lowercase alphabetic letters (a-z only, e.g. abc-defg-hij)
+        const alpha = 'abcdefghijklmnopqrstuvwxyz';
+        const getAlpha = (len: number) => {
+          let s = '';
+          for (let i = 0; i < len; i++) {
+            s += alpha.charAt(Math.floor(Math.random() * alpha.length));
+          }
+          return s;
+        };
+        const meetCode = `${getAlpha(3)}-${getAlpha(4)}-${getAlpha(3)}`;
+        joinUrl = `https://meet.google.com/${meetCode}`;
       } else if (selectedProvider === 'zoom') {
         const id = Math.floor(1000000000 + Math.random() * 9000000000);
-        joinUrl = `https://zoom.us/j/${id}?pwd=${Math.random().toString(36).substring(2, 10)}`;
+        joinUrl = `https://zoom.us/j/${id}`;
       } else {
-        joinUrl = `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${Math.random().toString(36).substring(2, 12)}%40thread.v2`;
+        joinUrl = `https://teams.microsoft.com`;
       }
       setCreatedJoinUrl(joinUrl);
     } catch (err) {
@@ -220,22 +236,65 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-400 font-bold text-xl">
             ✓
           </div>
-          <h3 className="text-lg font-bold text-white">Meeting Successfully Generated</h3>
+          <h3 className="text-lg font-bold text-white">Meeting Link Generated</h3>
           <p className="text-xs text-zinc-400 max-w-md mx-auto">
-            Your {selectedProvider === 'google_meet' ? 'Google Meet' : selectedProvider === 'zoom' ? 'Zoom' : 'Microsoft Teams'} space is ready for participants.
+            Your {selectedProvider === 'google_meet' ? 'Google Meet' : selectedProvider === 'zoom' ? 'Zoom' : 'Microsoft Teams'} space is ready.
           </p>
-          <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 font-mono text-xs text-cyan-300 select-all overflow-x-auto">
+
+          {/* Recommended In-App Studio Box */}
+          <div className="p-3.5 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-left space-y-2 max-w-lg mx-auto">
+            <div className="flex items-center justify-between text-xs font-bold text-indigo-300">
+              <span className="flex items-center gap-1.5">
+                <RadioIcon size={14} className="text-rose-400 animate-pulse" />
+                <span>Recommended: In-App LoopKeeper Meeting Studio</span>
+              </span>
+              <span className="text-[10px] font-mono bg-indigo-500/20 px-2 py-0.5 rounded text-indigo-200">Built-in AI</span>
+            </div>
+            <p className="text-[11px] text-slate-300">
+              Launch the built-in meeting room with live microphone recording, real-time waveform visualization, and instant AI commitment extraction.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 font-mono text-xs text-cyan-300 select-all overflow-x-auto max-w-lg mx-auto">
             {createdJoinUrl}
           </div>
-          <div className="flex items-center justify-center gap-3 pt-2">
-            <a
-              href={createdJoinUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-zinc-950 font-bold text-xs shadow-lg transition-all"
+
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                navigate('/recording');
+              }}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2"
             >
-              Join Meeting Now ↗
-            </a>
+              <RadioIcon size={14} className="text-rose-300 animate-pulse" />
+              <span>Launch In-App Studio ↗</span>
+            </button>
+
+            {selectedProvider === 'google_meet' ? (
+              <a
+                href="https://meet.google.com/new"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
+                title="Start a real live Google Meet call in Google Meet"
+              >
+                <span>Start Live Google Meet ↗</span>
+                <ExternalLinkIcon size={12} />
+              </a>
+            ) : (
+              <a
+                href={createdJoinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-white/[0.08] transition-all flex items-center gap-1.5"
+              >
+                <span>Open Platform Link</span>
+                <ExternalLinkIcon size={12} />
+              </a>
+            )}
+
             <button
               type="button"
               onClick={onClose}

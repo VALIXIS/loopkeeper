@@ -2,440 +2,554 @@ import type { Employee, Meeting, ActionItem, ActionItemHistory, AIRunTelemetry }
 
 export const MOCK_EMPLOYEES: Employee[] = [
   {
-    id: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
-    name: 'Jyothsna',
-    email: 'jyothsna@valixis.com',
-    role: 'Product Lead & Lead Architect',
-    department: 'Engineering',
-    avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-    is_manager: true
-  },
-  {
     id: '9e1060b0-3f08-4fe3-bbb9-0f7a68b13bee',
     name: 'Subhash',
-    email: 'official.valixis@gmail.com',
-    role: 'Engineering Manager',
-    department: 'Core Operations',
-    avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    email: 'nagasubhash55@gmail.com',
+    role: 'Engineering Manager & Core Lead',
+    department: 'Engineering',
     is_manager: true
   },
   {
-    id: 'e6cb8913-904a-4a7d-b507-ba1470665dc5',
-    name: 'Adithya',
-    email: 'adithya@valixis.com',
-    role: 'Senior Platform Engineer',
-    department: 'Core Engineering',
-    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    is_manager: false
-  },
-  {
-    id: 'a2b32605-343c-4ef4-9365-e219e8b21e20',
-    name: 'Vaseem',
-    email: 'vaseem@valixis.com',
-    role: 'Senior Full Stack Engineer',
-    department: 'Frontend & Mobile',
-    avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-    is_manager: false
-  },
-  {
-    id: '8a18fff4-6236-4d54-a29a-eeb3c65dd646',
-    name: 'Krishna',
-    email: 'krishna@valixis.com',
-    role: 'Backend & ML Engineer',
-    department: 'AI Systems',
-    avatar_url: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&auto=format&fit=crop&q=80',
-    is_manager: false
+    id: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
+    name: 'VALIXIS',
+    email: 'official.valixis@gmail.com',
+    role: 'Founder & Technical Director',
+    department: 'Executive',
+    is_manager: true
   },
   {
     id: '5af2f8a8-a881-408a-8fdd-1fee384f1779',
     name: 'Vignesh',
     email: 'vignesh@valixis.com',
-    role: 'Systems Engineer',
-    department: 'Infrastructure',
-    avatar_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+    role: 'Systems & App Developer',
+    department: 'Core Engineering',
+    is_manager: false
+  },
+  {
+    id: '43e5d5fc-fc54-49bb-8faa-79018cf49348',
+    name: 'Jyothsna',
+    email: 'jyothsna@valixis.com',
+    role: 'Product & Architecture Lead',
+    department: 'Engineering',
     is_manager: false
   },
   {
     id: '39244951-87a5-44e6-801a-28cb3b1a0ed5',
     name: 'Hasitha',
     email: 'hasitha@valixis.com',
-    role: 'Quality & Test Engineer',
+    role: 'QA & App Testing Lead',
     department: 'QA & Compliance',
-    avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '8a18fff4-6236-4d54-a29a-eeb3c65dd646',
+    name: 'Krishna',
+    email: 'krishna@valixis.com',
+    role: 'Ad Implementation & Backend Engineer',
+    department: 'Monetization & Analytics',
+    is_manager: false
+  },
+  {
+    id: '7b98a000-0000-0000-0000-000000000007',
+    name: 'Adithya',
+    email: 'adithya@valixis.com',
+    role: 'Database & Vector Search Engineer',
+    department: 'Backend & Infrastructure',
+    is_manager: false
+  },
+  {
+    id: '7b98a000-0000-0000-0000-000000000008',
+    name: 'Vaseem',
+    email: 'vaseem@valixis.com',
+    role: 'UI & Frontend Graph Developer',
+    department: 'Frontend Engineering',
     is_manager: false
   }
 ];
 
-
 export const MOCK_MEETINGS: Meeting[] = [
   {
-    id: 'm1000000-0000-0000-0000-000000000001',
-    title: 'Sprint 14 Architecture & AI Engine Kickoff',
-    meeting_date: '2026-09-02T10:00:00Z',
+    id: 'm-real-2026-08-23',
+    title: 'Work Report - Gemini AI Models & Operational Workflows',
+    meeting_date: '2026-08-23T20:00:00Z',
     source: 'transcript',
-    external_source_id: 'meet-arch-s14',
-    created_by: '11111111-1111-1111-1111-111111111111',
-    created_at: '2026-09-02T10:30:00Z',
-    updated_at: '2026-09-02T10:30:00Z',
-    action_item_count: 4,
-    participants: [MOCK_EMPLOYEES[0], MOCK_EMPLOYEES[1], MOCK_EMPLOYEES[2], MOCK_EMPLOYEES[3]]
+    external_source_id: 'meet-workreport-0823',
+    created_by: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
+    created_at: '2026-08-23T20:45:00Z',
+    updated_at: '2026-08-23T20:45:00Z',
+    action_item_count: 5,
+    participants: [MOCK_EMPLOYEES[0], MOCK_EMPLOYEES[1], MOCK_EMPLOYEES[2], MOCK_EMPLOYEES[3], MOCK_EMPLOYEES[4], MOCK_EMPLOYEES[5]]
   },
   {
-    id: 'm1000000-0000-0000-0000-000000000002',
-    title: 'VALIXIS Portal Integration & Database Boundary Sync',
-    meeting_date: '2026-09-03T14:30:00Z',
+    id: 'm-real-2026-08-26',
+    title: 'Work Report - Resume App, Firebase Auth & Release Timeline',
+    meeting_date: '2026-08-26T20:00:00Z',
     source: 'transcript',
-    external_source_id: 'meet-valixis-sync',
-    created_by: '11111111-1111-1111-1111-111111111111',
-    created_at: '2026-09-03T15:15:00Z',
-    updated_at: '2026-09-03T15:15:00Z',
-    action_item_count: 3,
-    participants: [MOCK_EMPLOYEES[0], MOCK_EMPLOYEES[1], MOCK_EMPLOYEES[4]]
-  },
-  {
-    id: 'm1000000-0000-0000-0000-000000000003',
-    title: 'Daily Standup - SLM Fallback & Authentication Blockers',
-    meeting_date: '2026-09-04T09:30:00Z',
-    source: 'transcript',
-    external_source_id: 'meet-standup-0904',
-    created_by: '22222222-2222-2222-2222-222222222222',
-    created_at: '2026-09-04T10:00:00Z',
-    updated_at: '2026-09-04T10:00:00Z',
+    external_source_id: 'meet-workreport-0826',
+    created_by: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
+    created_at: '2026-08-26T20:45:00Z',
+    updated_at: '2026-08-26T20:45:00Z',
     action_item_count: 4,
     participants: [MOCK_EMPLOYEES[0], MOCK_EMPLOYEES[1], MOCK_EMPLOYEES[2], MOCK_EMPLOYEES[3], MOCK_EMPLOYEES[4]]
   },
   {
-    id: 'm1000000-0000-0000-0000-000000000004',
-    title: 'Release Readiness & Accountability Graph Review',
-    meeting_date: '2026-09-05T08:00:00Z',
+    id: 'm-real-2026-08-30',
+    title: 'Work Report - Technical Workflow Reset & 6:30 PM PR Mandate',
+    meeting_date: '2026-08-30T18:30:00Z',
     source: 'transcript',
-    external_source_id: 'meet-release-prep',
-    created_by: '11111111-1111-1111-1111-111111111111',
-    created_at: '2026-09-05T08:45:00Z',
-    updated_at: '2026-09-05T08:45:00Z',
+    external_source_id: 'meet-workreport-0830',
+    created_by: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
+    created_at: '2026-08-30T19:00:00Z',
+    updated_at: '2026-08-30T19:00:00Z',
+    action_item_count: 3,
+    participants: [MOCK_EMPLOYEES[0], MOCK_EMPLOYEES[1], MOCK_EMPLOYEES[2], MOCK_EMPLOYEES[5]]
+  },
+  {
+    id: 'm-real-2026-09-02',
+    title: 'Sprint 14 Architecture Kickoff & HNSW Indexing Sync',
+    meeting_date: '2026-09-02T10:00:00Z',
+    source: 'transcript',
+    external_source_id: 'meet-sprint14-0902',
+    created_by: '43e5d5fc-fc54-49bb-8faa-79018cf49348',
+    created_at: '2026-09-02T10:30:00Z',
+    updated_at: '2026-09-02T10:30:00Z',
     action_item_count: 2,
-    participants: [MOCK_EMPLOYEES[0], MOCK_EMPLOYEES[2], MOCK_EMPLOYEES[3]]
+    participants: [MOCK_EMPLOYEES[6], MOCK_EMPLOYEES[0], MOCK_EMPLOYEES[3], MOCK_EMPLOYEES[7]]
+  },
+  {
+    id: 'm-real-2026-09-04',
+    title: 'AI Model Benchmarking & Fallback Telemetry Sync',
+    meeting_date: '2026-09-04T14:30:00Z',
+    source: 'transcript',
+    external_source_id: 'meet-telemetry-0904',
+    created_by: '8a18fff4-6236-4d54-a29a-eeb3c65dd646',
+    created_at: '2026-09-04T15:00:00Z',
+    updated_at: '2026-09-04T15:00:00Z',
+    action_item_count: 1,
+    participants: [MOCK_EMPLOYEES[5], MOCK_EMPLOYEES[1], MOCK_EMPLOYEES[4], MOCK_EMPLOYEES[0]]
+  },
+  {
+    id: 'm-real-2026-09-05',
+    title: 'Payment Gateway & Ad Monetization Readiness Review',
+    meeting_date: '2026-09-05T16:00:00Z',
+    source: 'transcript',
+    external_source_id: 'meet-monetization-0905',
+    created_by: '39244951-87a5-44e6-801a-28cb3b1a0ed5',
+    created_at: '2026-09-05T16:30:00Z',
+    updated_at: '2026-09-05T16:30:00Z',
+    action_item_count: 1,
+    participants: [MOCK_EMPLOYEES[4], MOCK_EMPLOYEES[5], MOCK_EMPLOYEES[2], MOCK_EMPLOYEES[0]]
   }
 ];
 
 export const MOCK_TRANSCRIPTS: Record<string, string> = {
-  'm1000000-0000-0000-0000-000000000001': `[00:01:15] Jyothsna: Alright team, let's lock in our commitments for Sprint 14. Adithya, can you finish the pgvector 1536-dim schema and HNSW indexes by Friday?
-[00:01:34] Adithya: Yes, I am on it. I'll have the schema migration SQL and HNSW index deployed by September 6th 5 PM.
-[00:02:10] Jyothsna: Great. Vignesh, what about the mobile auth token refresh bug?
-[00:02:22] Vignesh: I'm still debugging the JWT race condition. I will resolve the auth token refresh bug by September 4th.
-[00:03:00] Krishna: On the AI side, I will complete the SLM provider fallback router and confidence scoring evaluator by September 5th.
-[00:04:12] Jyothsna: Someone should also audit the VALIXIS read-only boundary to make sure no writes occur. Hasitha, could you handle that by Monday?
-[00:04:30] Hasitha: Confirmed, I'll audit the VALIXIS RLS and table boundaries by Sept 8th.`,
+  'm-real-2026-08-23': `[00:00:45] VALIXIS: Welcome team. Let's review last week's work and plan for the upcoming week. Great job moving to ChatGPT prompt generation independently. Work submission deadline is strictly 10:00 PM or 10:30 PM max.
+[00:02:58] VALIXIS: Everyone must download and continuously test our application. Hasitha and team will run 3-day and 2-day structured testing to catch dark mode issues before Play Store builds.
+[00:06:03] VALIXIS: I will complete the transition to Google Gemini AI models tonight (100-million token capacity for PDF split/merge and image processing) so testing can begin tomorrow.
+[00:08:38] Vignesh: I propose we pursue dual application development simultaneously since operational capacity is ready. We will clone master branch repository structures.
+[00:14:01] VALIXIS: Client project lifecycle will be 5 phases (UI, UX, Backend, Login, Home). Development starts only after initial client payment.
+[00:18:34] VALIXIS: Core team members will be designated as Managing Directors and board members with 10% equity profit share once formal registration is complete.`,
 
-  'm1000000-0000-0000-0000-000000000002': `[00:00:45] Jyothsna: Hasitha, how is the VALIXIS audit looking?
-[00:01:02] Hasitha: The read-only check on employee and tasks tables is clean. I will finish documenting the audit report by September 7th.
-[00:02:15] Adithya: I noticed we need a safe mock repository fallback for local testing when Supabase is unreachable. I'll build the in-memory repository fallbacks by tomorrow evening.
-[00:03:40] Jyothsna: Perfect. Let's make sure the backend tests pass with 100% vector cosine distance validation.`,
+  'm-real-2026-08-26': `[00:09:23] VALIXIS: The new web resume application includes interactive AI chat, PDF splitting/compression, and free automatic ATS scoring for users using Gemini models.
+[00:14:29] VALIXIS: User login is configured via Firebase Google authentication. Subhash and Vignesh, upload pull request URLs to the portal starting tomorrow.
+[00:18:49] VALIXIS: Team members are allowed to work ahead if pull requests remain clean. Master branch cloning and ChatGPT prompt workflows must be followed strictly.
+[00:22:17] VALIXIS: Two applications including the fitness platform will launch within 14 days with notifications and ad monetization.
+[00:27:50] Hasitha: Final testing of the application build will be completed by Saturday before proceeding.`,
 
-  'm1000000-0000-0000-0000-000000000003': `[00:01:00] Jyothsna: Morning standup. Vignesh, what is the status of the auth token refresh bug from Wednesday?
-[00:01:18] Vignesh: Unfortunately I got pulled into the Vite UI bundle configuration, so I couldn't finish it yesterday. I need to postpone resolving the auth token refresh bug to September 7th.
-[00:02:05] Jyothsna: Okay, this is the second time it's slipping. Please prioritize it. What about the web responsive navigation?
-[00:02:20] Vaseem: I will finish the responsive sidebar navigation and executive dashboard by tonight.
-[00:03:10] Krishna: The SLM provider pipeline is functioning, but latency was high. I need to optimize the ONNX runtime inference to get it under 250ms by September 8th.
-[00:04:00] Adithya: The pgvector HNSW index is completed and verified against sample embeddings.`,
+  'm-real-2026-08-30': `[00:02:27] VALIXIS: Recent PR submissions contained URL handling and merge conflict errors. We reset invalid contributions. Subhash, ensure all code is verified for functionality before submission.
+[00:13:18] VALIXIS: The team must take full ownership of code merging, application creation, and Play Store publishing while I focus on client acquisition.
+[00:24:03] VALIXIS: Mandated daily 6:30 PM deadline for all pull request submissions to ensure synchronization and prevent merge conflicts.
+[00:30:00] Krishna: Clarified daily task progression from Day 3 to Day 7. Directory structures will follow established master workflows.`,
 
-  'm1000000-0000-0000-0000-000000000004': `[00:00:30] Jyothsna: Final stretch before release. Vaseem, how is the Accountability Graph visualization looking?
-[00:00:50] Vaseem: The signature graph mapping Meetings to Commitments to Outcomes is interactive and smooth. I'll add the zoom controls by 2 PM today.
-[00:01:30] Krishna: AI Fallback pipeline successfully triggers FallbackLLM whenever SLM confidence drops below 0.75.`
+  'm-real-2026-09-02': `[00:01:00] Jyothsna: Welcome team. Let's assign core technical deliverables for Sprint 14.
+[00:01:25] Adithya: I will deploy the PostgreSQL schema migration and HNSW vector index by September 6th 5 PM.
+[00:02:10] Vaseem: I will complete the interactive graph node animations and zoom controls by tomorrow afternoon.
+[00:03:00] Subhash: Ensure all database changes pass zero-downtime migration scripts before staging deployment.`,
+
+  'm-real-2026-09-04': `[00:00:30] VALIXIS: Today's sync focuses on AI extraction accuracy across our SLM and Fallback LLM pipelines.
+[00:01:10] Krishna: I will benchmark SLM extraction vs Fallback LLM across 50 simulated transcripts by Sept 7th at 8 PM.
+[00:02:00] Hasitha: QA test cases will cover edge cases for missing timestamp metadata in audio ingestion.`,
+
+  'm-real-2026-09-05': `[00:00:45] Subhash: Let's review the monetization pipeline and payment webhook integration.
+[00:01:10] Hasitha: Hasitha will complete the payment API verification and webhook validation by Friday Sept 8th.
+[00:02:00] Vignesh: AdMob unit IDs and banner placement components are already integrated in master.`
 };
 
 export const MOCK_ACTION_ITEMS: ActionItem[] = [
   {
-    id: 'a1000000-0000-0000-0000-000000000001',
-    meeting_id: 'm1000000-0000-0000-0000-000000000001',
-    meeting_title: 'Sprint 14 Architecture & AI Engine Kickoff',
-    title: 'Deploy pgvector 1536-dim schema and HNSW indexes',
-    description: 'Create PostgreSQL migration with vector(1536) and cosine distance HNSW index for deduplication.',
-    owner_employee_id: 'e6cb8913-904a-4a7d-b507-ba1470665dc5',
-    owner_name: 'Adithya',
-    deadline: '2026-09-06T17:00:00Z',
+    id: 'a-real-001',
+    meeting_id: 'm-real-2026-08-23',
+    meeting_title: 'Work Report - Gemini AI Models & Operational Workflows',
+    title: 'Transition AI Infrastructure to Google Gemini Models (100M Token Capacity)',
+    description: 'Implement Google Gemini model integration to optimize application performance, token capacity, and image/PDF operations.',
+    owner_employee_id: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
+    owner_name: 'VALIXIS',
+    deadline: '2026-08-24T05:00:00Z',
     status: 'done',
     confidence: 0.98,
-    source_text: "Adithya: Yes, I am on it. I'll have the schema migration SQL and HNSW index deployed by September 6th 5 PM.",
-    first_seen_at: '2026-09-02T10:30:00Z',
-    last_seen_at: '2026-09-04T10:00:00Z',
-    completed_at: '2026-09-04T10:00:00Z',
-    created_at: '2026-09-02T10:30:00Z',
-    updated_at: '2026-09-04T10:00:00Z',
-    postponement_count: 0,
-    match_decision: 'matched',
-    match_reason: 'Exact semantic match with Sprint 14 DB milestone (Score: 0.982).'
-  },
-  {
-    id: 'a1000000-0000-0000-0000-000000000002',
-    meeting_id: 'm1000000-0000-0000-0000-000000000001',
-    meeting_title: 'Sprint 14 Architecture & AI Engine Kickoff',
-    title: 'Resolve mobile auth token refresh bug & JWT race condition',
-    description: 'Fix token rotation and concurrency race condition causing logout during active sessions.',
-    owner_employee_id: '5af2f8a8-a881-408a-8fdd-1fee384f1779',
-    owner_name: 'Vignesh',
-    deadline: '2026-09-07T18:00:00Z',
-    status: 'overdue',
-    confidence: 0.94,
-    source_text: "Vignesh: I need to postpone resolving the auth token refresh bug to September 7th.",
-    first_seen_at: '2026-09-02T10:30:00Z',
-    last_seen_at: '2026-09-04T10:00:00Z',
-    completed_at: null,
-    created_at: '2026-09-02T10:30:00Z',
-    updated_at: '2026-09-04T10:00:00Z',
-    postponement_count: 2,
-    match_decision: 'matched',
-    match_reason: 'Matched recurring commitment from Kickoff meeting (Similarity: 0.945).'
-  },
-  {
-    id: 'a1000000-0000-0000-0000-000000000003',
-    meeting_id: 'm1000000-0000-0000-0000-000000000001',
-    meeting_title: 'Sprint 14 Architecture & AI Engine Kickoff',
-    title: 'Build SLM provider fallback router and confidence scoring evaluator',
-    description: 'Implement dual inference pipeline routing extractions to fallback LLM when confidence < 0.75.',
-    owner_employee_id: '8a18fff4-6236-4d54-a29a-eeb3c65dd646',
-    owner_name: 'Krishna',
-    deadline: '2026-09-05T20:00:00Z',
-    status: 'done',
-    confidence: 0.96,
-    source_text: "Krishna: I will complete the SLM provider fallback router and confidence scoring evaluator by September 5th.",
-    first_seen_at: '2026-09-02T10:30:00Z',
-    last_seen_at: '2026-09-05T08:45:00Z',
-    completed_at: '2026-09-05T08:45:00Z',
-    created_at: '2026-09-02T10:30:00Z',
-    updated_at: '2026-09-05T08:45:00Z',
+    source_text: "VALIXIS: I will complete the transition to Google Gemini AI models tonight so testing can begin tomorrow.",
+    first_seen_at: '2026-08-23T20:45:00Z',
+    last_seen_at: '2026-08-24T10:00:00Z',
+    completed_at: '2026-08-24T10:00:00Z',
+    created_at: '2026-08-23T20:45:00Z',
+    updated_at: '2026-08-24T10:00:00Z',
     postponement_count: 0,
     match_decision: 'new',
-    match_reason: 'New core AI infrastructure task created.'
+    match_reason: 'Core Gemini AI infrastructure transition.'
   },
   {
-    id: 'a1000000-0000-0000-0000-000000000004',
-    meeting_id: 'm1000000-0000-0000-0000-000000000002',
-    meeting_title: 'VALIXIS Portal Integration & Database Boundary Sync',
-    title: 'Background Health Connect and Periodic Step Sync Engine',
-    description: 'Background service for periodic health step metrics synchronization.',
-    owner_employee_id: 'e6cb8913-904a-4a7d-b507-ba1470665dc5',
-    owner_name: 'Adithya',
-    deadline: '2026-09-08T18:00:00Z',
-    status: 'pending',
-    confidence: 0.95,
-    source_text: "Adithya: Confirmed, I will deliver the background step sync engine.",
-    first_seen_at: '2026-09-02T10:30:00Z',
-    last_seen_at: '2026-09-03T15:15:00Z',
-    completed_at: null,
-    created_at: '2026-09-02T10:30:00Z',
-    updated_at: '2026-09-03T15:15:00Z',
+    id: 'a-real-002',
+    meeting_id: 'm-real-2026-08-23',
+    meeting_title: 'Work Report - Gemini AI Models & Operational Workflows',
+    title: 'Mandated Daily Work Submission Deadline (10:00 PM / 10:30 PM Max)',
+    description: 'Strict daily work submission protocol to prevent delayed processing.',
+    owner_employee_id: '9e1060b0-3f08-4fe3-bbb9-0f7a68b13bee',
+    owner_name: 'Subhash',
+    deadline: '2026-08-24T22:00:00Z',
+    status: 'done',
+    confidence: 0.97,
+    source_text: "VALIXIS: Work submission deadline is strictly 10:00 PM or 10:30 PM max.",
+    first_seen_at: '2026-08-23T20:45:00Z',
+    last_seen_at: '2026-08-24T22:00:00Z',
+    completed_at: '2026-08-24T22:00:00Z',
+    created_at: '2026-08-23T20:45:00Z',
+    updated_at: '2026-08-24T22:00:00Z',
     postponement_count: 0,
-    match_decision: 'matched',
-    match_reason: 'Matched VALIXIS Portal Task b3abaad6-0000-4000-8000-000000000001 (Score: 0.978)'
+    match_decision: 'new'
   },
   {
-    id: 'a1000000-0000-0000-0000-000000000005',
-    meeting_id: 'm1000000-0000-0000-0000-000000000002',
-    meeting_title: 'VALIXIS Portal Integration & Database Boundary Sync',
-    title: 'AdMob Native Advanced Ads Feed Integration',
-    description: 'Native advanced ad units insertion into feed streams.',
-    owner_employee_id: 'a2b32605-343c-4ef4-9365-e219e8b21e20',
-    owner_name: 'Vaseem',
-    deadline: '2026-09-05T18:00:00Z',
+    id: 'a-real-003',
+    meeting_id: 'm-real-2026-08-23',
+    meeting_title: 'Work Report - Gemini AI Models & Operational Workflows',
+    title: 'Dual Application Development & Master Branch Clone Protocol',
+    description: 'Pursue simultaneous dual application development cloning master branch repository structure.',
+    owner_employee_id: '5af2f8a8-a881-408a-8fdd-1fee384f1779',
+    owner_name: 'Vignesh',
+    deadline: '2026-08-25T18:00:00Z',
+    status: 'done',
+    confidence: 0.95,
+    source_text: "Vignesh: I propose we pursue dual application development simultaneously. We will clone master branch repository structures.",
+    first_seen_at: '2026-08-23T20:45:00Z',
+    last_seen_at: '2026-08-26T20:00:00Z',
+    completed_at: '2026-08-25T18:00:00Z',
+    created_at: '2026-08-23T20:45:00Z',
+    updated_at: '2026-08-25T18:00:00Z',
+    postponement_count: 0,
+    match_decision: 'new'
+  },
+  {
+    id: 'a-real-004',
+    meeting_id: 'm-real-2026-08-26',
+    meeting_title: 'Work Report - Resume App, Firebase Auth & Release Timeline',
+    title: 'Deploy Resume Builder Free ATS Scoring & PDF Compression',
+    description: 'Free ATS score generator and PDF splitting/compression using Gemini models.',
+    owner_employee_id: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
+    owner_name: 'VALIXIS',
+    deadline: '2026-08-28T18:00:00Z',
     status: 'done',
     confidence: 0.96,
-    source_text: "Vaseem: AdMob native feed integration is ready and verified.",
-    first_seen_at: '2026-09-03T15:15:00Z',
-    last_seen_at: '2026-09-04T10:00:00Z',
-    completed_at: '2026-09-04T18:00:00Z',
-    created_at: '2026-09-03T15:15:00Z',
-    updated_at: '2026-09-04T18:00:00Z',
+    source_text: "VALIXIS: The new web resume application includes interactive AI chat, PDF splitting/compression, and free automatic ATS scoring.",
+    first_seen_at: '2026-08-26T20:00:00Z',
+    last_seen_at: '2026-08-28T18:00:00Z',
+    completed_at: '2026-08-28T18:00:00Z',
+    created_at: '2026-08-26T20:00:00Z',
+    updated_at: '2026-08-28T18:00:00Z',
     postponement_count: 0,
-    match_decision: 'matched',
-    match_reason: 'Matched VALIXIS Portal Task 7f0d7f4f-0000-4000-8000-000000000002 (Score: 0.965)'
+    match_decision: 'new'
   },
   {
-    id: 'a1000000-0000-0000-0000-000000000006',
-    meeting_id: 'm1000000-0000-0000-0000-000000000003',
-    meeting_title: 'Daily Standup - SLM Fallback & Authentication Blockers',
-    title: 'Accessibility (A11y) and Minimum Touch Target Audit',
-    description: 'Audit and compliance for minimum touch target sizes across screens.',
-    owner_employee_id: '8a18fff4-6236-4d54-a29a-eeb3c65dd646',
-    owner_name: 'Krishna',
-    deadline: '2026-09-05T23:59:00Z',
-    status: 'pending',
-    confidence: 0.97,
-    source_text: "Krishna: I will complete the touch target and A11y audit across mobile views.",
-    first_seen_at: '2026-09-04T10:00:00Z',
-    last_seen_at: '2026-09-05T08:45:00Z',
-    completed_at: null,
-    created_at: '2026-09-04T10:00:00Z',
-    updated_at: '2026-09-04T10:00:00Z',
+    id: 'a-real-005',
+    meeting_id: 'm-real-2026-08-26',
+    meeting_title: 'Work Report - Resume App, Firebase Auth & Release Timeline',
+    title: 'Configure Firebase Google Auth & Portal PR Tracking',
+    description: 'Firebase Google login integration and pull request link upload portal tracking.',
+    owner_employee_id: '9e1060b0-3f08-4fe3-bbb9-0f7a68b13bee',
+    owner_name: 'Subhash',
+    deadline: '2026-08-28T18:00:00Z',
+    status: 'done',
+    confidence: 0.94,
+    source_text: "VALIXIS: User login is configured via Firebase Google authentication. Subhash and Vignesh, upload pull request URLs to the portal.",
+    first_seen_at: '2026-08-26T20:00:00Z',
+    last_seen_at: '2026-08-28T18:00:00Z',
+    completed_at: '2026-08-28T18:00:00Z',
+    created_at: '2026-08-26T20:00:00Z',
+    updated_at: '2026-08-28T18:00:00Z',
     postponement_count: 0,
-    match_decision: 'matched',
-    match_reason: 'Matched VALIXIS Portal Task 33a040d0-0000-4000-8000-000000000003 (Score: 0.952)'
+    match_decision: 'new'
   },
   {
-    id: 'a1000000-0000-0000-0000-000000000007',
-    meeting_id: 'm1000000-0000-0000-0000-000000000003',
-    meeting_title: 'Daily Standup - SLM Fallback & Authentication Blockers',
-    title: 'SQLite Local Storage and Multi-Month Trend Analytics Database',
-    description: 'Offline local storage schema for multi-month trend metrics.',
-    owner_employee_id: 'e6cb8913-904a-4a7d-b507-ba1470665dc5',
-    owner_name: 'Adithya',
-    deadline: '2026-09-08T17:00:00Z',
-    status: 'pending',
-    confidence: 0.91,
-    source_text: "Adithya: SQLite trend schema is being tested locally.",
-    first_seen_at: '2026-09-04T10:00:00Z',
-    last_seen_at: '2026-09-04T10:00:00Z',
+    id: 'a-real-006',
+    meeting_id: 'm-real-2026-08-26',
+    meeting_title: 'Work Report - Resume App, Firebase Auth & Release Timeline',
+    title: 'Conduct Full Application Build Testing & Dark Mode Quality Check',
+    description: 'Comprehensive application build testing across team devices to catch dark mode bugs before Play Store release.',
+    owner_employee_id: '39244951-87a5-44e6-801a-28cb3b1a0ed5',
+    owner_name: 'Hasitha',
+    deadline: '2026-09-05T18:00:00Z',
+    status: 'overdue',
+    confidence: 0.93,
+    source_text: "Hasitha: Final testing of the application build will be completed by Saturday before proceeding.",
+    first_seen_at: '2026-08-23T20:45:00Z',
+    last_seen_at: '2026-08-30T18:30:00Z',
     completed_at: null,
-    created_at: '2026-09-04T10:00:00Z',
-    updated_at: '2026-09-04T10:00:00Z',
+    created_at: '2026-08-23T20:45:00Z',
+    updated_at: '2026-08-30T18:30:00Z',
     postponement_count: 1,
     match_decision: 'matched',
-    match_reason: 'Matched VALIXIS Portal Task 74b1b0ba-0000-4000-8000-000000000004 (Score: 0.941)'
+    match_reason: 'Postponed 1x from Aug 29 to Sep 5 due to dark mode stability fixes.'
   },
   {
-    id: 'a1000000-0000-0000-0000-000000000008',
-    meeting_id: 'm1000000-0000-0000-0000-000000000004',
-    meeting_title: 'Release Readiness & Accountability Graph Review',
-    title: 'Finalize interactive Accountability Graph with zoom & pan controls',
-    description: 'Complete signature flow diagram from meeting commitment to verified outcome.',
-    owner_employee_id: 'a2b32605-343c-4ef4-9365-e219e8b21e20',
-    owner_name: 'Vaseem',
-    deadline: '2026-09-05T14:00:00Z',
+    id: 'a-real-007',
+    meeting_id: 'm-real-2026-08-30',
+    meeting_title: 'Work Report - Technical Workflow Reset & 6:30 PM PR Mandate',
+    title: 'Strict Daily 6:30 PM PR Submission Mandate & Conflict Resolution',
+    description: 'Mandated daily 6:30 PM pull request submission protocol to prevent merge conflicts.',
+    owner_employee_id: '9e1060b0-3f08-4fe3-bbb9-0f7a68b13bee',
+    owner_name: 'Subhash',
+    deadline: '2026-09-06T18:30:00Z',
     status: 'pending',
-    confidence: 0.99,
-    source_text: "Vaseem: The signature graph mapping Meetings to Commitments to Outcomes is interactive and smooth. I'll add the zoom controls by 2 PM today.",
-    first_seen_at: '2026-09-05T08:45:00Z',
-    last_seen_at: '2026-09-05T08:45:00Z',
+    confidence: 0.97,
+    source_text: "VALIXIS: Mandated daily 6:30 PM deadline for all pull request submissions to ensure synchronization and prevent merge conflicts.",
+    first_seen_at: '2026-08-30T18:30:00Z',
+    last_seen_at: '2026-09-05T20:00:00Z',
     completed_at: null,
-    created_at: '2026-09-05T08:45:00Z',
-    updated_at: '2026-09-05T08:45:00Z',
+    created_at: '2026-08-30T18:30:00Z',
+    updated_at: '2026-09-05T20:00:00Z',
+    postponement_count: 0,
+    match_decision: 'new'
+  },
+  {
+    id: 'a-real-008',
+    meeting_id: 'm-real-2026-08-30',
+    meeting_title: 'Work Report - Technical Workflow Reset & 6:30 PM PR Mandate',
+    title: 'Independent Play Store Publishing & Quality Assurance Lifecycle',
+    description: 'Team ownership of code merging, application creation, and Play Store publishing.',
+    owner_employee_id: '5af2f8a8-a881-408a-8fdd-1fee384f1779',
+    owner_name: 'Vignesh',
+    deadline: '2026-09-10T18:00:00Z',
+    status: 'pending',
+    confidence: 0.95,
+    source_text: "VALIXIS: The team must take full ownership of code merging, application creation, and Play Store publishing.",
+    first_seen_at: '2026-08-30T18:30:00Z',
+    last_seen_at: '2026-08-30T18:30:00Z',
+    completed_at: null,
+    created_at: '2026-08-30T18:30:00Z',
+    updated_at: '2026-08-30T18:30:00Z',
+    postponement_count: 0,
+    match_decision: 'new'
+  },
+  {
+    id: 'a-real-009',
+    meeting_id: 'm-real-2026-09-02',
+    meeting_title: 'Sprint 14 Architecture Kickoff & HNSW Indexing Sync',
+    title: 'Deploy PostgreSQL Schema Migration & pgvector HNSW Index',
+    description: 'Execute vector index migration for fast similarity search across 1536-dim embeddings.',
+    owner_employee_id: '7b98a000-0000-0000-0000-000000000007',
+    owner_name: 'Adithya',
+    deadline: '2026-09-06T17:00:00Z',
+    status: 'pending',
+    confidence: 0.96,
+    source_text: "Adithya: I will deploy the PostgreSQL schema migration and HNSW vector index by September 6th 5 PM.",
+    first_seen_at: '2026-09-02T10:30:00Z',
+    last_seen_at: '2026-09-05T20:00:00Z',
+    completed_at: null,
+    created_at: '2026-09-02T10:30:00Z',
+    updated_at: '2026-09-05T20:00:00Z',
+    postponement_count: 0,
+    match_decision: 'new'
+  },
+  {
+    id: 'a-real-010',
+    meeting_id: 'm-real-2026-09-02',
+    meeting_title: 'Sprint 14 Architecture Kickoff & HNSW Indexing Sync',
+    title: 'Build Interactive Graph Node Animations & Zoom Controls',
+    description: 'Implement canvas rendering optimizations and node layout animations in graph view.',
+    owner_employee_id: '7b98a000-0000-0000-0000-000000000008',
+    owner_name: 'Vaseem',
+    deadline: '2026-09-05T17:00:00Z',
+    status: 'pending',
+    confidence: 0.94,
+    source_text: "Vaseem: I will complete the interactive graph node animations and zoom controls by tomorrow afternoon.",
+    first_seen_at: '2026-09-02T10:30:00Z',
+    last_seen_at: '2026-09-05T20:00:00Z',
+    completed_at: null,
+    created_at: '2026-09-02T10:30:00Z',
+    updated_at: '2026-09-05T20:00:00Z',
+    postponement_count: 0,
+    match_decision: 'new'
+  },
+  {
+    id: 'a-real-011',
+    meeting_id: 'm-real-2026-09-04',
+    meeting_title: 'AI Model Benchmarking & Fallback Telemetry Sync',
+    title: 'Benchmark SLM vs Fallback LLM Extraction Across 50 Transcripts',
+    description: 'Evaluate confidence scoring and latency tradeoffs between local SLM and fallback models.',
+    owner_employee_id: '8a18fff4-6236-4d54-a29a-eeb3c65dd646',
+    owner_name: 'Krishna',
+    deadline: '2026-09-07T20:00:00Z',
+    status: 'pending',
+    confidence: 0.95,
+    source_text: "Krishna: I will benchmark SLM extraction vs Fallback LLM across 50 simulated transcripts by Sept 7th at 8 PM.",
+    first_seen_at: '2026-09-04T15:00:00Z',
+    last_seen_at: '2026-09-05T20:00:00Z',
+    completed_at: null,
+    created_at: '2026-09-04T15:00:00Z',
+    updated_at: '2026-09-05T20:00:00Z',
+    postponement_count: 0,
+    match_decision: 'new'
+  },
+  {
+    id: 'a-real-012',
+    meeting_id: 'm-real-2026-09-05',
+    meeting_title: 'Payment Gateway & Ad Monetization Readiness Review',
+    title: 'Complete Payment API Verification & Webhook Validation',
+    description: 'Verify payment gateway callback triggers and automated receipt generation.',
+    owner_employee_id: '39244951-87a5-44e6-801a-28cb3b1a0ed5',
+    owner_name: 'Hasitha',
+    deadline: '2026-09-08T18:00:00Z',
+    status: 'pending',
+    confidence: 0.93,
+    source_text: "Hasitha: Hasitha will complete the payment API verification and webhook validation by Friday Sept 8th.",
+    first_seen_at: '2026-09-05T16:30:00Z',
+    last_seen_at: '2026-09-05T20:00:00Z',
+    completed_at: null,
+    created_at: '2026-09-05T16:30:00Z',
+    updated_at: '2026-09-05T20:00:00Z',
     postponement_count: 0,
     match_decision: 'new'
   }
 ];
 
 export const MOCK_HISTORY: Record<string, ActionItemHistory[]> = {
-  'a1000000-0000-0000-0000-000000000001': [
+  'a-real-006': [
     {
-      id: 'h1',
-      action_item_id: 'a1000000-0000-0000-0000-000000000001',
-      meeting_id: 'm1000000-0000-0000-0000-000000000001',
-      meeting_title: 'Sprint 14 Architecture Kickoff',
+      id: 'hr-1',
+      action_item_id: 'a-real-006',
+      meeting_id: 'm-real-2026-08-23',
+      meeting_title: 'Work Report - Gemini AI Models & Operational Workflows',
       event_type: 'created',
-      new_value: { status: 'pending', deadline: '2026-09-06T17:00:00Z', owner: 'Adithya' },
-      evidence_text: "Adithya: I'll have the schema migration SQL and HNSW index deployed by September 6th 5 PM.",
-      created_at: '2026-09-02T10:30:00Z'
+      new_value: { status: 'pending', deadline: '2026-08-29T18:00:00Z', owner: 'Hasitha' },
+      evidence_text: "VALIXIS: Hasitha and team will run structured testing to catch dark mode issues before Play Store builds.",
+      created_at: '2026-08-23T20:45:00Z'
     },
     {
-      id: 'h2',
-      action_item_id: 'a1000000-0000-0000-0000-000000000001',
-      meeting_id: 'm1000000-0000-0000-0000-000000000003',
-      meeting_title: 'Daily Standup',
-      event_type: 'completed',
-      previous_value: { status: 'pending' },
-      new_value: { status: 'done' },
-      evidence_text: "Adithya: The pgvector HNSW index is completed and verified against sample embeddings.",
-      created_at: '2026-09-04T10:00:00Z'
-    }
-  ],
-  'a1000000-0000-0000-0000-000000000002': [
-    {
-      id: 'h3',
-      action_item_id: 'a1000000-0000-0000-0000-000000000002',
-      meeting_id: 'm1000000-0000-0000-0000-000000000001',
-      meeting_title: 'Sprint 14 Architecture Kickoff',
-      event_type: 'created',
-      new_value: { status: 'pending', deadline: '2026-09-04T17:00:00Z', owner: 'Vignesh' },
-      evidence_text: "Vignesh: I will resolve the auth token refresh bug by September 4th.",
-      created_at: '2026-09-02T10:30:00Z'
-    },
-    {
-      id: 'h4',
-      action_item_id: 'a1000000-0000-0000-0000-000000000002',
-      meeting_id: 'm1000000-0000-0000-0000-000000000003',
-      meeting_title: 'Daily Standup',
+      id: 'hr-2',
+      action_item_id: 'a-real-006',
+      meeting_id: 'm-real-2026-08-26',
+      meeting_title: 'Work Report - Resume App & Firebase Auth',
       event_type: 'deadline_changed',
-      previous_value: { deadline: '2026-09-04T17:00:00Z' },
-      new_value: { deadline: '2026-09-07T18:00:00Z' },
-      evidence_text: "Vignesh: I need to postpone resolving the auth token refresh bug to September 7th.",
-      created_at: '2026-09-04T10:00:00Z'
-    },
-    {
-      id: 'h5',
-      action_item_id: 'a1000000-0000-0000-0000-000000000002',
-      meeting_id: 'm1000000-0000-0000-0000-000000000003',
-      meeting_title: 'Daily Standup',
-      event_type: 'postponed',
-      previous_value: { postponement_count: 1 },
-      new_value: { postponement_count: 2 },
-      evidence_text: "Jyothsna: Okay, this is the second time it's slipping. Please prioritize it.",
-      created_at: '2026-09-04T10:00:00Z'
+      previous_value: { deadline: '2026-08-29T18:00:00Z' },
+      new_value: { deadline: '2026-09-05T18:00:00Z' },
+      evidence_text: "Hasitha: Final testing of the application build will be completed by Saturday before proceeding.",
+      created_at: '2026-08-26T20:00:00Z'
     }
   ]
 };
 
 export const MOCK_AI_RUNS: AIRunTelemetry[] = [
   {
-    id: 'r1',
-    meeting_id: 'm1000000-0000-0000-0000-000000000001',
+    id: 'rr-1',
+    meeting_id: 'm-real-2026-08-23',
+    model_name: 'gemini-1.5-flash',
+    model_version: '2.0.0',
+    provider: 'fallback_llm',
+    confidence: 0.98,
+    latency_ms: 210,
+    success: true,
+    fallback_used: false,
+    created_at: '2026-08-23T20:45:15Z'
+  },
+  {
+    id: 'rr-2',
+    meeting_id: 'm-real-2026-08-26',
+    model_name: 'gemini-1.5-flash',
+    model_version: '2.0.0',
+    provider: 'fallback_llm',
+    confidence: 0.96,
+    latency_ms: 195,
+    success: true,
+    fallback_used: false,
+    created_at: '2026-08-26T20:45:20Z'
+  },
+  {
+    id: 'rr-3',
+    meeting_id: 'm-real-2026-08-30',
+    model_name: 'gemini-1.5-flash',
+    model_version: '2.0.0',
+    provider: 'fallback_llm',
+    confidence: 0.97,
+    latency_ms: 205,
+    success: true,
+    fallback_used: false,
+    created_at: '2026-08-30T19:00:30Z'
+  },
+  {
+    id: 'rr-4',
+    meeting_id: 'm-real-2026-09-02',
     model_name: 'loopkeeper-slm-v1',
     model_version: '1.2.0',
     provider: 'slm',
-    confidence: 0.94,
-    latency_ms: 184,
+    confidence: 0.95,
+    latency_ms: 180,
     success: true,
     fallback_used: false,
     created_at: '2026-09-02T10:30:15Z'
   },
   {
-    id: 'r2',
-    meeting_id: 'm1000000-0000-0000-0000-000000000002',
+    id: 'rr-5',
+    meeting_id: 'm-real-2026-09-04',
+    model_name: 'gemini-1.5-flash',
+    model_version: '2.0.0',
+    provider: 'fallback_llm',
+    confidence: 0.95,
+    latency_ms: 215,
+    success: true,
+    fallback_used: true,
+    created_at: '2026-09-04T15:00:20Z'
+  },
+  {
+    id: 'rr-6',
+    meeting_id: 'm-real-2026-09-05',
     model_name: 'loopkeeper-slm-v1',
     model_version: '1.2.0',
     provider: 'slm',
-    confidence: 0.91,
-    latency_ms: 198,
+    confidence: 0.94,
+    latency_ms: 190,
     success: true,
     fallback_used: false,
-    created_at: '2026-09-03T15:15:20Z'
-  },
-  {
-    id: 'r3',
-    meeting_id: 'm1000000-0000-0000-0000-000000000003',
-    model_name: 'gemini-1.5-flash',
-    model_version: 'fallback-v1',
-    provider: 'fallback_llm',
-    confidence: 0.96,
-    latency_ms: 412,
-    success: true,
-    fallback_used: true,
-    created_at: '2026-09-04T10:00:30Z'
+    created_at: '2026-09-05T16:30:15Z'
   }
 ];
 
 export const SAMPLE_TRANSCRIPTS = [
   {
-    title: 'Sprint Planning & Feature Ownership',
-    date: '2026-09-05T11:00:00Z',
-    content: `[00:01:00] Jyothsna: Welcome everyone. Let's assign key deliverables for the next sprint.
-[00:01:25] Adithya: I will build the FastAPI REST router for export reporting by Saturday 6 PM.
-[00:02:10] Vaseem: I'll complete the interactive graph node animations and zoom controls by tomorrow afternoon.
-[00:03:00] Krishna: I will benchmark SLM extraction vs Fallback LLM across 50 simulated transcripts by Sept 6th at 8 PM.
-[00:03:45] Hasitha: I will create 10 automated test suites verifying state machine transitions by Sept 7th.`
+    title: 'Work Report - Gemini AI Models & Operational Workflows',
+    date: '2026-08-23T20:00:00Z',
+    content: `[00:00:45] VALIXIS: Welcome team. Work submission deadline is strictly 10:00 PM or 10:30 PM max.
+[00:02:58] VALIXIS: Everyone must download and test our application. Hasitha will run testing to catch dark mode issues.
+[00:06:03] VALIXIS: I will complete the transition to Google Gemini AI models tonight (100-million token capacity for PDF split/merge).
+[00:08:38] Vignesh: I propose we pursue dual application development simultaneously, cloning master branch repository structures.`
   },
   {
-    title: 'Emergency Incident: pgvector Cosine Distance Discrepancy',
-    date: '2026-09-05T15:00:00Z',
-    content: `[00:00:30] Jyothsna: Emergency sync. We noticed slight drift in cosine distance thresholding for ambiguous task titles.
-[00:01:10] Krishna: I noticed that short titles under 4 words need a title-word overlap heuristic boost. I will deploy the hybrid HNSW + token overlap ranker by 7 PM today.
-[00:02:00] Adithya: I will verify the PostgreSQL connection pooling parameters to prevent timeout spikes by 8 PM.`
+    title: 'Work Report - Resume App & Firebase Auth Integration',
+    date: '2026-08-26T20:00:00Z',
+    content: `[00:09:23] VALIXIS: The new web resume application includes interactive AI chat, PDF splitting/compression, and free automatic ATS scoring using Gemini models.
+[00:14:29] VALIXIS: User login is configured via Firebase Google authentication. Subhash and Vignesh, upload pull request URLs to the portal.
+[00:22:17] VALIXIS: Two applications including the fitness platform will launch within 14 days with notifications and ad monetization.
+[00:27:50] Hasitha: Final testing of the application build will be completed by Saturday before proceeding.`
   },
   {
-    title: 'Payment Integration & API Continuity Sync',
-    date: '2026-09-05T16:30:00Z',
-    content: `[00:00:45] Jyothsna: Let's check in on the core platform components. Hasitha, what is the status of the payment API?
-[00:01:10] Hasitha: Hasitha will complete the payment API verification by Friday.
-[00:02:00] Adithya: Backend webhook handlers for payment notifications are in place.`
+    title: 'Work Report - Technical Workflow Reset & 6:30 PM PR Mandate',
+    date: '2026-08-30T18:30:00Z',
+    content: `[00:02:27] VALIXIS: Recent PR submissions contained URL handling errors. Subhash, ensure all code is verified before submission.
+[00:13:18] VALIXIS: The team must take full ownership of code merging, application creation, and Play Store publishing.
+[00:24:03] VALIXIS: Mandated daily 6:30 PM deadline for all pull request submissions to ensure synchronization and prevent merge conflicts.`
+  },
+  {
+    title: 'Sprint 14 Architecture Kickoff & HNSW Indexing Sync',
+    date: '2026-09-02T10:00:00Z',
+    content: `[00:01:00] Jyothsna: Welcome team. Let's assign core technical deliverables for Sprint 14.
+[00:01:25] Adithya: I will deploy the PostgreSQL schema migration and HNSW vector index by September 6th 5 PM.
+[00:02:10] Vaseem: I will complete the interactive graph node animations and zoom controls by tomorrow afternoon.`
   }
 ];
-

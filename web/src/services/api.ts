@@ -9,7 +9,8 @@ import type {
   ActionItemDetail,
   DashboardOverview,
   Employee,
-  AIRunTelemetry
+  AIRunTelemetry,
+  TaskComment
 } from '../types';
 import {
   MOCK_EMPLOYEES,
@@ -30,6 +31,7 @@ class LocalStateStore {
   history: Record<string, any[]> = {};
   aiRuns: AIRunTelemetry[] = [];
   employees: Employee[] = [];
+  comments: Record<string, TaskComment[]> = {};
   isBackendAvailable: boolean = false;
   forceMockMode: boolean = false;
 
@@ -39,16 +41,57 @@ class LocalStateStore {
 
   loadInitialData() {
     const savedMeetings = localStorage.getItem('loopkeeper_meetings');
+    if (!savedMeetings || !savedMeetings.includes('m-real-2026-09-05')) {
+      localStorage.removeItem('loopkeeper_meetings');
+      localStorage.removeItem('loopkeeper_action_items');
+      localStorage.removeItem('loopkeeper_history');
+      localStorage.removeItem('loopkeeper_transcripts');
+      localStorage.removeItem('loopkeeper_ai_runs');
+      localStorage.removeItem('loopkeeper_comments');
+    }
+
+    const currentMeetings = localStorage.getItem('loopkeeper_meetings');
     const savedActionItems = localStorage.getItem('loopkeeper_action_items');
     const savedHistory = localStorage.getItem('loopkeeper_history');
     const savedTranscripts = localStorage.getItem('loopkeeper_transcripts');
     const savedAiRuns = localStorage.getItem('loopkeeper_ai_runs');
+    const savedComments = localStorage.getItem('loopkeeper_comments');
 
     this.employees = [...MOCK_EMPLOYEES];
-    this.meetings = savedMeetings ? JSON.parse(savedMeetings) : [...MOCK_MEETINGS];
+    this.meetings = currentMeetings ? JSON.parse(currentMeetings) : [...MOCK_MEETINGS];
     this.actionItems = savedActionItems ? JSON.parse(savedActionItems) : [...MOCK_ACTION_ITEMS];
     this.history = savedHistory ? JSON.parse(savedHistory) : { ...MOCK_HISTORY };
     this.aiRuns = savedAiRuns ? JSON.parse(savedAiRuns) : [...MOCK_AI_RUNS];
+    this.comments = savedComments ? JSON.parse(savedComments) : {
+      'a-real-006': [
+        {
+          id: 'c-1',
+          task_id: 'a-real-006',
+          author_name: 'VALIXIS',
+          text: 'Hasitha and team must execute 3-day and 2-day structured build testing on physical devices to catch dark mode stability issues.',
+          type: 'instruction',
+          created_at: '2026-08-23T20:50:00Z'
+        },
+        {
+          id: 'c-2',
+          task_id: 'a-real-006',
+          author_name: 'VALIXIS',
+          text: '⚠️ RISK WARNING: Postponed 1x from Aug 29 to Sep 5 due to dark mode stability fixes. Must be verified before Play Store build freeze!',
+          type: 'warning',
+          created_at: '2026-08-26T20:15:00Z'
+        }
+      ],
+      'a-real-007': [
+        {
+          id: 'c-3',
+          task_id: 'a-real-007',
+          author_name: 'Subhash',
+          text: 'Mandated daily 6:30 PM PR submission window in place. Pull request links must be submitted to portal on time.',
+          type: 'instruction',
+          created_at: '2026-08-30T19:10:00Z'
+        }
+      ]
+    };
 
     if (savedTranscripts) {
       this.transcripts = JSON.parse(savedTranscripts);
@@ -72,6 +115,7 @@ class LocalStateStore {
     localStorage.setItem('loopkeeper_history', JSON.stringify(this.history));
     localStorage.setItem('loopkeeper_transcripts', JSON.stringify(this.transcripts));
     localStorage.setItem('loopkeeper_ai_runs', JSON.stringify(this.aiRuns));
+    localStorage.setItem('loopkeeper_comments', JSON.stringify(this.comments));
   }
 
   resetToDefaults() {
@@ -80,6 +124,7 @@ class LocalStateStore {
     localStorage.removeItem('loopkeeper_history');
     localStorage.removeItem('loopkeeper_transcripts');
     localStorage.removeItem('loopkeeper_ai_runs');
+    localStorage.removeItem('loopkeeper_comments');
     this.loadInitialData();
   }
 }
@@ -554,15 +599,34 @@ export const api = {
 
     const history = localStore.history[id] || [];
     const originMeeting = localStore.meetings.find(m => m.id === item.meeting_id);
+    const comments = localStore.comments[id] || [];
 
     return {
       ...item,
       history,
+      comments,
       originating_meeting: originMeeting,
       consecutive_meetings: localStore.meetings.filter(m =>
         history.some(h => h.meeting_id === m.id)
       )
     };
+  },
+
+  async addComment(taskId: string, authorName: string, text: string, type: 'comment' | 'warning' | 'instruction' = 'comment'): Promise<TaskComment> {
+    const comment: TaskComment = {
+      id: `c-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      task_id: taskId,
+      author_name: authorName,
+      text,
+      type,
+      created_at: new Date().toISOString()
+    };
+    if (!localStore.comments[taskId]) {
+      localStore.comments[taskId] = [];
+    }
+    localStore.comments[taskId].push(comment);
+    localStore.save();
+    return comment;
   },
 
   async updateActionItem(id: string, updates: ActionItemUpdate): Promise<ActionItem> {

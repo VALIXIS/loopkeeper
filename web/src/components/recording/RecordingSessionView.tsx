@@ -23,8 +23,14 @@ export const RecordingSessionView: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [meetingTitle, setMeetingTitle] = useState('Weekly Engineering & Architecture Sync');
-  const [selectedParticipants, setSelectedParticipants] = useState<string[]>(employees.map(e => e.id));
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>(() => employees.map(e => e.id));
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    if (employees && employees.length > 0) {
+      setSelectedParticipants(employees.map(e => e.id));
+    }
+  }, [employees]);
 
   // Live transcript stream buffer
   // Live transcript stream buffer
@@ -495,11 +501,9 @@ export const RecordingSessionView: React.FC = () => {
                         : 'bg-zinc-950/60 border-zinc-800 text-zinc-500'
                     }`}
                   >
-                    <img
-                      src={emp.avatar_url}
-                      alt={emp.name}
-                      className="h-4 w-4 rounded-full object-cover"
-                    />
+                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-300 font-bold text-[9px] shrink-0">
+                      {emp.name.charAt(0)}
+                    </div>
                     <span className="truncate max-w-[100px]">{emp.name}</span>
                   </button>
                 );

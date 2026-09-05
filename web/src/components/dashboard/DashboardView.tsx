@@ -1,15 +1,14 @@
 import React from 'react';
 import { MetricsGrid } from './MetricsGrid';
-import { QuickIngestCard } from './QuickIngestCard';
 import { OverloadedMembersCard } from './OverloadedMembersCard';
 import { UpcomingDeadlinesCard } from './UpcomingDeadlinesCard';
 import { useRouter } from '../../context/RouterContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   SparklesIcon,
   CheckCircleIcon,
   RadioIcon,
   ShieldAlertIcon,
-  AlertTriangleIcon,
   CalendarIcon,
   ArrowRightIcon,
   ExternalLinkIcon
@@ -21,210 +20,122 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeeting }) => {
   const { navigate, navigateToAccountability } = useRouter();
+  const { currentUser } = useAuth();
   const [showAiDetails, setShowAiDetails] = React.useState(false);
+  const [showDriftDetails, setShowDriftDetails] = React.useState(false);
 
   return (
-    <div className="space-y-6 pb-12 animate-fade-in-up">
+    <div className="space-y-5 pb-10 animate-fade-in-up">
       {/* Executive Hero Header */}
-      <div className="relative rounded-3xl bg-gradient-to-br from-slate-900/90 via-[#0e1424]/90 to-indigo-950/60 border border-white/[0.1] p-6 sm:p-8 shadow-2xl overflow-hidden backdrop-blur-xl space-y-4">
-        {/* Glow Flare */}
-        <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-16 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative rounded-2xl bg-gradient-to-r from-slate-900/90 via-[#0e1424]/90 to-indigo-950/70 border border-white/[0.1] p-5 shadow-lg overflow-hidden backdrop-blur-xl">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-60 h-60 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2.5 max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-sm">
-                <CheckCircleIcon size={13} className="text-cyan-400" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                <CheckCircleIcon size={12} className="text-cyan-400" />
                 LoopKeeper Core Engine Active
               </span>
               <span className="text-xs text-slate-400 font-mono hidden sm:inline">
-                Real Google Meet, Zoom & Xero Sync
+                Google Meet, Zoom & Jira Sync
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-              Keep meetings <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-cyan-300 to-emerald-300">accountable.</span>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-cyan-300 to-emerald-300">{currentUser.name}.</span>
             </h1>
-
-            <p className="text-sm text-slate-200 leading-relaxed font-normal">
-              LoopKeeper connects spoken commitments from <strong className="text-cyan-300 font-semibold">Google Meet & Zoom</strong> with actual execution evidence in <strong className="text-indigo-300 font-semibold">Jira & Xero</strong> to detect Execution Drift.
+            <p className="text-xs text-slate-300 font-medium">
+              Live team execution evidence, active commitments, and execution drift status.
             </p>
-
-            {/* Product Pipeline Flow */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px] font-mono text-slate-400">
-              <span className="px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-slate-300">Meeting</span>
-              <span>➔</span>
-              <span className="px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-slate-300">Commitment</span>
-              <span>➔</span>
-              <span className="px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-slate-300">Evidence</span>
-              <span>➔</span>
-              <span className="px-2 py-0.5 rounded-md bg-slate-950/80 border border-slate-800 text-indigo-300">Jira & Xero</span>
-              <span>➔</span>
-              <span className="px-2 py-0.5 rounded-md bg-rose-950/40 border border-rose-500/40 text-rose-300 font-bold">Execution Drift</span>
-            </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={() => navigate('/recording')}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 text-xs font-bold border border-white/[0.1] shadow-lg transition-all hover:scale-[1.03] active:scale-[0.98] hover:border-cyan-500/40"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 text-xs font-bold border border-white/[0.1] shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              <RadioIcon size={15} className="text-rose-400 animate-pulse" />
+              <RadioIcon size={14} className="text-rose-400 animate-pulse" />
               <span>Start Meeting</span>
             </button>
             <button
               onClick={() => onOpenCreateMeeting()}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-bold shadow-lg transition-all hover:scale-[1.03] active:scale-[0.98] border border-indigo-400/30"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-bold shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] border border-indigo-400/30"
             >
-              <CalendarIcon size={15} />
-              <span>Schedule Meeting</span>
+              <CalendarIcon size={14} />
+              <span>Schedule</span>
             </button>
             <button
               onClick={() => onOpenCreateMeeting()}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white text-xs font-bold shadow-lg shadow-indigo-500/25 transition-all hover:scale-[1.03] active:scale-[0.98] border border-indigo-400/30"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white text-xs font-bold shadow-md shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              <SparklesIcon size={15} />
+              <SparklesIcon size={14} />
               <span>Add Transcript</span>
             </button>
           </div>
         </div>
       </div>
 
-
-      {/* Hero Execution Drift Command Banner (Hero Feature Spotlight) */}
-      <div className="rounded-3xl bg-gradient-to-r from-rose-950/40 via-slate-900 to-slate-950 border border-rose-500/40 p-6 shadow-2xl space-y-5 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rose-500/20 pb-3">
-          <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
-              <ShieldAlertIcon size={18} />
+      {/* Minimized Execution Drift Command Center Banner */}
+      <div className="rounded-2xl bg-gradient-to-r from-rose-950/30 via-slate-900 to-slate-950 border border-rose-500/30 p-4 shadow-lg space-y-3 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 shrink-0">
+              <ShieldAlertIcon size={16} />
             </span>
-            <div>
-              <h2 className="text-base font-black text-white tracking-tight flex items-center gap-2">
-                Execution Drift Command Center
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-xs font-bold text-white tracking-tight">Execution Drift Command Center</h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                  HERO INNOVATION
+                  1 DRIFT DETECTED
                 </span>
-              </h2>
-              <p className="text-xs text-slate-400">
-                Someone said this was done in the meeting. The execution system says it isn't.
+              </div>
+              <p className="text-[11px] text-slate-400 truncate">
+                <strong className="text-slate-200 font-semibold">Stripe Webhook Replay</strong>: Meeting claim <span className="text-emerald-400 font-medium">"Done"</span> vs Jira status <span className="text-rose-300 font-mono font-semibold">To Do (SCRUM-1)</span>
               </p>
             </div>
           </div>
 
-          <button
-            onClick={() => navigateToAccountability('drift')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 border border-rose-500/40 text-xs font-bold transition-all shrink-0"
-          >
-            <span>View Full Drift Radar</span>
-            <ArrowRightIcon size={13} />
-          </button>
-        </div>
-
-        {/* Live Drift Comparison Card */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-950/80 p-5 rounded-2xl border border-white/[0.06]">
-          {/* Item & Evidence */}
-          <div className="md:col-span-2 space-y-2">
-            <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block font-mono">
-              Tracked Commitment & Evidence Quote
-            </span>
-            <h3 className="text-sm font-bold text-white leading-snug">
-              Stripe Webhook Replay & Payment API Idempotency Ledger
-            </h3>
-            <p className="text-xs text-slate-300 italic bg-slate-900/80 p-3 rounded-xl border border-white/[0.06] font-mono">
-              "Jyothsna: Payment API implementation is completely finished and verified on local."
-            </p>
-          </div>
-
-          {/* Claim vs Jira Discrepancy */}
-          <div className="space-y-2">
-            <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block font-mono">
-              Discrepancy Breakdown
-            </span>
-            <div className="space-y-1 text-xs">
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-white/[0.04]">
-                <span className="text-slate-400">Meeting Claim:</span>
-                <span className="font-bold text-emerald-400">Claimed Done</span>
-              </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-rose-950/40 border border-rose-500/30">
-                <span className="text-slate-400">Live Jira Status:</span>
-                <span className="font-mono font-bold text-rose-300">To Do (SCRUM-1)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Outcome Status */}
-          <div className="flex flex-col justify-between items-start md:items-end space-y-2 pt-2 md:pt-0">
-            <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block font-mono">
-              LoopKeeper Outcome
-            </span>
-            <span className="px-3 py-1.5 rounded-xl text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 shadow-md">
-              <AlertTriangleIcon size={14} className="text-rose-400 animate-pulse" />
-              <span>DRIFT DETECTED</span>
-            </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setShowDriftDetails(!showDriftDetails)}
+              className="text-[11px] px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-white/[0.08] transition-colors"
+            >
+              {showDriftDetails ? 'Hide Quote ▲' : 'Inspect Quote ▼'}
+            </button>
             <button
               onClick={() => navigate('/integrations')}
-              className="text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors"
+              className="text-[11px] px-2.5 py-1.5 rounded-lg bg-cyan-950/40 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-500/30 transition-colors flex items-center gap-1 font-semibold"
             >
-              <span>Verify Jira Sync</span>
-              <ExternalLinkIcon size={12} />
+              <span>Verify Jira</span>
+              <ExternalLinkIcon size={11} />
+            </button>
+            <button
+              onClick={() => navigateToAccountability('drift')}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-500/40 text-[11px] font-bold transition-all"
+            >
+              <span>Drift Radar</span>
+              <ArrowRightIcon size={12} />
             </button>
           </div>
         </div>
+
+        {/* Collapsible Quote & Details */}
+        {showDriftDetails && (
+          <div className="mt-3 pt-3 border-t border-rose-500/20 text-xs space-y-2 animate-fade-in">
+            <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono uppercase">
+              <span>Evidence Quote</span>
+              <span className="text-rose-300 font-semibold">Contradiction Flagged</span>
+            </div>
+            <p className="text-xs text-slate-300 italic bg-slate-950/80 p-2.5 rounded-xl border border-white/[0.06] font-mono">
+              "Jyothsna: Payment API implementation is completely finished and verified on local."
+            </p>
+          </div>
+        )}
       </div>
-
-      {/* Meeting Continuity Lifecycle Visualization */}
-      <div className="p-6 rounded-3xl glass-panel border border-white/[0.08] space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-            <CalendarIcon size={15} className="text-cyan-400" />
-            Cross-Meeting Continuity Lifecycle
-          </h3>
-          <span className="text-[10px] font-mono text-slate-500">
-            Lifecycle Across Standups
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs">
-          <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-white/[0.06] space-y-1">
-            <span className="text-[10px] font-mono text-cyan-400 font-bold block">1. MEETING 1</span>
-            <h4 className="font-bold text-white text-xs">Commitment Created</h4>
-            <p className="text-[11px] text-slate-400">Payment API assigned to Jyothsna due Wed.</p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-white/[0.06] space-y-1">
-            <span className="text-[10px] font-mono text-amber-300 font-bold block">2. MEETING 2</span>
-            <h4 className="font-bold text-white text-xs">Deadline Postponed</h4>
-            <p className="text-[11px] text-slate-400">Postponed 1x due to DB schema migration.</p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-white/[0.06] space-y-1">
-            <span className="text-[10px] font-mono text-emerald-400 font-bold block">3. MEETING 3</span>
-            <h4 className="font-bold text-white text-xs">Verbal Done Claimed</h4>
-            <p className="text-[11px] text-slate-400">Speaker claimed "Finished and verified".</p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-indigo-500/30 space-y-1">
-            <span className="text-[10px] font-mono text-indigo-300 font-bold block">4. JIRA TRACKER</span>
-            <h4 className="font-bold text-white text-xs">Actual Status: To Do</h4>
-            <p className="text-[11px] text-slate-400">Issue SCRUM-1 is still unassigned & To Do.</p>
-          </div>
-
-          <div className="p-3.5 rounded-2xl bg-rose-950/30 border border-rose-500/40 space-y-1">
-            <span className="text-[10px] font-mono text-rose-300 font-bold block">5. LOOPKEEPER</span>
-            <h4 className="font-bold text-rose-300 text-xs">Execution Drift</h4>
-            <p className="text-[11px] text-slate-300 font-bold">Contradiction Flagged</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Ingest Sequence Presets */}
-      <QuickIngestCard onOpenCreateMeeting={onOpenCreateMeeting} />
 
       {/* Commitments at Risk & Upcoming Meetings */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <OverloadedMembersCard />
         <UpcomingDeadlinesCard />
       </div>

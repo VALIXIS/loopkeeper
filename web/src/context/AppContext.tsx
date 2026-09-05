@@ -156,11 +156,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const navigateToMeeting = (id: string) => {
     setSelectedMeetingId(id);
     setActiveTab('meeting-detail');
+    try {
+      window.history.pushState({}, '', `/meetings/${id}`);
+      window.dispatchEvent(new Event('popstate'));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const navigateToTask = (id: string) => {
     setSelectedTaskId(id);
     setActiveTab('task-detail');
+    try {
+      window.history.pushState({}, '', `/commitments/${id}`);
+      window.dispatchEvent(new Event('popstate'));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const createMeetingAndProcess = async (
