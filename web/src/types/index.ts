@@ -90,6 +90,9 @@ export interface ActionItem {
   match_decision?: MatchDecisionType;
   match_reason?: string;
   matched_valixis_task_id?: string | null;
+  jira_issue_key?: string | null;
+  jira_issue_url?: string | null;
+  jira_status?: string | null;
   comments?: TaskComment[];
 }
 

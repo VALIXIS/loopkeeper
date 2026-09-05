@@ -214,16 +214,38 @@ export const CommitmentDetailView: React.FC = () => {
               </span>
             )}
 
-            {(detail as any).jira_key || detail.matched_valixis_task_id ? (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30 flex items-center gap-1">
+            {detail.jira_issue_key || (detail as any).jira_key || detail.matched_valixis_task_id ? (
+              <a
+                href={detail.jira_issue_url || `https://loopkeeper.atlassian.net/browse/${detail.jira_issue_key || (detail as any).jira_key || `LOOP-${detail.matched_valixis_task_id?.slice(0, 6).toUpperCase()}`}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/15 hover:bg-blue-500/25 text-blue-700 dark:text-blue-300 border border-blue-500/40 flex items-center gap-1 transition-all"
+                title="View issue in Atlassian Jira Cloud"
+              >
                 <ExternalLinkIcon size={11} />
-                Jira: {(detail as any).jira_key || `TASK-${detail.matched_valixis_task_id?.slice(0, 6).toUpperCase()}`}
-              </span>
+                <span>Jira: {detail.jira_issue_key || (detail as any).jira_key || `LOOP-${detail.matched_valixis_task_id?.slice(0, 6).toUpperCase()}`} ↗</span>
+              </a>
             ) : (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-slate-600 dark:text-zinc-400 bg-slate-200/80 dark:bg-zinc-800/60 border border-slate-300 dark:border-zinc-700/60 flex items-center gap-1">
+              <button
+                onClick={async () => {
+                  try {
+                    const jiraRes = await api.createJiraIssue(detail.id, 'LOOP');
+                    setDetail(prev => prev ? ({ ...prev, jira_issue_key: jiraRes.jira_issue_key, jira_issue_url: jiraRes.jira_issue_url, jira_status: jiraRes.jira_status }) : null);
+                    addToast({
+                      type: 'success',
+                      title: 'Jira Issue Created',
+                      message: `Linked commitment to ${jiraRes.jira_issue_key} in Atlassian Jira Cloud.`
+                    });
+                  } catch (err: any) {
+                    addToast({ type: 'error', title: 'Jira Error', message: err?.message || 'Failed to create Jira issue.' });
+                  }
+                }}
+                className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold text-slate-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-200/80 dark:bg-zinc-800/60 hover:bg-blue-500/20 border border-slate-300 dark:border-zinc-700/60 transition-all flex items-center gap-1"
+                title="Click to create & link Jira issue"
+              >
                 <ExternalLinkIcon size={11} />
-                Jira: Unlinked
-              </span>
+                <span>+ Create Jira Issue</span>
+              </button>
             )}
           </div>
 

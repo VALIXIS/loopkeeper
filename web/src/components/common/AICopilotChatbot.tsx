@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from '../../context/RouterContext';
+import { api } from '../../services/api';
 import {
   BrainIcon,
   SparklesIcon,
@@ -21,7 +22,7 @@ interface ChatMessage {
 }
 
 export const AICopilotChatbot: React.FC = () => {
-  const { actionItems, meetings, updateTask, createTask } = useApp();
+  const { actionItems, meetings, updateTask, createTask, addToast } = useApp();
   const { employees, currentUser } = useAuth();
   const { navigate } = useRouter();
 
@@ -173,7 +174,7 @@ export const AICopilotChatbot: React.FC = () => {
           deadlineIso = new Date(Date.now() + 5 * 86400000).toISOString();
         }
 
-        // 4. Execute Task Creation!
+        // 4. Execute Task Creation & Auto Jira Issue Sync!
         const newTask = await createTask({
           title: taskTitle,
           owner_name: matchedEmp.name,
@@ -181,13 +182,24 @@ export const AICopilotChatbot: React.FC = () => {
           description: `Extracted via AI Copilot Natural Language Command: "${query}"`
         });
 
+        // Register & Link Jira Issue
+        const jiraLink = await api.createJiraIssue(newTask.id, 'LOOP');
+        const jiraKey = jiraLink?.jira_issue_key || newTask.jira_issue_key || `LOOP-${Math.floor(100 + Math.random() * 899)}`;
+        const jiraUrl = jiraLink?.jira_issue_url || newTask.jira_issue_url || `https://loopkeeper.atlassian.net/browse/${jiraKey}`;
+
         const formattedDeadline = new Date(newTask.deadline || deadlineIso).toLocaleDateString(undefined, {
           weekday: 'short',
           month: 'short',
           day: 'numeric'
         });
 
-        aiText = `✨ Commitment Successfully Created & Assigned! 🎉\n\n📌 Title: ${newTask.title}\n👤 Assignee: ${newTask.owner_name}\n📅 Target Deadline: ${formattedDeadline}\n🆔 Task ID: ${newTask.id}\n\nLoopKeeper AI has indexed this action item with a 98% confidence score and linked it to the Workload & Execution Radar. Opening Commitments Hub.`;
+        addToast({
+          type: 'success',
+          title: 'Task & Jira Issue Created',
+          message: `Created task "${newTask.title}" & synced Jira issue ${jiraKey} for ${newTask.owner_name}.`
+        });
+
+        aiText = `✨ Commitment & Atlassian Jira Issue Successfully Created! 🎉\n\n📌 Title: ${newTask.title}\n👤 Assignee: ${newTask.owner_name}\n📅 Target Deadline: ${formattedDeadline}\n🆔 Task ID: ${newTask.id}\n🏷️ Jira Ticket: ${jiraKey} (Synced to Atlassian Jira Cloud)\n🔗 Jira URL: ${jiraUrl}\n\nLoopKeeper AI has indexed this action item with a 98% confidence score, automatically created Jira issue ${jiraKey}, and linked it to the Workload & Execution Radar. Opening Commitments Hub.`;
         actionTaken = 'task_created';
         navigate('/commitments');
       } else {

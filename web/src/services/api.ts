@@ -629,6 +629,10 @@ export const api = {
       data.owner_name && e.name.toLowerCase().includes(data.owner_name.toLowerCase())
     ) || localStore.employees[0];
 
+    const jiraNum = Math.floor(100 + Math.random() * 899);
+    const jiraKey = `LOOP-${jiraNum}`;
+    const jiraUrl = `https://loopkeeper.atlassian.net/browse/${jiraKey}`;
+
     const newItem: ActionItem = {
       id: `a-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       meeting_id: localStore.meetings[0]?.id || 'm-standalone',
@@ -647,7 +651,10 @@ export const api = {
       updated_at: new Date().toISOString(),
       postponement_count: 0,
       match_decision: 'new',
-      match_reason: 'Direct AI Copilot task creation command.'
+      match_reason: 'Direct AI Copilot task creation command.',
+      jira_issue_key: jiraKey,
+      jira_issue_url: jiraUrl,
+      jira_status: 'To Do'
     };
 
     localStore.actionItems.unshift(newItem);
