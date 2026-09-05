@@ -19,6 +19,7 @@ import { AccountabilityInsights } from './components/insights/AccountabilityInsi
 import { IntegrationsView } from './components/integrations/IntegrationsView';
 import { RecordingSessionView } from './components/recording/RecordingSessionView';
 import { SettingsView } from './components/settings/SettingsView';
+import { AICopilotChatbot } from './components/common/AICopilotChatbot';
 import {
   GaugeIcon,
   CalendarIcon,
@@ -26,8 +27,6 @@ import {
   ShieldAlertIcon,
   NetworkIcon,
   SettingsIcon
-
-
 } from './components/common/Icons';
 
 const MainLayout: React.FC = () => {
@@ -147,6 +146,9 @@ const MainLayout: React.FC = () => {
           setDetailModalTaskId(null);
         }}
       />
+
+      {/* AI Copilot Chatbot Layer */}
+      <AICopilotChatbot />
 
       {/* Toast Notification Layer */}
       <ToastContainer />
