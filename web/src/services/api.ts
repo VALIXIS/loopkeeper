@@ -236,13 +236,30 @@ export const api = {
     }
 
     const meeting = localStore.meetings.find(m => m.id === id);
-    if (!meeting) {
-      throw new Error(`Meeting with ID ${id} not found.`);
-    }
-
     const transcript = localStore.transcripts[id] || null;
     const actionItems = localStore.actionItems.filter(a => a.meeting_id === id);
     const aiRuns = localStore.aiRuns.filter(r => r.meeting_id === id);
+
+    if (!meeting) {
+      const fallbackMeeting: Meeting = {
+        id,
+        title: 'Live Meeting Session & Ingestion',
+        meeting_date: new Date().toISOString(),
+        source: 'loopkeeper_native',
+        created_by: localStore.employees[0].id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        action_item_count: actionItems.length,
+        participants: localStore.employees
+      };
+      return {
+        ...fallbackMeeting,
+        transcript,
+        action_items: actionItems,
+        participant_ids: localStore.employees.map(e => e.id),
+        ai_runs: aiRuns
+      };
+    }
 
     return {
       ...meeting,

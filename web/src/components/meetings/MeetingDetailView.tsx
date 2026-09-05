@@ -21,8 +21,8 @@ import { useRouter } from '../../context/RouterContext';
 
 export const MeetingDetailView: React.FC = () => {
   const { route, navigate } = useRouter();
-  const { selectedMeetingId, navigateToTask } = useApp();
-  const meetingId = selectedMeetingId || route.params.meetingId;
+  const { selectedMeetingId, meetings, navigateToTask } = useApp();
+  const meetingId = route.params.meetingId || selectedMeetingId;
   const [meeting, setMeeting] = useState<MeetingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveDetailTab] = useState<'items' | 'transcript' | 'telemetry'>('items');
@@ -41,12 +41,22 @@ export const MeetingDetailView: React.FC = () => {
         }
       })
       .catch(err => {
-        console.error(err);
+        console.warn('getMeetingDetail error, using local fallback:', err);
+        const localM = meetings.find(m => m.id === meetingId);
+        if (localM) {
+          setMeeting({
+            ...localM,
+            transcript: null,
+            action_items: [],
+            participant_ids: localM.participants?.map(p => p.id) || [],
+            ai_runs: []
+          });
+        }
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [meetingId]);
+  }, [meetingId, meetings]);
 
   if (loading || !meeting) {
     return (

@@ -82,6 +82,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   const [modalTurnInput, setModalTurnInput] = useState('');
   const [modalSpeaker, setModalSpeaker] = useState(currentUser?.name || 'Subhash');
 
+  const modalMediaStreamRef = React.useRef<MediaStream | null>(null);
   const modalMediaRecorderRef = React.useRef<MediaRecorder | null>(null);
   const modalRecordedChunksRef = React.useRef<Blob[]>([]);
   const modalRecognitionRef = React.useRef<any>(null);
@@ -119,6 +120,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
       if (tracks.length > 0) {
         const combined = new MediaStream(tracks);
+        modalMediaStreamRef.current = combined;
         try {
           const recorder = new MediaRecorder(combined);
           recorder.ondataavailable = (e) => {
@@ -133,7 +135,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           try {
             const recognition = new SpeechRecognition();
             recognition.continuous = true;
-            recognition.interimResults = false;
+            recognition.interimResults = true;
             recognition.lang = 'en-US';
             recognition.onresult = (event: any) => {
               for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -167,6 +169,10 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     }
     if (modalMediaRecorderRef.current && modalMediaRecorderRef.current.state !== 'inactive') {
       try { modalMediaRecorderRef.current.stop(); } catch {}
+    }
+    if (modalMediaStreamRef.current) {
+      modalMediaStreamRef.current.getTracks().forEach(track => track.stop());
+      modalMediaStreamRef.current = null;
     }
     setIsModalRecording(false);
 

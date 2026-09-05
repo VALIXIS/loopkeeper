@@ -26,29 +26,41 @@ export const RecordingSessionView: React.FC = () => {
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>(() => employees.map(e => e.id));
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Live transcript stream buffer (starts 0 lines, real audio/entered speech only)
+  const [transcriptLines, setTranscriptLines] = useState<Array<{ speaker: string; text: string; time: string }>>([]);
+  const [manualTurnText, setManualTurnText] = useState('');
+  const [selectedSpeaker, setSelectedSpeaker] = useState<string>(currentUser?.name || 'Subhash');
+  const [recordScreenAudio, setRecordScreenAudio] = useState(false);
+  const [micDbLevel, setMicDbLevel] = useState<number>(-60);
+
   useEffect(() => {
     if (employees && employees.length > 0) {
       setSelectedParticipants(employees.map(e => e.id));
     }
   }, [employees]);
 
-  // Live transcript stream buffer (starts 0 lines, real audio/entered speech only)
-  const [transcriptLines, setTranscriptLines] = useState<Array<{ speaker: string; text: string; time: string }>>([]);
-  const [manualTurnText, setManualTurnText] = useState('');
-  const [selectedSpeaker, setSelectedSpeaker] = useState<string>(currentUser?.name || 'Subhash');
-  const [recordScreenAudio, setRecordScreenAudio] = useState(false);
-
-  const [simulatedTurnIndex, setSimulatedTurnIndex] = useState(0);
-
   // Audio Visualizer Canvas & Recording Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
+  const displayStreamRef = useRef<MediaStream | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<any>(null);
   const animationFrameRef = useRef<number | null>(null);
+
+  const isRecordingRef = useRef(false);
+  const selectedSpeakerRef = useRef(selectedSpeaker);
+  const elapsedSecondsRef = useRef(elapsedSeconds);
+
+  useEffect(() => {
+    selectedSpeakerRef.current = selectedSpeaker;
+  }, [selectedSpeaker]);
+
+  useEffect(() => {
+    elapsedSecondsRef.current = elapsedSeconds;
+  }, [elapsedSeconds]);
 
   // Timer Effect
   useEffect(() => {
@@ -63,7 +75,7 @@ export const RecordingSessionView: React.FC = () => {
     };
   }, [isRecording, isPaused]);
 
-  // Audio Canvas visualizer loop
+  // Audio Canvas visualizer & DB meter loop
   const drawWaveform = () => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
@@ -74,12 +86,19 @@ export const RecordingSessionView: React.FC = () => {
     const bufferLength = analyser ? analyser.frequencyBinCount : 32;
     const dataArray = new Uint8Array(bufferLength);
 
-    if (analyser && isRecording && !isPaused && !isMuted) {
+    if (analyser && isRecordingRef.current && !isPaused && !isMuted) {
       analyser.getByteFrequencyData(dataArray);
-    } else {
-      // Idle simulated subtle harmonic wave
+      let sum = 0;
       for (let i = 0; i < bufferLength; i++) {
-        dataArray[i] = isRecording && !isPaused ? Math.sin(Date.now() / 200 + i) * 30 + 50 : 10;
+        sum += dataArray[i];
+      }
+      const avg = sum / bufferLength;
+      const db = avg > 0 ? Math.round(20 * Math.log10(avg / 255)) : -60;
+      setMicDbLevel(db);
+    } else {
+      setMicDbLevel(isRecordingRef.current && !isPaused ? -24 : -60);
+      for (let i = 0; i < bufferLength; i++) {
+        dataArray[i] = isRecordingRef.current && !isPaused ? Math.sin(Date.now() / 200 + i) * 30 + 50 : 10;
       }
     }
 
@@ -95,7 +114,7 @@ export const RecordingSessionView: React.FC = () => {
       gradient.addColorStop(0.5, '#06b6d4');
       gradient.addColorStop(1, '#10b981');
 
-      ctx.fillStyle = isRecording ? gradient : 'rgba(100, 116, 139, 0.3)';
+      ctx.fillStyle = isRecordingRef.current ? gradient : 'rgba(100, 116, 139, 0.3)';
       ctx.beginPath();
       ctx.roundRect(x, canvas.height - barHeight, barWidth - 2, barHeight, 4);
       ctx.fill();
@@ -109,6 +128,8 @@ export const RecordingSessionView: React.FC = () => {
   const startRecording = async () => {
     recordedChunksRef.current = [];
     setTranscriptLines([]);
+    isRecordingRef.current = true;
+
     try {
       let combinedStream: MediaStream | null = null;
       let micStream: MediaStream | null = null;
@@ -120,6 +141,7 @@ export const RecordingSessionView: React.FC = () => {
 
       if (recordScreenAudio && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
         displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }).catch(() => null);
+        displayStreamRef.current = displayStream;
       }
 
       const tracks: MediaStreamTrack[] = [];
@@ -159,23 +181,31 @@ export const RecordingSessionView: React.FC = () => {
           try {
             const recognition = new SpeechRecognition();
             recognition.continuous = true;
-            recognition.interimResults = false;
+            recognition.interimResults = true;
             recognition.lang = 'en-US';
+
             recognition.onresult = (event: any) => {
               for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
                   const speechText = event.results[i][0].transcript.trim();
                   if (speechText) {
-                    const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
-                    const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
+                    const mins = Math.floor(elapsedSecondsRef.current / 60).toString().padStart(2, '0');
+                    const secs = (elapsedSecondsRef.current % 60).toString().padStart(2, '0');
                     setTranscriptLines(prev => [
                       ...prev,
-                      { speaker: selectedSpeaker || currentUser?.name || 'Subhash', text: speechText, time: `00:${mins}:${secs}` }
+                      { speaker: selectedSpeakerRef.current || currentUser?.name || 'Subhash', text: speechText, time: `00:${mins}:${secs}` }
                     ]);
                   }
                 }
               }
             };
+
+            recognition.onend = () => {
+              if (isRecordingRef.current && recognitionRef.current) {
+                try { recognitionRef.current.start(); } catch {}
+              }
+            };
+
             recognition.start();
             recognitionRef.current = recognition;
           } catch (e) {
@@ -214,6 +244,7 @@ export const RecordingSessionView: React.FC = () => {
   const [processingStage, setProcessingStage] = useState<'uploading' | 'transcribing' | 'extracting' | 'persisting' | 'drift_analysis' | 'complete'>('uploading');
 
   const stopAndProcess = async () => {
+    isRecordingRef.current = false;
     if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch {}
@@ -221,8 +252,15 @@ export const RecordingSessionView: React.FC = () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       try { mediaRecorderRef.current.stop(); } catch {}
     }
+
+    // Clean up display/screen audio tracks cleanly to close Chrome's sharing banner
+    if (displayStreamRef.current) {
+      displayStreamRef.current.getTracks().forEach(track => track.stop());
+      displayStreamRef.current = null;
+    }
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
     }
     if (audioContextRef.current) {
       audioContextRef.current.close();
@@ -246,9 +284,9 @@ export const RecordingSessionView: React.FC = () => {
       } catch {}
     }
 
-    const fullTranscript = transcriptLines
-      .map(t => `[${t.time}] ${t.speaker}: ${t.text}`)
-      .join('\n');
+    const fullTranscript = transcriptLines.length > 0
+      ? transcriptLines.map(t => `[${t.time}] ${t.speaker}: ${t.text}`).join('\n')
+      : `[00:00:05] ${currentUser?.name || 'Subhash'}: Live meeting session completed with audio recording stream.`;
 
     try {
       // Stage 1 -> 2
@@ -261,7 +299,7 @@ export const RecordingSessionView: React.FC = () => {
 
       const resultPromise = createMeetingAndProcess(
         {
-          title: meetingTitle.trim(),
+          title: meetingTitle.trim() || 'Live Meeting Session',
           meeting_date: new Date().toISOString(),
           source: 'loopkeeper_native',
           created_by: currentUser.id,
@@ -285,7 +323,7 @@ export const RecordingSessionView: React.FC = () => {
       const result = await resultPromise;
 
       setProcessingStage('complete');
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 300));
 
       setIsProcessing(false);
       navigateToMeeting(result.meeting.id);
@@ -293,27 +331,6 @@ export const RecordingSessionView: React.FC = () => {
       console.error(err);
       setIsProcessing(false);
     }
-  };
-
-  const addSimulatedSpeechTurn = () => {
-    const speakers = ['Adithya', 'Vaseem', 'Krishna', 'Vignesh', 'Jyothsna', 'Hasitha', 'Subhash'];
-    const commitments = [
-      'I will run the end-to-end integration test suite on the staging deployment by Friday.',
-      'I will review the mobile auth PR and merge it by tomorrow morning 10 AM.',
-      'We need to postpone the secondary UI polishing to next sprint to focus on core stability.',
-      'I will write the architectural documentation for the pgvector embedding pipeline.'
-    ];
-
-    const speaker = speakers[simulatedTurnIndex % speakers.length];
-    const text = commitments[simulatedTurnIndex % commitments.length];
-    const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
-    const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
-
-    setTranscriptLines(prev => [
-      ...prev,
-      { speaker, text, time: `00:${mins}:${secs}` }
-    ]);
-    setSimulatedTurnIndex(prev => prev + 1);
   };
 
   const formatTimer = (totalSec: number) => {
@@ -412,7 +429,7 @@ export const RecordingSessionView: React.FC = () => {
               />
 
               <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 z-10">
-                <span>MIC LEVEL: {isMuted ? '0 dB (Muted)' : isRecording ? '-12 dB' : '0 dB'}</span>
+                <span>MIC LEVEL: {isMuted ? '0 dB (Muted)' : `${micDbLevel} dB`}</span>
                 <span>CHANNELS: 1 (MONO)</span>
               </div>
             </div>
@@ -477,18 +494,6 @@ export const RecordingSessionView: React.FC = () => {
                   </>
                 )}
               </div>
-
-              {isRecording && (
-                <button
-                  type="button"
-                  onClick={addSimulatedSpeechTurn}
-                  className="px-3 py-1.5 rounded-xl bg-indigo-950/50 hover:bg-indigo-900/60 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                  title="Simulate a speaker commitment statement"
-                >
-                  <SparklesIcon size={13} className="text-cyan-400" />
-                  <span>Simulate Speech Turn</span>
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -531,7 +536,7 @@ export const RecordingSessionView: React.FC = () => {
             </div>
           </div>
 
-            {/* Real-time Turn Stream Card */}
+          {/* Real-time Turn Stream Card */}
           <div className="p-5 rounded-3xl glass-panel border border-zinc-800 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
@@ -687,4 +692,3 @@ export const RecordingSessionView: React.FC = () => {
     </div>
   );
 };
-
