@@ -249,11 +249,9 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                         : 'bg-zinc-950/80 border-zinc-800 text-zinc-400 hover:border-zinc-700'
                     }`}
                   >
-                    <img
-                      src={emp.avatar_url}
-                      alt={emp.name}
-                      className="h-5 w-5 rounded-full object-cover"
-                    />
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 text-indigo-300 font-bold text-[9px] shrink-0">
+                      {emp.name.charAt(0)}
+                    </div>
                     <span>{emp.name}</span>
                   </button>
                 );
