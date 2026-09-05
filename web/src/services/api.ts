@@ -359,165 +359,155 @@ export const api = {
 
     lines.forEach((line, index) => {
       const lower = line.toLowerCase();
-      if (
-        lower.includes('will') ||
-        lower.includes('need to') ||
-        lower.includes('working on') ||
-        lower.includes('action item') ||
-        lower.includes('finish') ||
-        lower.includes('deploy') ||
-        lower.includes('complete') ||
-        lower.includes('audit') ||
-        lower.includes('optimize') ||
-        lower.includes('move it to') ||
-        lower.includes('postpone')
-      ) {
-        // 1. Identify Owner
-        let owner: Employee | undefined = localStore.employees.find(e =>
-          line.toLowerCase().includes(e.name.toLowerCase().split(' ')[0])
-        );
+      // 1. Identify Owner from line text or speaker tag
+      let owner: Employee | undefined = localStore.employees.find(e =>
+        line.toLowerCase().includes(e.name.toLowerCase().split(' ')[0])
+      );
 
-        if (!owner) {
-          const matchSpeaker = line.match(/\[.*?\]\s*([^:]+):/);
-          if (matchSpeaker && matchSpeaker[1]) {
-            const speaker = matchSpeaker[1].trim();
-            owner = localStore.employees.find(e =>
-              e.name.toLowerCase().includes(speaker.toLowerCase())
-            );
-          }
+      if (!owner) {
+        const matchSpeaker = line.match(/\[.*?\]\s*([^:]+):/);
+        if (matchSpeaker && matchSpeaker[1]) {
+          const speaker = matchSpeaker[1].trim();
+          owner = localStore.employees.find(e =>
+            e.name.toLowerCase().includes(speaker.toLowerCase())
+          );
+        }
+      }
+
+      if (!owner && meeting?.created_by) {
+        owner = localStore.employees.find(e => e.id === meeting.created_by);
+      }
+
+      // 2. Extract Title
+      let title = line.replace(/\[\d\d:\d\d:\d\d\]\s*/g, '').trim();
+      if (title.includes(':')) {
+        title = title.split(':')[1].trim();
+      }
+      title = title.replace(/^(I will|I'll|I need to|Adithya,|Vaseem,|Krishna,|Hasitha,|Vignesh,|Jyothsna,|Subhash,|still working on)\s*/i, '');
+      title = title.charAt(0).toUpperCase() + title.slice(1);
+      if (!title || title.length < 2) title = `Commitment turn ${index + 1} from ${meeting?.title || 'meeting'}`;
+
+      // 3. Semantic match against existing active tasks
+      const existingTask = localStore.actionItems.find(a => {
+        const aTitle = a.title.toLowerCase();
+        const lineWords = lower.split(/\s+/);
+        if (a.owner_employee_id && owner && a.owner_employee_id === owner.id) {
+          const hasCommonKeywords = lineWords.some(w => w.length > 4 && aTitle.includes(w));
+          if (hasCommonKeywords) return true;
+        }
+        if (lower.includes('payment') && aTitle.includes('payment')) return true;
+        if (lower.includes('auth') && aTitle.includes('auth')) return true;
+        return false;
+      });
+
+      if (existingTask) {
+        // Continuity: Update existing task
+        const isPostponed = lower.includes('move it to') || lower.includes('postpone') || lower.includes('still working on') || lower.includes('monday');
+        const newPostponementCount = isPostponed ? (existingTask.postponement_count || 0) + 1 : (existingTask.postponement_count || 0);
+
+        let updatedDeadline = existingTask.deadline;
+        if (lower.includes('monday')) {
+          updatedDeadline = new Date(Date.now() + 3 * 86400000).toISOString();
         }
 
-        // 2. Extract Title
-        let title = line.replace(/\[\d\d:\d\d:\d\d\]\s*/g, '').trim();
-        if (title.includes(':')) {
-          title = title.split(':')[1].trim();
-        }
-        title = title.replace(/^(I will|I'll|I need to|Adithya,|Vaseem,|Krishna,|Hasitha,|Vignesh,|Jyothsna,|Subhash,|still working on)\s*/i, '');
-        title = title.charAt(0).toUpperCase() + title.slice(1);
+        existingTask.last_seen_at = new Date().toISOString();
+        existingTask.postponement_count = newPostponementCount;
+        existingTask.deadline = updatedDeadline;
+        existingTask.updated_at = new Date().toISOString();
 
-        // 3. Semantic match against existing active tasks
-        const existingTask = localStore.actionItems.find(a => {
-          const aTitle = a.title.toLowerCase();
-          const lineWords = lower.split(/\s+/);
-          // Check keywords like "payment", "auth token", "pgvector", "audit"
-          if (a.owner_employee_id && owner && a.owner_employee_id === owner.id) {
-            const hasCommonKeywords = lineWords.some(w => w.length > 4 && aTitle.includes(w));
-            if (hasCommonKeywords) return true;
-          }
-          if (lower.includes('payment') && aTitle.includes('payment')) return true;
-          if (lower.includes('auth') && aTitle.includes('auth')) return true;
-          return false;
-        });
-
-        if (existingTask) {
-          // Continuity: Update existing task
-          const isPostponed = lower.includes('move it to') || lower.includes('postpone') || lower.includes('still working on') || lower.includes('monday');
-          const newPostponementCount = isPostponed ? (existingTask.postponement_count || 0) + 1 : (existingTask.postponement_count || 0);
-
-          let updatedDeadline = existingTask.deadline;
-          if (lower.includes('monday')) {
-            updatedDeadline = new Date(Date.now() + 3 * 86400000).toISOString();
-          }
-
-          existingTask.last_seen_at = new Date().toISOString();
-          existingTask.postponement_count = newPostponementCount;
-          existingTask.deadline = updatedDeadline;
-          existingTask.updated_at = new Date().toISOString();
-
-          // Log continuity audit event
-          if (!localStore.history[existingTask.id]) localStore.history[existingTask.id] = [];
-          
-          if (isPostponed) {
-            localStore.history[existingTask.id].push({
-              id: `h-${Date.now()}-${index}-postpone`,
-              action_item_id: existingTask.id,
-              meeting_id: meetingId,
-              meeting_title: meeting?.title || 'Meeting',
-              event_type: 'postponed',
-              previous_value: { postponement_count: existingTask.postponement_count - 1 },
-              new_value: { postponement_count: newPostponementCount, deadline: updatedDeadline },
-              evidence_text: line.trim(),
-              created_at: new Date().toISOString()
-            });
-          } else {
-            localStore.history[existingTask.id].push({
-              id: `h-${Date.now()}-${index}-updated`,
-              action_item_id: existingTask.id,
-              meeting_id: meetingId,
-              meeting_title: meeting?.title || 'Meeting',
-              event_type: 'updated',
-              previous_value: { status: existingTask.status },
-              new_value: { status: existingTask.status },
-              evidence_text: line.trim(),
-              created_at: new Date().toISOString()
-            });
-          }
-
-          const matchedItemForReturn: ActionItem = {
-            ...existingTask,
-            meeting_id: meetingId,
-            match_decision: 'matched',
-            match_reason: `Continuity match with previously recorded task (Similarity score: 0.942).`
-          };
-          extracted.push(matchedItemForReturn);
-        } else {
-          // New Commitment
-          const confidence = 0.88 + (Math.random() * 0.11);
-          const deadlineDate = new Date(Date.now() + (index + 2) * 86400000 * 2).toISOString();
-
-          const newItem: ActionItem = {
-            id: `a-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 6)}`,
+        if (!localStore.history[existingTask.id]) localStore.history[existingTask.id] = [];
+        
+        if (isPostponed) {
+          localStore.history[existingTask.id].push({
+            id: `h-${Date.now()}-${index}-postpone`,
+            action_item_id: existingTask.id,
             meeting_id: meetingId,
             meeting_title: meeting?.title || 'Meeting',
-            title: title.length > 80 ? title.substring(0, 77) + '...' : title,
-            description: `Extracted automatically from meeting discussion: "${line.trim()}"`,
-            owner_employee_id: owner?.id || null,
-            owner_name: owner?.name || 'Unassigned',
-            deadline: deadlineDate,
-            status: 'pending',
-            confidence: Number(confidence.toFixed(2)),
-            source_text: line.trim(),
-            first_seen_at: new Date().toISOString(),
-            last_seen_at: new Date().toISOString(),
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            postponement_count: 0,
-            match_decision: 'new',
-            match_reason: 'Extracted as new commitment from transcript processing pipeline.'
-          };
-
-          extracted.push(newItem);
-
-          const historyEvent = {
-            id: `h-${Date.now()}-${index}`,
-            action_item_id: newItem.id,
-            meeting_id: meetingId,
-            meeting_title: meeting?.title,
-            event_type: 'created',
-            new_value: { status: 'pending', deadline: deadlineDate, owner: newItem.owner_name },
+            event_type: 'postponed',
+            previous_value: { postponement_count: existingTask.postponement_count - 1 },
+            new_value: { postponement_count: newPostponementCount, deadline: updatedDeadline },
             evidence_text: line.trim(),
             created_at: new Date().toISOString()
-          };
-          if (!localStore.history[newItem.id]) localStore.history[newItem.id] = [];
-          localStore.history[newItem.id].push(historyEvent);
-          localStore.actionItems.unshift(newItem);
+          });
+        } else {
+          localStore.history[existingTask.id].push({
+            id: `h-${Date.now()}-${index}-updated`,
+            action_item_id: existingTask.id,
+            meeting_id: meetingId,
+            meeting_title: meeting?.title || 'Meeting',
+            event_type: 'updated',
+            previous_value: { status: existingTask.status },
+            new_value: { status: existingTask.status },
+            evidence_text: line.trim(),
+            created_at: new Date().toISOString()
+          });
         }
+
+        const matchedItemForReturn: ActionItem = {
+          ...existingTask,
+          meeting_id: meetingId,
+          match_decision: 'matched',
+          match_reason: `Continuity match with previously recorded task (Similarity score: 0.942).`
+        };
+        extracted.push(matchedItemForReturn);
+      } else {
+        // New Commitment
+        const confidence = 0.88 + (Math.random() * 0.11);
+        const deadlineDate = new Date(Date.now() + (index + 2) * 86400000 * 2).toISOString();
+
+        const newItem: ActionItem = {
+          id: `a-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 6)}`,
+          meeting_id: meetingId,
+          meeting_title: meeting?.title || 'Meeting',
+          title: title.length > 80 ? title.substring(0, 77) + '...' : title,
+          description: `Extracted automatically from meeting discussion turn: "${line.trim()}"`,
+          owner_employee_id: owner?.id || localStore.employees[0].id,
+          owner_name: owner?.name || localStore.employees[0].name,
+          deadline: deadlineDate,
+          status: 'pending',
+          confidence: Number(confidence.toFixed(2)),
+          source_text: line.trim(),
+          first_seen_at: new Date().toISOString(),
+          last_seen_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          postponement_count: 0,
+          match_decision: 'new',
+          match_reason: 'Extracted as new commitment from transcript processing pipeline.'
+        };
+
+        extracted.push(newItem);
+
+        const historyEvent = {
+          id: `h-${Date.now()}-${index}`,
+          action_item_id: newItem.id,
+          meeting_id: meetingId,
+          meeting_title: meeting?.title,
+          event_type: 'created',
+          new_value: { status: 'pending', deadline: deadlineDate, owner: newItem.owner_name },
+          evidence_text: line.trim(),
+          created_at: new Date().toISOString()
+        };
+        if (!localStore.history[newItem.id]) localStore.history[newItem.id] = [];
+        localStore.history[newItem.id].push(historyEvent);
+        localStore.actionItems.unshift(newItem);
       }
     });
 
     if (extracted.length === 0) {
+      const defaultOwner = (meeting?.created_by && localStore.employees.find(e => e.id === meeting.created_by)) || localStore.employees[0];
       const fallbackItem: ActionItem = {
         id: `a-${Date.now()}-fallback`,
         meeting_id: meetingId,
         meeting_title: meeting?.title || 'Meeting',
         title: `Deliver key commitments from ${meeting?.title || 'meeting'}`,
         description: 'Action items extracted from transcript discussion.',
-        owner_employee_id: localStore.employees[1].id,
-        owner_name: localStore.employees[1].name,
+        owner_employee_id: defaultOwner.id,
+        owner_name: defaultOwner.name,
         deadline: new Date(Date.now() + 3 * 86400000).toISOString(),
         status: 'pending',
         confidence: 0.92,
-        source_text: content.substring(0, 120),
+        source_text: content.substring(0, 120) || meeting?.title || 'Meeting transcript turn',
         first_seen_at: new Date().toISOString(),
         last_seen_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
