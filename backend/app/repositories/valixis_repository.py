@@ -5,11 +5,15 @@ from app.models.models import Employee, Task
 class ValixisRepository:
     def __init__(self, db_session=None):
         self.db = db_session
-        # In-memory fallback / cache for mock testing when DB is not connected
+        # In-memory fallback / cache matching live VALIXIS employees when DB session is uninitialized
         self._mock_employees: List[dict] = [
-            {"id": "11111111-1111-1111-1111-111111111111", "name": "Alice Johnson", "email": "alice@valixis.com", "role": "employee"},
-            {"id": "22222222-2222-2222-2222-222222222222", "name": "Bob Smith", "email": "bob@valixis.com", "role": "employee"},
-            {"id": "33333333-3333-3333-3333-333333333333", "name": "Charlie Davis", "email": "charlie@valixis.com", "role": "manager"},
+            {"id": "e6cb8913-904a-4a7d-b507-ba1470665dc5", "name": "Adithya", "email": "adithya@valixis.com", "role": "employee"},
+            {"id": "39244951-87a5-44e6-801a-28cb3b1a0ed5", "name": "Hasitha", "email": "hasitha@valixis.com", "role": "employee"},
+            {"id": "43e5d5fc-fc54-49bb-8faa-79018cf49349", "name": "Jyothsna", "email": "jyothsna@valixis.com", "role": "manager"},
+            {"id": "8a18fff4-6236-4d54-a29a-eeb3c65dd646", "name": "Krishna", "email": "krishna@valixis.com", "role": "employee"},
+            {"id": "9e1060b0-3f08-4fe3-bbb9-0f7a68b13bee", "name": "Subhash", "email": "official.valixis@gmail.com", "role": "manager"},
+            {"id": "a2b32605-343c-4ef4-9365-e219e8b21e20", "name": "Vaseem", "email": "vaseem@valixis.com", "role": "employee"},
+            {"id": "5af2f8a8-a881-408a-8fdd-1fee384f1779", "name": "Vignesh", "email": "vignesh@valixis.com", "role": "employee"},
         ]
         self._mock_tasks: List[dict] = []
 
@@ -51,6 +55,23 @@ class ValixisRepository:
             if employees:
                 return [{"id": str(e.id), "name": e.name, "email": e.email, "role": e.role} for e in employees]
         return self._mock_employees
+
+    def list_valixis_tasks(self) -> List[dict]:
+        """List all tasks from VALIXIS Portal. Read-Only."""
+        if self.db:
+            tasks = self.db.query(Task).all()
+            if tasks:
+                return [
+                    {
+                        "id": str(t.id),
+                        "title": t.title,
+                        "description": t.description,
+                        "priority": t.priority,
+                        "deadline": t.deadline.isoformat() if t.deadline else None
+                    }
+                    for t in tasks
+                ]
+        return self._mock_tasks
 
     def search_existing_tasks(self, query_str: str) -> List[dict]:
         """Search existing VALIXIS tasks by title/description. Read-Only."""

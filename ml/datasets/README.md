@@ -45,4 +45,4 @@ Each dataset item follows this JSON schema:
 - `test.json`: 5 samples for blind test evaluation.
 
 ## Methodology & Privacy
-All examples are synthetically generated using realistic software engineering hackathon scenarios. Zero PII or private corporate data is present.
+All examples are synthetically generated using realistic software engineering meeting scenarios. Zero PII or private corporate data is present.

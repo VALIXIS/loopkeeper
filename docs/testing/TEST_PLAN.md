@@ -1,15 +1,15 @@
-# LoopKeeper Quality Assurance & Hackathon Test Plan
+# LoopKeeper Quality Assurance & System Verification Test Plan
 
 ## Executive Overview
-This document defines the comprehensive Quality Assurance (QA) test plan for **LoopKeeper**. It details the test methodology, functional and non-functional test cases, AI extraction validation procedures, task continuity verification, API contract compliance checks, failure scenario handling, and the final **Hackathon Acceptance Checklist**.
+This document defines the comprehensive Quality Assurance (QA) test plan for **LoopKeeper**. It details the test methodology, functional and non-functional test cases, AI extraction validation procedures, task continuity verification, API contract compliance checks, failure scenario handling, and the final **System Acceptance Checklist**.
 
 ---
 
 ## 1. Requirement Traceability Matrix
 
-Every test case in this plan traces directly back to the official SRM Hackathon challenge requirements:
+Every test case in this plan traces directly back to official product requirements:
 
-| Official Challenge Requirement | Test Category | Target Component | Core Verification Focus |
+| Official Product Requirement | Test Category | Target Component | Core Verification Focus |
 | :--- | :--- | :--- | :--- |
 | **1. Extract Action Items** | Functional / AI | AI Pipeline (`extraction.py`) | Parse unstructured transcripts into structured task objects. |
 | **2. Identify Owner, Deadline & Status** | Functional / AI | AI Pipeline & State Engine | Correctly extract employee owner, target date, and initial status (`pending`). |
@@ -144,11 +144,11 @@ Every test case in this plan traces directly back to the official SRM Hackathon 
 
 ---
 
-## 4. Final Hackathon Acceptance Checklist
+## 4. Final System Acceptance Checklist
 
-This checklist must be executed prior to final submission to guarantee 100% compliance with SRM Hackathon evaluation criteria:
+This checklist must be executed prior to release to guarantee 100% compliance with product quality standards:
 
-| # | Official Challenge Requirement | Test Method | Verification Standard | Pass / Fail Criteria |
+| # | Official Product Requirement | Test Method | Verification Standard | Pass / Fail Criteria |
 | :-: | :--- | :--- | :--- | :-: |
 | **1** | Extract action items from meetings | Automated API Test (`TC-AI-001`) | Action items correctly extracted with title, owner, and deadline. | **PASS** |
 | **2** | Identify owner, deadline & status | Schema Audit | `owner_employee_id`, `deadline`, `status` populated in `loopkeeper_action_items`. | **PASS** |

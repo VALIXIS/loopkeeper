@@ -122,7 +122,21 @@ export const api = {
     localStore.forceMockMode = enabled;
   },
 
-  getEmployees(): Employee[] {
+  async getEmployees(): Promise<Employee[]> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/employees`);
+        if (res.ok) {
+          const data: Employee[] = await res.json();
+          if (data && data.length > 0) {
+            localStore.employees = data;
+            return data;
+          }
+        }
+      } catch (err) {
+        console.warn('Backend getEmployees failed, using local store', err);
+      }
+    }
     return localStore.employees;
   },
 

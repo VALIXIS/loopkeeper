@@ -2,47 +2,65 @@ import type { Employee, Meeting, ActionItem, ActionItemHistory, AIRunTelemetry }
 
 export const MOCK_EMPLOYEES: Employee[] = [
   {
-    id: '11111111-1111-1111-1111-111111111111',
-    name: 'Jyothsna (Lead Architect)',
-    email: 'jyothsna@srmhack.loopkeeper.io',
+    id: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
+    name: 'Jyothsna',
+    email: 'jyothsna@valixis.com',
     role: 'Product Lead & Lead Architect',
-    department: 'Core Engineering',
+    department: 'Engineering',
     avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
     is_manager: true
   },
   {
-    id: '22222222-2222-2222-2222-222222222222',
-    name: 'Alice Johnson',
-    email: 'alice.j@srmhack.loopkeeper.io',
-    role: 'Senior Backend Engineer',
-    department: 'Platform',
-    avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
-    is_manager: false
-  },
-  {
-    id: '33333333-3333-3333-3333-333333333333',
-    name: 'Bob Smith',
-    email: 'bob.smith@srmhack.loopkeeper.io',
-    role: 'Frontend & UI Specialist',
-    department: 'Client Experience',
+    id: '9e1060b0-3f08-4fe3-bbb9-0f7a68b13bee',
+    name: 'Subhash',
+    email: 'official.valixis@gmail.com',
+    role: 'Engineering Manager',
+    department: 'Core Operations',
     avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    is_manager: false
+    is_manager: true
   },
   {
-    id: '44444444-4444-4444-4444-444444444444',
-    name: 'Charlie Lee',
-    email: 'charlie.l@srmhack.loopkeeper.io',
-    role: 'AI & Inference Systems Engineer',
-    department: 'Applied AI',
+    id: 'e6cb8913-904a-4a7d-b507-ba1470665dc5',
+    name: 'Adithya',
+    email: 'adithya@valixis.com',
+    role: 'Senior Platform Engineer',
+    department: 'Core Engineering',
     avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     is_manager: false
   },
   {
-    id: '55555555-5555-5555-5555-555555555555',
-    name: 'Diana Patel',
-    email: 'diana.p@srmhack.loopkeeper.io',
-    role: 'Integration & QA Lead',
-    department: 'Quality & Ops',
+    id: 'a2b32605-343c-4ef4-9365-e219e8b21e20',
+    name: 'Vaseem',
+    email: 'vaseem@valixis.com',
+    role: 'Senior Full Stack Engineer',
+    department: 'Frontend & Mobile',
+    avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '8a18fff4-6236-4d54-a29a-eeb3c65dd646',
+    name: 'Krishna',
+    email: 'krishna@valixis.com',
+    role: 'Backend & ML Engineer',
+    department: 'AI Systems',
+    avatar_url: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '5af2f8a8-a881-408a-8fdd-1fee384f1779',
+    name: 'Vignesh',
+    email: 'vignesh@valixis.com',
+    role: 'Systems Engineer',
+    department: 'Infrastructure',
+    avatar_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '39244951-87a5-44e6-801a-28cb3b1a0ed5',
+    name: 'Hasitha',
+    email: 'hasitha@valixis.com',
+    role: 'Quality & Test Engineer',
+    department: 'QA & Compliance',
     avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
     is_manager: false
   }
@@ -120,7 +138,7 @@ export const MOCK_TRANSCRIPTS: Record<string, string> = {
 [00:03:10] Charlie: The SLM provider pipeline is functioning, but latency was high. I need to optimize the ONNX runtime inference to get it under 250ms by September 8th.
 [00:04:00] Alice: The pgvector HNSW index is completed and verified against sample embeddings.`,
 
-  'm1000000-0000-0000-0000-000000000004': `[00:00:30] Jyothsna: Final stretch before hackathon demo. Bob, how is the Accountability Graph visualization looking?
+  'm1000000-0000-0000-0000-000000000004': `[00:00:30] Jyothsna: Final stretch before release. Bob, how is the Accountability Graph visualization looking?
 [00:00:50] Bob: The signature graph mapping Meetings to Commitments to Outcomes is interactive and smooth. I'll add the zoom controls by 2 PM today.
 [00:01:30] Charlie: AI Fallback pipeline successfully triggers FallbackLLM whenever SLM confidence drops below 0.75.`
 };

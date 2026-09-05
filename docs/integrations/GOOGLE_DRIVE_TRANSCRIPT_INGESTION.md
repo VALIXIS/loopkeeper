@@ -60,11 +60,11 @@ The parser preserves speaker attribution (e.g. `[10:32] Rahul: "..."`).
 - `GET /api/v1/integrations/google-drive/auth-url`: Returns OAuth authorization URL.
 - `GET /api/v1/integrations/google-drive/status`: Returns integration status & scope config.
 - `POST /api/v1/integrations/google-drive/sync`: Triggers Google Drive transcript discovery & sync.
-- `POST /api/v1/integrations/google-drive/demo-sync`: Triggers deterministic Hackathon Demo ingestion using synthetic transcripts.
+- `POST /api/v1/integrations/google-drive/demo-sync`: Triggers deterministic Demo Mode ingestion using synthetic transcripts.
 
 ---
 
-## 6. Hackathon Demo Mode
+## 6. Demo Mode
 Run the deterministic demo via:
 ```bash
 POST /api/v1/integrations/google-drive/demo-sync

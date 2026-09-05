@@ -1,0 +1,172 @@
+[
+  {
+    "id": "valixis-task-b3abaad6",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "Background Health Connect and Periodic Step Sync Engine",
+    "assigned_owner": "Adithya",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "Critical",
+    "deadline": "2026-09-03 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-7f0d7f4f",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "AdMob Native Advanced Ads Feed Integration",
+    "assigned_owner": "Vaseem",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "High",
+    "deadline": "2026-09-03 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-33a040d0",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "Accessibility (A11y) and Minimum Touch Target Audit",
+    "assigned_owner": "Krishna",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "Medium",
+    "deadline": "2026-09-03 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-74b1b0ba",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "SQLite Local Storage and Multi-Month Trend Analytics Database",
+    "assigned_owner": "Adithya",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "Critical",
+    "deadline": "2026-09-04 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-b63c218a",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "Interactive Hydration and Sleep Goal Reminder Engine",
+    "assigned_owner": "Vaseem",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "High",
+    "deadline": "2026-09-04 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-cf4e96e3",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "Performance Profiling and Memory Leak Optimization",
+    "assigned_owner": "Krishna",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "Medium",
+    "deadline": "2026-09-04 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-b4eeffc0",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "Exportable Progress and Streak Milestone Story Cards",
+    "assigned_owner": "Vaseem",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "High",
+    "deadline": "2026-09-05 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-0a56f3a4",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "Cloud Backup and Sync Protocol (Firebase / Supabase)",
+    "assigned_owner": "Adithya",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "Critical",
+    "deadline": "2026-09-05 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-138ea956",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "UI Micro-Interactions and Haptic Feedback Polish",
+    "assigned_owner": "Krishna",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "Medium",
+    "deadline": "2026-09-05 23:59:59+00"
+  },
+  {
+    "id": "valixis-task-084c3eeb",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "VIGNESH - SEP 2ND",
+    "assigned_owner": "Vignesh",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "High",
+    "deadline": "2026-09-02 00:00:00+00"
+  },
+  {
+    "id": "valixis-task-b66b4e05",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "KRISHNA - SEP 2ND",
+    "assigned_owner": "Krishna",
+    "portal_status": "approved",
+    "mapped_loopkeeper_status": "done",
+    "priority": "High",
+    "deadline": "2026-09-02 00:00:00+00"
+  },
+  {
+    "id": "valixis-task-f61a1b32",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "ADITHYA - SEP 2ND",
+    "assigned_owner": "Adithya",
+    "portal_status": "approved",
+    "mapped_loopkeeper_status": "done",
+    "priority": "High",
+    "deadline": "2026-09-02 00:00:00+00"
+  },
+  {
+    "id": "valixis-task-6d3dfd59",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "Hasitha - SEP 2nd",
+    "assigned_owner": "Hasitha",
+    "portal_status": "approved",
+    "mapped_loopkeeper_status": "done",
+    "priority": "High",
+    "deadline": "2026-09-02 00:00:00+00"
+  },
+  {
+    "id": "valixis-task-98692723",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "ADITHYA - AUG 28",
+    "assigned_owner": "Adithya",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "High",
+    "deadline": "2026-08-28 00:00:00+00"
+  },
+  {
+    "id": "valixis-task-c61307b2",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "VASEEM - AUG 28",
+    "assigned_owner": "Vaseem",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "High",
+    "deadline": "2026-08-28 00:00:00+00"
+  },
+  {
+    "id": "valixis-task-15fb0a71",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "HASITHA - AUG 28",
+    "assigned_owner": "Hasitha",
+    "portal_status": "submitted",
+    "mapped_loopkeeper_status": "pending",
+    "priority": "High",
+    "deadline": "2026-08-28 00:00:00+00"
+  },
+  {
+    "id": "valixis-task-7cbde3b9",
+    "source": "VALIXIS_TASK_DERIVED",
+    "task_title": "KRISHNA - AUG 28",
+    "assigned_owner": "Krishna",
+    "portal_status": "approved",
+    "mapped_loopkeeper_status": "done",
+    "priority": "High",
+    "deadline": "2026-08-28 00:00:00+00"
+  }
+]

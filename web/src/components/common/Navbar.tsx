@@ -35,7 +35,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
                 LOOPKEEPER
               </span>
               <span className="rounded-md bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-bold text-indigo-300 border border-indigo-500/40">
-                SRM HACK
+                ENTERPRISE
               </span>
             </div>
             <p className="text-[11px] text-zinc-400 font-medium hidden sm:block">

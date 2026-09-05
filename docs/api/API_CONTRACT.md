@@ -130,5 +130,5 @@ Trigger Google Drive transcript discovery, duplicate filtering, ingestion, and A
   ```
 
 ### `POST /api/v1/integrations/google-drive/demo-sync`
-Run hackathon demo ingestion using synthetic Google Meet export transcripts.
+Run demo ingestion using synthetic Google Meet export transcripts.
 - **Response `200 OK`**
