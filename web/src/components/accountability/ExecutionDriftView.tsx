@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   ShieldAlertIcon,
@@ -102,7 +102,13 @@ export const ExecutionDriftView: React.FC = () => {
       mitigationRecommendation: `Review history log and verify commit hashes linked to ${a.title}.`
     }));
 
-  const driftItems = liveDriftItems.length > 0 ? liveDriftItems : demoDriftItems;
+  const [showReferencePatterns, setShowReferencePatterns] = useState(false);
+
+  const driftItems = liveDriftItems.length > 0
+    ? liveDriftItems
+    : showReferencePatterns
+    ? demoDriftItems
+    : [];
 
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">
@@ -115,14 +121,14 @@ export const ExecutionDriftView: React.FC = () => {
             Execution Drift Radar
           </span>
           <span className="text-xs font-mono text-zinc-400 hidden sm:inline">
-            Meeting Statements vs External Jira / Tracker Reality
+            Meeting Statements vs External Tracker Reality
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
           Verbal Commitments vs Tracker Discrepancies
         </h1>
         <p className="text-sm text-zinc-300 max-w-3xl leading-relaxed">
-          LoopKeeper's execution engine automatically cross-references verbal claims made in meetings against real external issue tracker states (Jira, GitHub PRs). When a speaker says "It's done" while Jira says "In Progress", LoopKeeper flags the drift before it cascades into delayed deliverables.
+          LoopKeeper's execution engine cross-references verbal claims made in meetings against issue tracker states (Jira, GitHub PRs). When a speaker says "It's done" while Jira remains "In Progress", LoopKeeper flags the drift before it cascades into delayed deliverables.
         </p>
       </div>
 
@@ -152,25 +158,50 @@ export const ExecutionDriftView: React.FC = () => {
 
         <div className="p-5 rounded-2xl glass-panel-elevated border border-cyan-500/30 shadow-lg">
           <div className="flex items-center justify-between text-xs text-zinc-400 font-semibold uppercase tracking-wider">
-            <span>Jira Linked Deliverables</span>
+            <span>Monitored Deliverables</span>
             <CheckCircleIcon size={16} className="text-cyan-400" />
           </div>
           <span className="text-3xl font-black font-mono text-cyan-400 mt-2 block">
             {actionItems.length}
           </span>
-          <p className="text-xs text-zinc-400 mt-1">Monitored for real-time drift</p>
+          <p className="text-xs text-zinc-400 mt-1">Active meeting action items</p>
         </div>
       </div>
 
-      {/* Drift Comparison Cards List */}
+      {/* Drift Comparison Cards List or Empty State */}
       <div className="space-y-4">
-        <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
-          <ShieldAlertIcon size={18} className="text-rose-400" />
-          Active Execution Drift Anomalies ({driftItems.length})
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+            <ShieldAlertIcon size={18} className="text-rose-400" />
+            Active Execution Drift Anomalies ({driftItems.length})
+          </h3>
+          {liveDriftItems.length === 0 && (
+            <button
+              onClick={() => setShowReferencePatterns(!showReferencePatterns)}
+              className="text-xs font-mono text-cyan-400 hover:text-cyan-300 underline"
+            >
+              {showReferencePatterns ? 'Hide Reference Patterns' : 'Show Reference Patterns'}
+            </button>
+          )}
+        </div>
 
-        <div className="space-y-4">
-          {driftItems.map(item => (
+        {driftItems.length === 0 ? (
+          <div className="p-10 rounded-3xl glass-panel border border-zinc-800 text-center space-y-3">
+            <CheckCircleIcon size={36} className="mx-auto text-emerald-400" />
+            <h4 className="text-base font-bold text-zinc-100">No Active Execution Drift Anomalies</h4>
+            <p className="text-xs text-zinc-400 max-w-md mx-auto">
+              All active meeting commitments match their expected tracker state and show clean execution continuity.
+            </p>
+            <button
+              onClick={() => setShowReferencePatterns(true)}
+              className="text-xs font-mono text-cyan-400 hover:underline pt-2 inline-block"
+            >
+              (Click to view sample reference drift patterns)
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {driftItems.map(item => (
             <div
               key={item.id}
               className="p-6 rounded-3xl glass-panel-elevated border border-rose-500/40 shadow-xl space-y-5 hover:border-rose-400/70 transition-all"
@@ -262,6 +293,7 @@ export const ExecutionDriftView: React.FC = () => {
             </div>
           ))}
         </div>
+      )}
       </div>
     </div>
   );

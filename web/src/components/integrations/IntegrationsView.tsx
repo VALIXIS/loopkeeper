@@ -32,11 +32,10 @@ export const IntegrationsView: React.FC = () => {
       id: 'jira',
       name: 'Atlassian Jira Software',
       category: 'Issue Tracker & Execution',
-      description: 'Bi-directional issue verification. Detects execution drift when meeting statements conflict with actual Jira issue status (e.g. PAY-142).',
+      description: 'Bi-directional issue verification. Detects execution drift when meeting statements conflict with actual Jira issue status.',
       iconBg: 'bg-blue-600',
       iconText: 'Jira',
-      status: 'connected',
-      lastSynced: 'Just now',
+      status: 'not_connected',
       features: ['Execution drift detection', 'Commitment ➔ Issue key linking', 'Sprint backlog alignment', 'Read-Only safe queries'],
       externalUrl: 'https://atlassian.net'
     },
@@ -47,9 +46,8 @@ export const IntegrationsView: React.FC = () => {
       description: 'Direct ingestion from Google Meet recordings and Google Drive transcript attachments.',
       iconBg: 'bg-emerald-600',
       iconText: 'Meet',
-      status: 'connected',
-      lastSynced: '14 minutes ago',
-      features: ['Google Drive transcript sync', 'Calendar event auto-tagging', 'Speaker diaritization ingest'],
+      status: 'not_connected',
+      features: ['Google Drive transcript sync', 'Calendar event auto-tagging', 'Speaker diarization ingest'],
       externalUrl: 'https://meet.google.com'
     },
     {
