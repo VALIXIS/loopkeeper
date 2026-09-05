@@ -386,7 +386,7 @@ LoopKeeper supports two primary operational personas derived from the underlying
 ## Signature "WOW" Experience: The LoopKeeper Accountability Graph
 
 ### Concept & Philosophy
-The **LoopKeeper Accountability Graph** is a visual time-series DAG (Directed Acyclic Graph) designed to show hackathon judges and executive users how LoopKeeper tracks commitment state across multiple meetings over time.
+The **LoopKeeper Accountability Graph** is a visual time-series DAG (Directed Acyclic Graph) designed to show executive users how LoopKeeper tracks commitment state across multiple meetings over time.
 
 $$\text{Meeting} \longrightarrow \text{Commitment} \longrightarrow \text{Person} \longrightarrow \text{Deadline} \longrightarrow \text{Changes} \longrightarrow \text{Outcome}$$
 
@@ -432,7 +432,7 @@ On mobile viewports, the multi-branch SVG graph dynamically transforms into a to
 - Pinch-to-zoom is enabled on an optional full-screen interactive modal view.
 - Wording mutations are rendered as inline text diff chips.
 
-### Hackathon Judge Demonstration Strategy (90-Second Walkthrough)
+### Product Demonstration Strategy (90-Second Walkthrough)
 1. **0:00 - 0:20 (The Ingestion)**: Upload Transcript for Meeting 1. Point out automatic extraction of "Vignesh to finish authentication screen by Friday".
 2. **0:20 - 0:45 (The Continuity Magic)**: Upload Transcript for Meeting 2 ("Can we get login work completed?"). Open the **Accountability Graph**. Show the node link connecting Meeting 2 to Meeting 1's task via vector similarity matching (`0.887`), demonstrating that LoopKeeper recognized the task despite wording changes.
 3. **0:45 - 1:10 (The Postponement Detection)**: Upload Transcript for Meeting 3 ("Auth work needs another week"). Show the graph node updating the deadline, incrementing the postponement counter to `2x`, and pulsing with a **High Risk Alert**.
