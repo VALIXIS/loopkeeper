@@ -160,9 +160,17 @@ class LoopKeeperIntegration(Base):
     __tablename__ = "loopkeeper_integrations"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    provider = Column(String, nullable=False)  # google_drive, jira, teams, zoom, slack
+    user_id = Column(UUID(as_uuid=True), nullable=True)
+    provider = Column(String, nullable=False)  # google_meet, jira, ms_teams, zoom, slack
+    status = Column(String, nullable=False, default="not_connected") # connected, not_connected, reauthorization_required, authorization_required, admin_consent_required, error
     is_connected = Column(Boolean, nullable=False, default=False)
     account_email = Column(String, nullable=True)
+    account_name = Column(String, nullable=True)
+    encrypted_access_token = Column(Text, nullable=True)
+    encrypted_refresh_token = Column(Text, nullable=True)
+    token_type = Column(String, nullable=True, default="Bearer")
+    expires_at = Column(DateTime(timezone=True), nullable=True)
+    scopes = Column(JSONB, nullable=True)
     config = Column(JSONB, nullable=True)
     last_synced_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)

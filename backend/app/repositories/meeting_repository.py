@@ -218,3 +218,36 @@ class MeetingRepository:
                 if is_local:
                     db.close()
         return self._in_memory_participants.get(meeting_id, [])
+
+    def get_meeting_by_external_id(self, source: str, external_source_id: str) -> Optional[dict]:
+        if not source or not external_source_id:
+            return None
+        source_clean = source.strip().lower()
+        ext_clean = str(external_source_id).strip()
+
+        db, is_local = self._get_db()
+        if db:
+            try:
+                m = db.query(LoopKeeperMeeting).filter(
+                    LoopKeeperMeeting.source == source_clean,
+                    LoopKeeperMeeting.external_source_id == ext_clean
+                ).first()
+                if m:
+                    return {
+                        "id": m.id,
+                        "title": m.title,
+                        "meeting_date": m.meeting_date,
+                        "source": m.source,
+                        "external_source_id": m.external_source_id,
+                        "created_by": m.created_by,
+                        "created_at": m.created_at,
+                        "updated_at": m.updated_at
+                    }
+            finally:
+                if is_local:
+                    db.close()
+
+        for m in self._in_memory_meetings.values():
+            if m.get("source", "").lower() == source_clean and str(m.get("external_source_id", "")).strip() == ext_clean:
+                return m
+        return None

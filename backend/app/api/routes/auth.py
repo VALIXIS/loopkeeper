@@ -37,10 +37,9 @@ def get_current_user_profile(authorization: Optional[str] = Header(None)):
     token = authorization.replace("Bearer ", "").strip()
     return {
         "id": "11111111-1111-1111-1111-111111111111",
-        "email": f"user-{token[:8]}@loopkeeper.ai",
+        "email": "authenticated.user@loopkeeper.ai",
         "name": "Authenticated User",
-        "role": "employee",
-        "token": token
+        "role": "employee"
     }
 
 @router.post("/logout")

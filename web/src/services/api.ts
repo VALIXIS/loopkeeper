@@ -810,15 +810,37 @@ export const api = {
     return { action_item_id: actionItemId, jira_issue_key: jiraIssueKey, jira_status: jiraStatus || 'In Progress' };
   },
 
-  async connectProvider(providerId: string): Promise<any> {
-    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
-      const res = await fetch(`${API_BASE_URL}/integrations/${providerId}/connect`, {
-        method: 'POST',
-        headers: getAuthHeaders()
-      });
-      if (res.ok) return await res.json();
+  async listIntegrations(): Promise<any[]> {
+    try {
+      const resp = await fetch(`${API_BASE_URL}/integrations`);
+      if (resp.ok) return await resp.json();
+    } catch (e) {
+      console.warn('Backend integrations list unavailable:', e);
     }
-    return { provider: providerId, status: 'authorization_required', auth_url: `https://auth.loopkeeper.ai/oauth/${providerId}` };
+    return [
+      { provider: 'google_meet', provider_name: 'Google Meet', is_connected: false, status: 'not_connected', status_message: 'Google Meet API integration available' },
+      { provider: 'zoom', provider_name: 'Zoom', is_connected: false, status: 'not_connected', status_message: 'Zoom OAuth integration available' },
+      { provider: 'ms_teams', provider_name: 'Microsoft Teams', is_connected: false, status: 'not_connected', status_message: 'Microsoft Graph Teams integration available' }
+    ];
+  },
+
+  async connectIntegration(providerId: string): Promise<{ authorization_url: string }> {
+    const resp = await fetch(`${API_BASE_URL}/integrations/${providerId}/connect`);
+    if (!resp.ok) throw new Error(`Failed to initiate OAuth for ${providerId}`);
+    return await resp.json();
+  },
+
+  async disconnectIntegration(providerId: string): Promise<any> {
+    const resp = await fetch(`${API_BASE_URL}/integrations/${providerId}/disconnect`, { method: 'POST' });
+    if (!resp.ok) throw new Error(`Failed to disconnect ${providerId}`);
+    return await resp.json();
+  },
+
+  async syncIntegration(providerId: string): Promise<any> {
+    const resp = await fetch(`${API_BASE_URL}/integrations/${providerId}/sync`, { method: 'POST' });
+    if (!resp.ok) throw new Error(`Sync failed for ${providerId}`);
+    return await resp.json();
+  },
   },
 
   resetStore() {
