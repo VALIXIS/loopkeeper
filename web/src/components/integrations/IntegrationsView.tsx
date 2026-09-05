@@ -126,6 +126,11 @@ export const IntegrationsView: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
 
+  // Slack / MS Teams Webhook Replay State
+  const [slackChannel, setSlackChannel] = useState('#engineering-commitments');
+  const [isSlackReplaying, setIsSlackReplaying] = useState(false);
+  const [slackLastReplayed, setSlackLastReplayed] = useState<string | null>(null);
+
   // Load stored Jira config on mount if available
   useEffect(() => {
     const savedJira = localStorage.getItem(JIRA_CONFIG_STORAGE_KEY);
@@ -435,6 +440,112 @@ export const IntegrationsView: React.FC = () => {
             </div>
           );
         })}
+      </div>
+
+      {/* Slack & Microsoft Teams Webhook Live Digest Simulator */}
+      <div className="p-6 rounded-3xl glass-panel-elevated border border-indigo-500/30 space-y-4 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-sm">
+              <SparklesIcon size={20} />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+                Slack & Teams Webhook Digest Simulator
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                  Real-Time Webhook Engine
+                </span>
+              </h3>
+              <p className="text-xs text-zinc-400">Simulate automated commitment dispatches to team messaging channels</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs">
+            <select
+              value={slackChannel}
+              onChange={e => setSlackChannel(e.target.value)}
+              className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+            >
+              <option value="#engineering-commitments">#engineering-commitments</option>
+              <option value="#product-sync">#product-sync</option>
+              <option value="#management-exec">#management-exec</option>
+            </select>
+
+            <button
+              onClick={() => {
+                setIsSlackReplaying(true);
+                setTimeout(() => {
+                  setIsSlackReplaying(false);
+                  const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                  setSlackLastReplayed(nowStr);
+                  addToast({
+                    type: 'success',
+                    title: `Slack Webhook Dispatched`,
+                    message: `Commitment digest successfully posted to ${slackChannel} at ${nowStr}`
+                  });
+                }, 500);
+              }}
+              disabled={isSlackReplaying}
+              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-purple-600/30 flex items-center gap-1.5 disabled:opacity-50 transition-all"
+            >
+              <RefreshCwIcon size={13} className={isSlackReplaying ? 'animate-spin' : ''} />
+              <span>Replay Slack Dispatch</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Live Slack Card Visual Preview */}
+        <div className="p-4 rounded-2xl bg-[#1A1D21] border border-zinc-800 space-y-3 font-sans text-xs">
+          <div className="flex items-center justify-between text-zinc-400 text-[11px] pb-2 border-b border-zinc-800">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-zinc-200">{slackChannel}</span>
+              <span>• APP • LoopKeeper Bot</span>
+            </div>
+            <span className="font-mono text-[10px] text-zinc-500">
+              {slackLastReplayed ? `Last Sent: ${slackLastReplayed}` : 'Webhook Ready'}
+            </span>
+          </div>
+
+          <div className="pl-3 border-l-4 border-indigo-500 space-y-2">
+            <div className="font-bold text-zinc-100 text-xs flex items-center gap-2">
+              <span>🚀 LoopKeeper Executive Commitment Digest</span>
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                Vector AI 91.4%
+              </span>
+            </div>
+
+            <p className="text-zinc-300 leading-relaxed text-[11px]">
+              Extracted 1 active commitment from meeting: <strong className="text-white">"Sprint 42 Architecture & Payment Gateway Alignment"</strong>
+            </p>
+
+            <div className="grid grid-cols-2 gap-2 bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800/80 text-[11px]">
+              <div>
+                <span className="text-zinc-500 block text-[9px] uppercase font-bold">Assignee / Owner</span>
+                <span className="text-cyan-300 font-semibold">Subhash (Lead)</span>
+              </div>
+              <div>
+                <span className="text-zinc-500 block text-[9px] uppercase font-bold">Target Deadline</span>
+                <span className="text-emerald-400 font-mono font-semibold">Tomorrow 6:30 PM</span>
+              </div>
+              <div className="col-span-2">
+                <span className="text-zinc-500 block text-[9px] uppercase font-bold">Spoken Promise Evidence</span>
+                <span className="text-zinc-300 italic font-mono text-[10px]">
+                  "Subhash: Will complete PostgreSQL migration script and push PR by 6:30 PM."
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                ✓ GitHub PR #42 Linked
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                ✓ Jira Issue SCRUM-101 Synced
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Security & Boundary Notice */}
