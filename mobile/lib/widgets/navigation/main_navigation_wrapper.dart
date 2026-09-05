@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
-import '../../providers/app_state_provider.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/meetings/meetings_screen.dart';
 import '../../screens/action_items/my_action_items_screen.dart';
 import '../../screens/team/team_overview_screen.dart';
-import '../../screens/alerts/alerts_screen.dart';
 import '../motion/glass_container.dart';
+import '../../screens/settings/settings_screen.dart';
+
+
 
 class MainNavigationWrapper extends StatefulWidget {
   const MainNavigationWrapper({super.key});
@@ -24,7 +24,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
     MeetingsScreen(),
     MyActionItemsScreen(),
     TeamOverviewScreen(),
-    AlertsScreen(),
+    SettingsScreen(),
   ];
 
   final List<_NavItem> _navItems = const [
@@ -32,15 +32,14 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
     _NavItem(icon: Icons.video_call_outlined, activeIcon: Icons.video_call_rounded, label: 'Meetings'),
     _NavItem(icon: Icons.task_alt_outlined, activeIcon: Icons.task_alt_rounded, label: 'My Tasks'),
     _NavItem(icon: Icons.groups_outlined, activeIcon: Icons.groups_rounded, label: 'Team'),
-    _NavItem(icon: Icons.notifications_none_rounded, activeIcon: Icons.notifications_rounded, label: 'Alerts', isAlert: true),
+    _NavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile'),
   ];
+
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AppStateProvider>(context);
-    final unreadAlerts = provider.unreadAlertsCount;
-
     return PopScope(
+
       canPop: _currentIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && _currentIndex != 0) {
@@ -126,33 +125,9 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                                         : AppColors.textTertiary,
                                   ),
                                 ),
-                                if (item.isAlert && unreadAlerts > 0)
-                                  Positioned(
-                                    top: -4,
-                                    right: -6,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(3),
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.statusOverdue,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      constraints: const BoxConstraints(
-                                        minWidth: 14,
-                                        minHeight: 14,
-                                      ),
-                                      child: Text(
-                                        '$unreadAlerts',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                               ],
                             ),
+
                             const SizedBox(height: 3),
                             Text(
                               item.label,
@@ -183,12 +158,11 @@ class _NavItem {
   final IconData icon;
   final IconData activeIcon;
   final String label;
-  final bool isAlert;
 
   const _NavItem({
     required this.icon,
     required this.activeIcon,
     required this.label,
-    this.isAlert = false,
   });
 }
+

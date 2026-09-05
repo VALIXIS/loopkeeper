@@ -363,15 +363,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     const Divider(height: 24, color: Color(0x1FFFFFFF)),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Demo Fixture Mode [OFFLINE]', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Isolates local mock fixtures for offline testing.', style: TextStyle(color: AppColors.textTertiary, fontSize: 12)),
-                      value: provider.isOffline,
-                      activeTrackColor: AppColors.brandPrimary,
-                      onChanged: (val) {
-                        provider.toggleOfflineMode(val);
-                      },
+                    Material(
+                      color: Colors.transparent,
+                      child: SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Demo Fixture Mode [OFFLINE]', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+                        subtitle: const Text('Isolates local mock fixtures for offline testing.', style: TextStyle(color: AppColors.textTertiary, fontSize: 12)),
+                        value: provider.isOffline,
+                        activeTrackColor: AppColors.brandPrimary,
+                        onChanged: (val) {
+                          provider.toggleOfflineMode(val);
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -393,44 +396,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 borderRadius: 16,
                 blur: 12,
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.hub_rounded, color: AppColors.brandAccent),
-                      title: const Text('External Integrations', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Google Meet, MS Teams, Zoom, Jira status', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/integrations');
-                      },
-                    ),
-                    const Divider(height: 1, color: Color(0x1FFFFFFF)),
-                    ListTile(
-                      leading: const Icon(Icons.refresh_rounded, color: AppColors.brandPrimary),
-                      title: const Text('Refresh Application State', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Sync meetings, action items, and telemetry', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
-                      onTap: () async {
-                        await provider.refreshAll();
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('State refreshed!')),
+                child: Material(
+                  color: Colors.transparent,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.hub_rounded, color: AppColors.brandAccent),
+                        title: const Text('External Integrations', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                        subtitle: const Text('Google Meet, MS Teams, Zoom, Jira status', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+                        trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/integrations');
+                        },
+                      ),
+                      const Divider(height: 1, color: Color(0x1FFFFFFF)),
+                      ListTile(
+                        leading: const Icon(Icons.refresh_rounded, color: AppColors.brandPrimary),
+                        title: const Text('Refresh Application State', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                        subtitle: const Text('Sync meetings, action items, and telemetry', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+                        onTap: () async {
+                          await provider.refreshAll();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('State refreshed!')),
+                            );
+                          }
+                        },
+                      ),
+                      const Divider(height: 1, color: Color(0x1FFFFFFF)),
+                      ListTile(
+                        leading: const Icon(Icons.swap_horiz_rounded, color: AppColors.statusOverdue),
+                        title: const Text('Switch User Profile / Log Out', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                        subtitle: const Text('Change active persona (Manager vs Employee)', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
+                        onTap: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            FadeSlidePageRoute(page: const AuthScreen()),
+                            (route) => false,
                           );
-                        }
-                      },
-                    ),
-                    const Divider(height: 1, color: Color(0x1FFFFFFF)),
-                    ListTile(
-                      leading: const Icon(Icons.swap_horiz_rounded, color: AppColors.statusOverdue),
-                      title: const Text('Switch User Profile / Log Out', style: TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Change active persona (Manager vs Employee)', style: TextStyle(fontSize: 12, color: AppColors.textTertiary)),
-                      onTap: () {
-                        Navigator.of(context).pushAndRemoveUntil(
-                          FadeSlidePageRoute(page: const AuthScreen()),
-                          (route) => false,
-                        );
-                      },
-                    ),
-                  ],
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
 

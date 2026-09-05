@@ -33,7 +33,7 @@ void main() {
     expect(find.text('Meetings'), findsOneWidget);
     expect(find.text('My Tasks'), findsOneWidget);
     expect(find.text('Team'), findsOneWidget);
-    expect(find.text('Alerts'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
   });
 
   testWidgets('StatusPill renders status correctly', (WidgetTester tester) async {

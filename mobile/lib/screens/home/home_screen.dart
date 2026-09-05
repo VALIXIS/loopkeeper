@@ -18,6 +18,8 @@ import '../meetings/meeting_detail_screen.dart';
 import '../ai_status/ai_status_screen.dart';
 import '../insights/insights_screen.dart';
 
+import '../settings/settings_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -52,8 +54,16 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          FadeSlidePageRoute(page: const SettingsScreen()),
+                        );
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        children: [
+
                         Container(
                           width: 44,
                           height: 44,
@@ -120,8 +130,11 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
+                  ),
+                  Row(
+                    children: [
+
+
                         _HeaderIconButton(
                           icon: Icons.auto_awesome_rounded,
                           color: AppColors.brandAccent,
