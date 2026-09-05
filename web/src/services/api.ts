@@ -841,6 +841,15 @@ export const api = {
     if (!resp.ok) throw new Error(`Sync failed for ${providerId}`);
     return await resp.json();
   },
+
+  async connectProvider(providerId: string): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      const res = await fetch(`${API_BASE_URL}/integrations/${providerId}/connect`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) return await res.json();
+    }
+    return { provider: providerId, status: 'authorization_required', auth_url: `https://auth.loopkeeper.ai/oauth/${providerId}` };
   },
 
   resetStore() {
