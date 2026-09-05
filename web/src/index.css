@@ -11,6 +11,9 @@
   --bg-surface-elevated: #151b2a;
   --bg-card: rgba(14, 18, 29, 0.75);
   
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  
   --border-subtle: rgba(255, 255, 255, 0.07);
   --border-medium: rgba(255, 255, 255, 0.12);
   --border-accent: rgba(99, 102, 241, 0.4);
@@ -23,6 +26,20 @@
   --color-rose: #f43f5e;
 }
 
+html.light, [data-theme="light"] {
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-medium: rgba(15, 23, 42, 0.14);
+  --border-accent: rgba(99, 102, 241, 0.5);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -31,12 +48,13 @@
 
 html, body {
   background-color: var(--bg-app);
-  color: #f1f5f9;
+  color: var(--text-main);
   font-family: var(--font-sans);
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 #root {
@@ -45,6 +63,70 @@ html, body {
   flex-direction: column;
   background-color: var(--bg-app);
   position: relative;
+}
+
+/* Light Mode Overrides for Glass Panels */
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
+  color: #0f172a;
+}
+
+html.light .glass-panel-elevated {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  box-shadow: 0 12px 30px -10px rgba(15, 23, 42, 0.1), 0 0 20px -5px rgba(99, 102, 241, 0.06);
+  color: #0f172a;
+}
+
+html.light .bg-zinc-950,
+html.light .bg-zinc-900 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+html.light .bg-zinc-950\/80,
+html.light .bg-zinc-950\/90,
+html.light .bg-zinc-900\/80,
+html.light .bg-zinc-900\/90 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #0f172a !important;
+}
+
+html.light .border-zinc-800,
+html.light .border-zinc-700 {
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+html.light .text-zinc-100,
+html.light .text-zinc-200 {
+  color: #0f172a !important;
+}
+
+html.light .text-zinc-300,
+html.light .text-zinc-400 {
+  color: #475569 !important;
+}
+
+html.light .text-zinc-500 {
+  color: #64748b !important;
+}
+
+html.light .bg-tech-grid {
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+}
+
+html.light header {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+html.light aside {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+  border-right-color: rgba(15, 23, 42, 0.08) !important;
 }
 
 /* Custom Scrollbars */

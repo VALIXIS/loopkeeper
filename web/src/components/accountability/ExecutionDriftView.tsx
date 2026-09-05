@@ -1,0 +1,246 @@
+import React from 'react';
+import { useApp } from '../../context/AppContext';
+import {
+  ShieldAlertIcon,
+  AlertTriangleIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  ExternalLinkIcon,
+  SparklesIcon,
+  UsersIcon
+} from '../common/Icons';
+
+export interface ExecutionDriftItem {
+  id: string;
+  commitmentTitle: string;
+  ownerName: string;
+  spokenStatement: string;
+  meetingTitle: string;
+  spokenStatus: 'Claimed Done' | 'Claimed Ready' | 'Ahead of Schedule';
+  spokenDate: string;
+  jiraIssueKey: string;
+  jiraStatus: 'In Progress' | 'Open' | 'Code Review' | 'Blocked';
+  jiraAssignee: string;
+  jiraLastUpdated: string;
+  driftSeverity: 'critical' | 'high' | 'moderate';
+  discrepancySummary: string;
+  mitigationRecommendation: string;
+}
+
+export const ExecutionDriftView: React.FC = () => {
+  const { actionItems } = useApp();
+
+  // Cross-reference action items with Jira execution drift states
+  const driftItems: ExecutionDriftItem[] = [
+    {
+      id: 'drift-1',
+      commitmentTitle: 'Stripe webhook replay and idempotency ledger',
+      ownerName: 'Alice Johnson',
+      spokenStatement: 'Payment API idempotency ledger is completely finished and verified on local.',
+      meetingTitle: 'Sprint 15 Architecture & Delivery Review',
+      spokenStatus: 'Claimed Done',
+      spokenDate: 'Today, 10:14 AM',
+      jiraIssueKey: 'PAY-142',
+      jiraStatus: 'In Progress',
+      jiraAssignee: 'Alice Johnson',
+      jiraLastUpdated: 'Yesterday, 6:30 PM (Branch: feat/pay-142 has 3 open PR review comments)',
+      driftSeverity: 'critical',
+      discrepancySummary: 'Speaker stated payment webhook was completed, but Jira issue PAY-142 remains In Progress with 3 unresolved code review comments.',
+      mitigationRecommendation: 'Verify whether PR #482 was merged or if uncommitted local stashes exist.'
+    },
+    {
+      id: 'drift-2',
+      commitmentTitle: 'Mobile OAuth token silent refresh and secure biometric vault',
+      ownerName: 'Bob Chen',
+      spokenStatement: 'Auth token refresh is working properly and ready for staging release.',
+      meetingTitle: 'Sprint 15 Architecture & Delivery Review',
+      spokenStatus: 'Claimed Ready',
+      spokenDate: 'Today, 10:22 AM',
+      jiraIssueKey: 'AUTH-89',
+      jiraStatus: 'Code Review',
+      jiraAssignee: 'Bob Chen',
+      jiraLastUpdated: '2 hours ago (CI build failure on iOS bundle tests)',
+      driftSeverity: 'high',
+      discrepancySummary: 'Speaker claimed token refresh is ready for staging, but Jira CI telemetry shows failing iOS bundle tests.',
+      mitigationRecommendation: 'Re-run mobile CI pipeline and unblock iOS certificate bundle.'
+    },
+    {
+      id: 'drift-3',
+      commitmentTitle: 'pgvector HNSW Cosine Indexing for 1536-dim embeddings',
+      ownerName: 'Charlie Davis',
+      spokenStatement: 'Migration script executed on staging database.',
+      meetingTitle: 'Engineering Standup & Delivery Sync',
+      spokenStatus: 'Claimed Done',
+      spokenDate: 'Yesterday, 11:00 AM',
+      jiraIssueKey: 'PGV-104',
+      jiraStatus: 'In Progress',
+      jiraAssignee: 'Charlie Davis',
+      jiraLastUpdated: '3 hours ago (Pending DB administrator approval)',
+      driftSeverity: 'moderate',
+      discrepancySummary: 'Migration executed on local replica, but staging database migration requires DBA peer sign-off.',
+      mitigationRecommendation: 'Request DBA sign-off on Jira PGV-104.'
+    }
+  ];
+
+  return (
+    <div className="space-y-6 pb-12 animate-fade-in-up">
+      {/* Header Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-950/40 via-zinc-900 to-zinc-950 border border-rose-500/30 p-6 sm:p-8 shadow-2xl space-y-3">
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 shadow-sm">
+            <ShieldAlertIcon size={14} className="animate-pulse" />
+            Execution Drift Radar
+          </span>
+          <span className="text-xs font-mono text-zinc-400 hidden sm:inline">
+            Meeting Statements vs External Jira / Tracker Reality
+          </span>
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
+          Verbal Commitments vs Tracker Discrepancies
+        </h1>
+        <p className="text-sm text-zinc-300 max-w-3xl leading-relaxed">
+          LoopKeeper's execution engine automatically cross-references verbal claims made in meetings against real external issue tracker states (Jira, GitHub PRs). When a speaker says "It's done" while Jira says "In Progress", LoopKeeper flags the drift before it cascades into delayed deliverables.
+        </p>
+      </div>
+
+      {/* Summary KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="p-5 rounded-2xl glass-panel-elevated border border-rose-500/30 shadow-lg">
+          <div className="flex items-center justify-between text-xs text-zinc-400 font-semibold uppercase tracking-wider">
+            <span>Critical Drift Detected</span>
+            <AlertTriangleIcon size={16} className="text-rose-400" />
+          </div>
+          <span className="text-3xl font-black font-mono text-rose-400 mt-2 block">
+            {driftItems.filter(d => d.driftSeverity === 'critical').length}
+          </span>
+          <p className="text-xs text-zinc-400 mt-1">Claimed Done vs Incomplete External Reality</p>
+        </div>
+
+        <div className="p-5 rounded-2xl glass-panel-elevated border border-amber-500/30 shadow-lg">
+          <div className="flex items-center justify-between text-xs text-zinc-400 font-semibold uppercase tracking-wider">
+            <span>High Risk Discrepancies</span>
+            <ClockIcon size={16} className="text-amber-400" />
+          </div>
+          <span className="text-3xl font-black font-mono text-amber-300 mt-2 block">
+            {driftItems.filter(d => d.driftSeverity === 'high').length}
+          </span>
+          <p className="text-xs text-zinc-400 mt-1">CI / Code Review unmerged dependencies</p>
+        </div>
+
+        <div className="p-5 rounded-2xl glass-panel-elevated border border-cyan-500/30 shadow-lg">
+          <div className="flex items-center justify-between text-xs text-zinc-400 font-semibold uppercase tracking-wider">
+            <span>Jira Linked Deliverables</span>
+            <CheckCircleIcon size={16} className="text-cyan-400" />
+          </div>
+          <span className="text-3xl font-black font-mono text-cyan-400 mt-2 block">
+            {actionItems.length}
+          </span>
+          <p className="text-xs text-zinc-400 mt-1">Monitored for real-time drift</p>
+        </div>
+      </div>
+
+      {/* Drift Comparison Cards List */}
+      <div className="space-y-4">
+        <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+          <ShieldAlertIcon size={18} className="text-rose-400" />
+          Active Execution Drift Anomalies ({driftItems.length})
+        </h3>
+
+        <div className="space-y-4">
+          {driftItems.map(item => (
+            <div
+              key={item.id}
+              className="p-6 rounded-3xl glass-panel-elevated border border-rose-500/40 shadow-xl space-y-5 hover:border-rose-400/70 transition-all"
+            >
+              {/* Card Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                      item.driftSeverity === 'critical'
+                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse'
+                        : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                    }`}
+                  >
+                    {item.driftSeverity.toUpperCase()} DRIFT
+                  </span>
+                  <h4 className="text-base font-bold text-zinc-100">
+                    {item.commitmentTitle}
+                  </h4>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+                  <span className="flex items-center gap-1">
+                    <UsersIcon size={13} className="text-cyan-400" />
+                    {item.ownerName}
+                  </span>
+                  <span>•</span>
+                  <span className="text-indigo-400 font-bold">{item.jiraIssueKey}</span>
+                </div>
+              </div>
+
+              {/* Side-by-Side Comparison Matrix */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Left Side: Meeting Spoken Claim */}
+                <div className="p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800 space-y-2 relative overflow-hidden">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-cyan-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                      <SparklesIcon size={12} />
+                      Verbal Statement in Meeting
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                      {item.spokenStatus}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-zinc-200 font-mono italic leading-relaxed pt-1">
+                    "{item.spokenStatement}"
+                  </p>
+
+                  <div className="text-[10px] text-zinc-500 pt-2 flex items-center justify-between border-t border-zinc-800/60">
+                    <span>Source: {item.meetingTitle}</span>
+                    <span>{item.spokenDate}</span>
+                  </div>
+                </div>
+
+                {/* Right Side: External Tracker (Jira) State */}
+                <div className="p-4 rounded-2xl bg-zinc-950/90 border border-rose-500/30 space-y-2 relative overflow-hidden">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-rose-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                      <ExternalLinkIcon size={12} />
+                      External Issue Tracker (Jira)
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      {item.jiraStatus}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-zinc-300 leading-relaxed font-mono pt-1">
+                    {item.jiraLastUpdated}
+                  </p>
+
+                  <div className="text-[10px] text-zinc-500 pt-2 flex items-center justify-between border-t border-zinc-800/60">
+                    <span>Assignee: {item.jiraAssignee}</span>
+                    <span className="text-indigo-400 font-mono font-bold">{item.jiraIssueKey}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Discrepancy & Mitigation Row */}
+              <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
+                <div className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+                  <AlertTriangleIcon size={14} />
+                  <span>Drift Analysis: {item.discrepancySummary}</span>
+                </div>
+                <p className="text-xs text-zinc-300 leading-relaxed pl-5">
+                  <strong className="text-cyan-300">Action Plan:</strong> {item.mitigationRecommendation}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
