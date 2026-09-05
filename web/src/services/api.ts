@@ -62,7 +62,9 @@ class LocalStateStore {
 
     this.employees = [...MOCK_EMPLOYEES];
     this.meetings = currentMeetings ? JSON.parse(currentMeetings) : [...MOCK_MEETINGS];
-    this.actionItems = savedActionItems ? JSON.parse(savedActionItems) : [...MOCK_ACTION_ITEMS];
+    this.actionItems = (savedActionItems ? JSON.parse(savedActionItems) : [...MOCK_ACTION_ITEMS]).filter(
+      (item: ActionItem) => !item.title.toLowerCase().includes('hey hello hi') && !item.source_text?.toLowerCase().includes('hey hello hi')
+    );
     this.history = savedHistory ? JSON.parse(savedHistory) : { ...MOCK_HISTORY };
     this.aiRuns = savedAiRuns ? JSON.parse(savedAiRuns) : [...MOCK_AI_RUNS];
     this.comments = savedComments ? JSON.parse(savedComments) : {
@@ -376,6 +378,17 @@ export const api = {
 
     lines.forEach((line, index) => {
       const lower = line.toLowerCase();
+
+      // Check if line is casual greeting / small talk without actionable commitment
+      const lineWithoutSpeaker = line.replace(/\[\d\d:\d\d:\d\d\]\s*/g, '').replace(/^[^:]+:\s*/, '').trim().toLowerCase();
+      const isCasualGreeting = /^(hey|hello|hi|good morning|good afternoon|good evening|can you hear me|testing|this is|how are you|thanks|bye|okay|cool|mic test)\b/i.test(lineWithoutSpeaker) || lineWithoutSpeaker.includes('hey hello hi');
+      const hasActionVerb = /(will|need to|should|must|going to|i'll|working on|complete|deploy|fix|refactor|build|test|implement|update|resolve|push|deliver|by\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today)|todo|action item|finish)/i.test(lineWithoutSpeaker);
+
+      if (isCasualGreeting && !hasActionVerb) {
+        // Skip non-commitment small talk
+        return;
+      }
+
       // 1. Identify Owner from line text or speaker tag
       let owner: Employee | undefined = localStore.employees.find(e =>
         line.toLowerCase().includes(e.name.toLowerCase().split(' ')[0])
