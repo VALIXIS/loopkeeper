@@ -9,6 +9,7 @@ import {
   RefreshCwIcon,
   PlusIcon,
   ChevronDownIcon,
+  SunIcon,
   MoonIcon,
   RadioIcon
 } from './Icons';

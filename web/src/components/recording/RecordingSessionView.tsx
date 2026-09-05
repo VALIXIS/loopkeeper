@@ -32,25 +32,11 @@ export const RecordingSessionView: React.FC = () => {
     }
   }, [employees]);
 
-  // Live transcript stream buffer
-  // Live transcript stream buffer
-  const [transcriptLines, setTranscriptLines] = useState<Array<{ speaker: string; text: string; time: string }>>([
-    {
-      speaker: 'Jyothsna',
-      text: "Welcome everyone. Let's do a quick round on outstanding commitments before sprint freeze.",
-      time: '00:01:05'
-    },
-    {
-      speaker: 'Adithya',
-      text: 'I will finalize the pgvector cosine distance indexing and test the migration script by Friday 5 PM.',
-      time: '00:01:24'
-    },
-    {
-      speaker: 'Vignesh',
-      text: 'The auth token refresh bug in mobile needs attention. I will deploy a fix tomorrow morning.',
-      time: '00:02:10'
-    }
-  ]);
+  // Live transcript stream buffer (starts 0 lines, real audio/entered speech only)
+  const [transcriptLines, setTranscriptLines] = useState<Array<{ speaker: string; text: string; time: string }>>([]);
+  const [manualTurnText, setManualTurnText] = useState('');
+  const [selectedSpeaker, setSelectedSpeaker] = useState<string>(currentUser?.name || 'Subhash');
+  const [recordScreenAudio, setRecordScreenAudio] = useState(false);
 
   const [simulatedTurnIndex, setSimulatedTurnIndex] = useState(0);
 
@@ -122,10 +108,29 @@ export const RecordingSessionView: React.FC = () => {
 
   const startRecording = async () => {
     recordedChunksRef.current = [];
+    setTranscriptLines([]);
     try {
+      let combinedStream: MediaStream | null = null;
+      let micStream: MediaStream | null = null;
+      let displayStream: MediaStream | null = null;
+
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaStreamRef.current = stream;
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => null);
+      }
+
+      if (recordScreenAudio && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }).catch(() => null);
+      }
+
+      const tracks: MediaStreamTrack[] = [];
+      if (micStream) tracks.push(...micStream.getAudioTracks());
+      if (displayStream && displayStream.getAudioTracks().length > 0) {
+        tracks.push(...displayStream.getAudioTracks());
+      }
+
+      if (tracks.length > 0) {
+        combinedStream = new MediaStream(tracks);
+        mediaStreamRef.current = combinedStream;
 
         const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
         audioContextRef.current = audioCtx;
@@ -133,12 +138,12 @@ export const RecordingSessionView: React.FC = () => {
         analyser.fftSize = 64;
         analyserRef.current = analyser;
 
-        const source = audioCtx.createMediaStreamSource(stream);
+        const source = audioCtx.createMediaStreamSource(combinedStream);
         source.connect(analyser);
 
         // MediaRecorder for real audio capture
         try {
-          const recorder = new MediaRecorder(stream);
+          const recorder = new MediaRecorder(combinedStream);
           recorder.ondataavailable = (e) => {
             if (e.data.size > 0) recordedChunksRef.current.push(e.data);
           };
@@ -161,12 +166,11 @@ export const RecordingSessionView: React.FC = () => {
                 if (event.results[i].isFinal) {
                   const speechText = event.results[i][0].transcript.trim();
                   if (speechText) {
-                    const speakerName = currentUser?.name || 'Jyothsna';
                     const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
                     const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
                     setTranscriptLines(prev => [
                       ...prev,
-                      { speaker: speakerName, text: speechText, time: `00:${mins}:${secs}` }
+                      { speaker: selectedSpeaker || currentUser?.name || 'Subhash', text: speechText, time: `00:${mins}:${secs}` }
                     ]);
                   }
                 }
@@ -180,7 +184,7 @@ export const RecordingSessionView: React.FC = () => {
         }
       }
     } catch {
-      console.warn('Microphone permission not granted or unavailable, using audio simulation.');
+      console.warn('Microphone/screen audio permission not granted or unavailable.');
     }
 
     setIsRecording(true);
@@ -189,8 +193,8 @@ export const RecordingSessionView: React.FC = () => {
     drawWaveform();
     addToast({
       type: 'info',
-      title: 'LoopKeeper Recording Started',
-      message: 'Listening for speech turns and conversational commitments.'
+      title: recordScreenAudio ? 'Screen & Mic Audio Recording Started' : 'Mic Audio Recording Started',
+      message: 'Listening for live speech turns and commitments with 0 fake initial lines.'
     });
   };
 
@@ -417,13 +421,29 @@ export const RecordingSessionView: React.FC = () => {
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               <div className="flex items-center gap-2">
                 {!isRecording ? (
-                  <button
-                    onClick={startRecording}
-                    className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition-all hover:scale-105 active:scale-95"
-                  >
-                    <RadioIcon size={16} className="animate-pulse" />
-                    <span>Start Meeting Recording</span>
-                  </button>
+                  <>
+                    <button
+                      onClick={startRecording}
+                      className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition-all hover:scale-105 active:scale-95"
+                    >
+                      <RadioIcon size={16} className="animate-pulse" />
+                      <span>Start Meeting Recording</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setRecordScreenAudio(!recordScreenAudio)}
+                      className={`px-3 py-2.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                        recordScreenAudio
+                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
+                          : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-zinc-200'
+                      }`}
+                      title="Include system/browser tab audio in recording"
+                    >
+                      <SparklesIcon size={14} className={recordScreenAudio ? 'text-cyan-400' : ''} />
+                      <span>{recordScreenAudio ? 'Screen & Tab Audio Enabled' : '+ Enable Screen/Tab Audio'}</span>
+                    </button>
+                  </>
                 ) : (
                   <>
                     <button
@@ -511,7 +531,7 @@ export const RecordingSessionView: React.FC = () => {
             </div>
           </div>
 
-          {/* Real-time Turn Stream Card */}
+            {/* Real-time Turn Stream Card */}
           <div className="p-5 rounded-3xl glass-panel border border-zinc-800 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
@@ -523,21 +543,78 @@ export const RecordingSessionView: React.FC = () => {
               </span>
             </div>
 
-            <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-              {transcriptLines.map((turn, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 space-y-1 animate-fade-in-up"
-                >
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="font-bold text-cyan-400">{turn.speaker}</span>
-                    <span className="text-[10px] font-mono text-zinc-500">{turn.time}</span>
-                  </div>
-                  <p className="text-xs text-zinc-300 leading-relaxed font-mono">
-                    "{turn.text}"
-                  </p>
+            {/* Live Spoken Turn Input */}
+            <div className="flex items-center gap-2 p-2 rounded-2xl bg-zinc-950/80 border border-zinc-800">
+              <select
+                value={selectedSpeaker}
+                onChange={e => setSelectedSpeaker(e.target.value)}
+                className="bg-zinc-900 text-xs font-bold text-cyan-300 px-2 py-1.5 rounded-xl border border-zinc-700 focus:outline-none shrink-0"
+              >
+                {employees.map(e => (
+                  <option key={e.id} value={e.name}>{e.name}</option>
+                ))}
+              </select>
+
+              <input
+                type="text"
+                value={manualTurnText}
+                onChange={e => setManualTurnText(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && manualTurnText.trim()) {
+                    e.preventDefault();
+                    const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+                    const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
+                    setTranscriptLines(prev => [
+                      ...prev,
+                      { speaker: selectedSpeaker, text: manualTurnText.trim(), time: `00:${mins}:${secs}` }
+                    ]);
+                    setManualTurnText('');
+                  }
+                }}
+                placeholder="Speak or type live turn..."
+                className="w-full bg-transparent text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none px-1"
+              />
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (manualTurnText.trim()) {
+                    const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+                    const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
+                    setTranscriptLines(prev => [
+                      ...prev,
+                      { speaker: selectedSpeaker, text: manualTurnText.trim(), time: `00:${mins}:${secs}` }
+                    ]);
+                    setManualTurnText('');
+                  }
+                }}
+                className="px-2.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shrink-0 transition-colors"
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+              {transcriptLines.length === 0 ? (
+                <div className="p-4 text-center text-[11px] font-mono text-zinc-500">
+                  {isRecording ? 'Listening... Speak into mic or type live turn above.' : 'No speech recorded yet. Click Start Meeting Recording.'}
                 </div>
-              ))}
+              ) : (
+                transcriptLines.map((turn, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 space-y-1 animate-fade-in-up"
+                  >
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-bold text-cyan-400">{turn.speaker}</span>
+                      <span className="text-[10px] font-mono text-zinc-500">{turn.time}</span>
+                    </div>
+                    <p className="text-xs text-zinc-300 leading-relaxed font-mono">
+                      "{turn.text}"
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

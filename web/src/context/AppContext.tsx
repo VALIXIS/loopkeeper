@@ -65,6 +65,7 @@ interface AppContextType {
     transcriptData: TranscriptCreate,
     onStepUpdate?: (stepIndex: number, stepName: string) => void
   ) => Promise<{ meeting: Meeting; actionItems: ActionItem[] }>;
+  deleteMeeting: (id: string) => Promise<void>;
   updateTask: (id: string, updates: ActionItemUpdate) => Promise<ActionItem>;
   resetDemoData: () => Promise<void>;
 }
@@ -245,6 +246,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const deleteMeeting = async (id: string) => {
+    try {
+      await api.deleteMeeting(id);
+      addToast({
+        type: 'info',
+        title: 'Meeting Deleted',
+        message: 'Meeting and associated transcript removed successfully.'
+      });
+      await refreshData();
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Delete Failed',
+        message: err.message || 'Could not delete meeting.'
+      });
+    }
+  };
+
   const updateTask = async (id: string, updates: ActionItemUpdate) => {
     try {
       const updated = await api.updateActionItem(id, updates);
@@ -302,6 +321,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         removeToast,
         refreshData,
         createMeetingAndProcess,
+        deleteMeeting,
         updateTask,
         resetDemoData
       }}

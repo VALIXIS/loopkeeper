@@ -10,7 +10,8 @@ import type {
   DashboardOverview,
   Employee,
   AIRunTelemetry,
-  TaskComment
+  TaskComment,
+  ProofOfWork
 } from '../types';
 import {
   MOCK_EMPLOYEES,
@@ -625,7 +626,7 @@ export const api = {
     const powList = localStore.proofOfWork?.[id] || [];
     const originMeeting = localStore.meetings.find(m => m.id === item.meeting_id);
     const comments = localStore.comments[id] || [];
-
+    return {
       ...item,
       history,
       comments,
