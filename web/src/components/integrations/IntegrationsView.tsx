@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../../context/AppContext';
 import { api } from '../../services/api';
 import {
@@ -564,19 +565,26 @@ export const IntegrationsView: React.FC = () => {
       </div>
 
       {/* Persistent Authentication Modal for All Providers */}
-      {selectedIntegration && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in-up">
-          <div className="w-full max-w-lg rounded-3xl glass-panel-elevated border border-indigo-500/40 p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+      {selectedIntegration && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div
+            className="fixed inset-0"
+            onClick={() => {
+              setSelectedIntegration(null);
+              setTestResult(null);
+            }}
+          />
+          <div className="relative z-10 w-full max-w-lg rounded-3xl glass-panel-elevated border border-indigo-500/40 p-6 shadow-2xl space-y-5 my-auto max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-zinc-800">
               <div className="flex items-center gap-3">
                 <div className={`h-9 w-9 rounded-xl ${selectedIntegration.iconBg} text-white flex items-center justify-center font-bold text-xs shadow-md`}>
                   {selectedIntegration.iconText}
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-zinc-100">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-zinc-100">
                     Authorize {selectedIntegration.name}
                   </h3>
-                  <p className="text-xs text-zinc-400">Configure & authenticate persistent API bridge</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">Configure & authenticate persistent API bridge</p>
                 </div>
               </div>
               <button
@@ -584,7 +592,7 @@ export const IntegrationsView: React.FC = () => {
                   setSelectedIntegration(null);
                   setTestResult(null);
                 }}
-                className="text-zinc-500 hover:text-zinc-300 p-1"
+                className="text-slate-400 hover:text-slate-700 dark:text-zinc-500 dark:hover:text-zinc-300 p-1"
               >
                 <XIcon size={18} />
               </button>
@@ -594,8 +602,8 @@ export const IntegrationsView: React.FC = () => {
               {selectedIntegration.id === 'jira' ? (
                 <>
                   <div className="space-y-1.5">
-                    <label className="text-zinc-300 font-semibold flex items-center gap-1.5">
-                      <NetworkIcon size={13} className="text-indigo-400" />
+                    <label className="text-slate-700 dark:text-zinc-300 font-semibold flex items-center gap-1.5">
+                      <NetworkIcon size={13} className="text-indigo-600 dark:text-indigo-400" />
                       Jira Workspace Domain URL
                     </label>
                     <input
@@ -604,13 +612,13 @@ export const IntegrationsView: React.FC = () => {
                       value={jiraDomain}
                       onChange={e => setJiraDomain(e.target.value)}
                       placeholder="https://your-domain.atlassian.net"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-zinc-300 font-semibold block">
+                      <label className="text-slate-700 dark:text-zinc-300 font-semibold block">
                         Atlassian Account Email
                       </label>
                       <input
@@ -619,12 +627,12 @@ export const IntegrationsView: React.FC = () => {
                         value={jiraEmail}
                         onChange={e => setJiraEmail(e.target.value)}
                         placeholder="user@company.com"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-zinc-300 font-semibold block">
+                      <label className="text-slate-700 dark:text-zinc-300 font-semibold block">
                         Target Project Key
                       </label>
                       <input
@@ -633,14 +641,14 @@ export const IntegrationsView: React.FC = () => {
                         value={projectKey}
                         onChange={e => setProjectKey(e.target.value.toUpperCase())}
                         placeholder="LOOP"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500 uppercase"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500 uppercase"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-zinc-300 font-semibold flex items-center gap-1.5">
-                      <KeyIcon size={13} className="text-cyan-400" />
+                    <label className="text-slate-700 dark:text-zinc-300 font-semibold flex items-center gap-1.5">
+                      <KeyIcon size={13} className="text-cyan-600 dark:text-cyan-400" />
                       Jira API Token
                     </label>
                     <input
@@ -648,9 +656,9 @@ export const IntegrationsView: React.FC = () => {
                       placeholder="ATATT3xFfGF0r..."
                       value={jiraToken}
                       onChange={e => setJiraToken(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                     />
-                    <span className="text-[10px] text-zinc-500 block">
+                    <span className="text-[10px] text-slate-500 dark:text-zinc-500 block">
                       Generated in Atlassian Account Settings ➔ Security ➔ API tokens.
                     </span>
                   </div>
@@ -658,8 +666,8 @@ export const IntegrationsView: React.FC = () => {
               ) : (
                 <>
                   <div className="space-y-1.5">
-                    <label className="text-zinc-300 font-semibold flex items-center gap-1.5">
-                      <NetworkIcon size={13} className="text-indigo-400" />
+                    <label className="text-slate-700 dark:text-zinc-300 font-semibold flex items-center gap-1.5">
+                      <NetworkIcon size={13} className="text-indigo-600 dark:text-indigo-400" />
                       Organization / Tenant Domain
                     </label>
                     <input
@@ -668,13 +676,13 @@ export const IntegrationsView: React.FC = () => {
                       value={orgDomain}
                       onChange={e => setOrgDomain(e.target.value)}
                       placeholder="company.com or tenant ID"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-zinc-300 font-semibold block">
+                      <label className="text-slate-700 dark:text-zinc-300 font-semibold block">
                         OAuth Client ID
                       </label>
                       <input
@@ -682,12 +690,12 @@ export const IntegrationsView: React.FC = () => {
                         required
                         value={clientId}
                         onChange={e => setClientId(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-zinc-300 font-semibold block">
+                      <label className="text-slate-700 dark:text-zinc-300 font-semibold block">
                         OAuth Client Secret
                       </label>
                       <input
@@ -695,23 +703,23 @@ export const IntegrationsView: React.FC = () => {
                         required
                         value={clientSecret}
                         onChange={e => setClientSecret(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-zinc-300 font-semibold flex items-center gap-1.5">
-                      <LockIcon size={13} className="text-emerald-400" />
+                    <label className="text-slate-700 dark:text-zinc-300 font-semibold flex items-center gap-1.5">
+                      <LockIcon size={13} className="text-emerald-600 dark:text-emerald-400" />
                       Webhook / Read Token Secret
                     </label>
                     <input
                       type="text"
                       value={webhookSecret}
                       onChange={e => setWebhookSecret(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                     />
-                    <span className="text-[10px] text-zinc-500 block">
+                    <span className="text-[10px] text-slate-500 dark:text-zinc-500 block">
                       Enables real-time webhook ingestion and transcript auto-sync for {selectedIntegration.name}.
                     </span>
                   </div>
@@ -721,38 +729,38 @@ export const IntegrationsView: React.FC = () => {
               {testResult && (
                 <div className={`p-3 rounded-xl text-xs flex items-center gap-2 border ${
                   testResult.success
-                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                    : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
+                    ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                    : 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30'
                 }`}>
                   {testResult.success ? <CheckCircleIcon size={14} /> : <AlertTriangleIcon size={14} />}
                   <span>{testResult.message}</span>
                 </div>
               )}
 
-              <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-zinc-400 text-[11px] flex items-center justify-between gap-2">
+              <div className="p-3.5 rounded-xl bg-slate-100/80 dark:bg-zinc-950/80 border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 text-[11px] flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <SparklesIcon size={14} className="text-cyan-400 shrink-0" />
+                  <SparklesIcon size={14} className="text-cyan-600 dark:text-cyan-400 shrink-0" />
                   <span>Saves persistent authorization credentials across browser sessions.</span>
                 </div>
                 <button
                   type="button"
                   onClick={handleTestConnection}
                   disabled={isTesting}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium text-xs shrink-0 flex items-center gap-1 disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-medium text-xs shrink-0 flex items-center gap-1 disabled:opacity-50"
                 >
                   {isTesting && <RefreshCwIcon size={12} className="animate-spin" />}
                   <span>Test Connection</span>
                 </button>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedIntegration(null);
                     setTestResult(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-medium hover:bg-zinc-700"
+                  className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium hover:bg-slate-300 dark:hover:bg-zinc-700"
                 >
                   Cancel
                 </button>
@@ -766,7 +774,8 @@ export const IntegrationsView: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
