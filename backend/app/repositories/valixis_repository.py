@@ -55,6 +55,10 @@ class ValixisRepository:
                 if is_local:
                     db.close()
 
+        if os.getenv("STRICT_PRODUCTION_DB", "false").lower() == "true":
+            logger.error("Database connection unavailable in strict production mode. Refusing fallback for employee lookup.")
+            return None
+
         # Fallback for offline test environments
         for emp in self._mock_employees:
             if name_clean in emp["name"].lower():
@@ -82,6 +86,10 @@ class ValixisRepository:
                 if is_local:
                     db.close()
 
+        if os.getenv("STRICT_PRODUCTION_DB", "false").lower() == "true":
+            logger.error("Database connection unavailable in strict production mode. Refusing fallback for employee ID lookup.")
+            return None
+
         for emp in self._mock_employees:
             if emp["id"] == emp_str:
                 return emp
@@ -104,11 +112,16 @@ class ValixisRepository:
                         }
                         for e in employees
                     ]
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Error querying employees from database: {e}")
             finally:
                 if is_local:
                     db.close()
+
+        if os.getenv("STRICT_PRODUCTION_DB", "false").lower() == "true":
+            logger.error("Database connection unavailable in strict production mode. Refusing silent fallback to mock employees.")
+            return []
+
         return self._mock_employees
 
     def list_valixis_tasks(self) -> List[dict]:
@@ -128,11 +141,16 @@ class ValixisRepository:
                         }
                         for t in tasks
                     ]
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Error querying tasks from database: {e}")
             finally:
                 if is_local:
                     db.close()
+
+        if os.getenv("STRICT_PRODUCTION_DB", "false").lower() == "true":
+            logger.error("Database connection unavailable in strict production mode. Refusing silent fallback to mock tasks.")
+            return []
+
         return self._mock_tasks
 
     def search_existing_tasks(self, query_str: str) -> List[dict]:
