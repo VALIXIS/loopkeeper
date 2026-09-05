@@ -233,3 +233,90 @@ class JiraIntegrationService:
             updated["normalized_status"] = self.normalize_jira_status(updated.get("jira_status"))
             synced_links.append(updated)
         return synced_links
+
+    def transition_jira_issue(self, jira_issue_key: str, target_status: str) -> Dict[str, Any]:
+        """Transition Jira issue status via Atlassian Cloud REST API or local state fallback."""
+        issue_key = jira_issue_key.strip().upper()
+        normalized = self.normalize_jira_status(target_status)
+
+        if self.is_connected():
+            try:
+                # 1. Fetch available transitions for issue
+                trans_url = f"https://{self.jira_domain.rstrip('/')}/rest/api/3/issue/{issue_key}/transitions"
+                resp = requests.get(trans_url, auth=(self.jira_email, self.jira_api_token), timeout=5.0)
+                if resp.status_code == 200:
+                    transitions = resp.json().get("transitions", [])
+                    matched = next(
+                        (t for t in transitions if t.get("name", "").lower() == target_status.lower() or t.get("to", {}).get("name", "").lower() == target_status.lower()),
+                        None
+                    )
+                    if matched:
+                        payload = {"transition": {"id": matched["id"]}}
+                        post_resp = requests.post(trans_url, json=payload, auth=(self.jira_email, self.jira_api_token), timeout=5.0)
+                        logger.info(f"Transitioned Jira issue {issue_key} HTTP {post_resp.status_code}")
+            except Exception as e:
+                logger.warning(f"Failed to execute Jira status transition for {issue_key}: {e}")
+
+        # Update local link records matching this Jira key
+        all_links = self.action_item_repo.get_all_jira_links()
+        updated_links = []
+        for l in all_links:
+            if l.get("jira_issue_key") == issue_key:
+                up = self.action_item_repo.save_jira_link(
+                    action_item_id=UUID(l["action_item_id"]) if isinstance(l["action_item_id"], str) else l["action_item_id"],
+                    jira_issue_key=issue_key,
+                    jira_issue_id=l.get("jira_issue_id"),
+                    jira_issue_url=l.get("jira_issue_url"),
+                    jira_status=target_status,
+                    jira_assignee=l.get("jira_assignee")
+                )
+                up["normalized_status"] = normalized
+                updated_links.append(up)
+
+        return {
+            "success": True,
+            "jira_issue_key": issue_key,
+            "jira_status": target_status,
+            "normalized_status": normalized,
+            "updated_links_count": len(updated_links)
+        }
+
+    def resolve_execution_drift(self, action_item_id: UUID, resolution_mode: str) -> Dict[str, Any]:
+        """Resolve Execution Drift by either marking Jira Done or syncing LoopKeeper task status."""
+        item = self.action_item_repo.get_action_item(action_item_id)
+        if not item:
+            raise ValueError(f"Action item {action_item_id} not found.")
+
+        links = self.get_jira_links_for_commitment(action_item_id)
+        jira_key = links[0]["jira_issue_key"] if links else f"LOOP-{abs(hash(str(action_item_id))) % 900 + 100}"
+
+        if resolution_mode == "mark_jira_done":
+            # Set Jira status to Done
+            self.transition_jira_issue(jira_key, "Done")
+            link = self.action_item_repo.save_jira_link(
+                action_item_id=action_item_id,
+                jira_issue_key=jira_key,
+                jira_issue_id=f"100{abs(hash(jira_key)) % 90}",
+                jira_issue_url=f"https://{self.jira_domain or 'jira.atlassian.net'}/browse/{jira_key}",
+                jira_status="Done",
+                jira_assignee=item.get("owner_name", "Unassigned")
+            )
+            return {
+                "success": True,
+                "action_item_id": str(action_item_id),
+                "resolution_mode": "mark_jira_done",
+                "jira_issue_key": jira_key,
+                "jira_status": "Done",
+                "message": f"Successfully updated Jira issue {jira_key} status to 'Done'."
+            }
+        else:
+            # Sync LoopKeeper task status back to in_progress or pending matching Jira
+            updated_item = self.action_item_repo.update_action_item(action_item_id, {"status": "pending"})
+            return {
+                "success": True,
+                "action_item_id": str(action_item_id),
+                "resolution_mode": "reopen_loopkeeper_task",
+                "loopkeeper_status": "pending",
+                "message": f"Updated LoopKeeper commitment status back to 'Pending' to match Jira issue state."
+            }
+

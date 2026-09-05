@@ -66,6 +66,31 @@ def link_jira_issue(payload: JiraLinkRequest):
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
+class JiraTransitionRequest(BaseModel):
+    jira_issue_key: str
+    target_status: str
+
+class JiraResolveDriftRequest(BaseModel):
+    action_item_id: UUID
+    resolution_mode: str  # 'mark_jira_done' or 'reopen_loopkeeper_task'
+
+@router.post("/transition")
+def transition_jira_issue(payload: JiraTransitionRequest):
+    return jira_service.transition_jira_issue(
+        jira_issue_key=payload.jira_issue_key,
+        target_status=payload.target_status
+    )
+
+@router.post("/resolve-drift")
+def resolve_jira_drift(payload: JiraResolveDriftRequest):
+    try:
+        return jira_service.resolve_execution_drift(
+            action_item_id=payload.action_item_id,
+            resolution_mode=payload.resolution_mode
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
 @router.post("/sync/{action_item_id}")
 def sync_jira_issue(action_item_id: UUID):
     return jira_service.sync_jira_status(action_item_id)
@@ -73,3 +98,4 @@ def sync_jira_issue(action_item_id: UUID):
 @router.get("/status/{action_item_id}")
 def get_jira_issue_status(action_item_id: UUID):
     return jira_service.get_jira_links_for_commitment(action_item_id)
+

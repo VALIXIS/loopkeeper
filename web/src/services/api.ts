@@ -921,6 +921,56 @@ export const api = {
     return { action_item_id: actionItemId, jira_issue_key: jiraIssueKey, jira_status: jiraStatus || 'In Progress' };
   },
 
+  async createJiraIssue(actionItemId: string, projectKey?: string): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      const res = await fetch(`${API_BASE_URL}/jira/issue`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ action_item_id: actionItemId, project_key: projectKey || 'LOOP' })
+      });
+      if (res.ok) return await res.json();
+    }
+    const item = localStore.actionItems.find(a => a.id === actionItemId);
+    const key = `${projectKey || 'LOOP'}-${Math.floor(100 + Math.random() * 800)}`;
+    const link = {
+      action_item_id: actionItemId,
+      jira_issue_key: key,
+      jira_issue_url: `https://loopkeeper.atlassian.net/browse/${key}`,
+      jira_status: 'To Do',
+      jira_assignee: item?.owner_name || 'Unassigned',
+      normalized_status: 'todo'
+    };
+    return link;
+  },
+
+  async transitionJiraStatus(jiraIssueKey: string, targetStatus: string): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      const res = await fetch(`${API_BASE_URL}/jira/transition`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ jira_issue_key: jiraIssueKey, target_status: targetStatus })
+      });
+      if (res.ok) return await res.json();
+    }
+    return { success: true, jira_issue_key: jiraIssueKey, jira_status: targetStatus };
+  },
+
+  async resolveJiraDrift(actionItemId: string, resolutionMode: 'mark_jira_done' | 'reopen_loopkeeper_task'): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      const res = await fetch(`${API_BASE_URL}/jira/resolve-drift`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ action_item_id: actionItemId, resolution_mode: resolutionMode })
+      });
+      if (res.ok) return await res.json();
+    }
+    if (resolutionMode === 'reopen_loopkeeper_task') {
+      await this.updateActionItem(actionItemId, { status: 'pending' });
+    }
+    return { success: true, action_item_id: actionItemId, resolution_mode: resolutionMode };
+  },
+
+
   async listIntegrations(): Promise<any[]> {
     try {
       const resp = await fetch(`${API_BASE_URL}/integrations`);

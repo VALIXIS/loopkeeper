@@ -288,7 +288,8 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         const id = Math.floor(1000000000 + Math.random() * 9000000000);
         joinUrl = `https://zoom.us/j/${id}`;
       } else {
-        joinUrl = `https://teams.microsoft.com`;
+        const teamsMeetingId = Math.random().toString(36).substring(2, 10);
+        joinUrl = `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${teamsMeetingId}%40thread.v2/0?context=%7b%22Tid%22%3a%22loopkeeper-enterprise-tenant%22%7d`;
       }
       setCreatedJoinUrl(joinUrl);
     } catch (err) {

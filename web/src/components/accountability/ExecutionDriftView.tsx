@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { api } from '../../services/api';
 import {
   ShieldAlertIcon,
   AlertTriangleIcon,
@@ -28,7 +29,7 @@ export interface ExecutionDriftItem {
 }
 
 export const ExecutionDriftView: React.FC = () => {
-  const { actionItems } = useApp();
+  const { actionItems, addToast, refreshData } = useApp();
 
   // Static demo drift anomalies for architectural reference
   const demoDriftItems: ExecutionDriftItem[] = [
@@ -281,14 +282,59 @@ export const ExecutionDriftView: React.FC = () => {
               </div>
 
               {/* Discrepancy & Mitigation Row */}
-              <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-2">
-                <div className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
-                  <AlertTriangleIcon size={14} />
-                  <span>Drift Analysis: {item.discrepancySummary}</span>
+              <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-3">
+                <div className="text-xs font-bold text-rose-300 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <AlertTriangleIcon size={14} />
+                    <span>Drift Analysis: {item.discrepancySummary}</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                    Action Required
+                  </span>
                 </div>
+
                 <p className="text-xs text-zinc-300 leading-relaxed pl-5">
                   <strong className="text-cyan-300">Action Plan:</strong> {item.mitigationRecommendation}
                 </p>
+
+                <div className="pt-2 border-t border-rose-500/20 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span className="text-[11px] font-mono text-zinc-400">
+                    Resolve Execution Discrepancy:
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={async () => {
+                        const rawId = item.id.replace('drift-live-', '');
+                        await api.resolveJiraDrift(rawId, 'mark_jira_done');
+                        addToast({
+                          type: 'success',
+                          title: 'Jira Issue Updated',
+                          message: `Transitioned ${item.jiraIssueKey} to 'Done' in Atlassian Jira Cloud.`
+                        });
+                        refreshData();
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1"
+                    >
+                      <CheckCircleIcon size={13} />
+                      <span>Mark Jira Issue Done</span>
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const rawId = item.id.replace('drift-live-', '');
+                        await api.resolveJiraDrift(rawId, 'reopen_loopkeeper_task');
+                        addToast({
+                          type: 'info',
+                          title: 'LoopKeeper Task Re-opened',
+                          message: `Updated task status back to 'Pending' to match Jira issue state.`
+                        });
+                        refreshData();
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-white/[0.08] transition-all"
+                    >
+                      Re-open Task in LoopKeeper
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           ))}

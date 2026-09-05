@@ -29,11 +29,12 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
   onClose
 }) => {
   const { employees } = useAuth();
-  const { updateTask, navigateToMeeting } = useApp();
+  const { updateTask, navigateToMeeting, addToast } = useApp();
 
   const [detail, setDetail] = useState<ActionItemDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [jiraLink, setJiraLink] = useState<any>(null);
 
   // Edit form state
   const [title, setTitle] = useState('');
@@ -128,6 +129,32 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  if (!taskId) return;
+                  setSaving(true);
+                  try {
+                    const jiraRes = await api.createJiraIssue(taskId, 'LOOP');
+                    setJiraLink(jiraRes);
+                    addToast({
+                      type: 'success',
+                      title: 'Jira Issue Created',
+                      message: `Linked commitment to ${jiraRes.jira_issue_key} in Atlassian Jira Cloud.`
+                    });
+                  } catch (err: any) {
+                    addToast({ type: 'error', title: 'Jira Error', message: err?.message || 'Failed to push to Jira.' });
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+                disabled={saving}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 text-xs font-bold border border-blue-500/40 transition-colors shadow-sm"
+                title="Create or link issue in Atlassian Jira Cloud"
+              >
+                <SparklesIcon size={14} className="text-cyan-400" />
+                <span>{jiraLink ? jiraLink.jira_issue_key : 'Push to Jira'}</span>
+              </button>
+
               {detail.status !== 'done' ? (
                 <button
                   onClick={() => handleQuickStatus('done')}
