@@ -73,6 +73,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   const [modalTab, setModalTab] = useState<'schedule' | 'ingest' | 'record'>('schedule');
   const [selectedProvider, setSelectedProvider] = useState<'google_meet' | 'zoom' | 'ms_teams'>('google_meet');
   const [createdJoinUrl, setCreatedJoinUrl] = useState<string | null>(null);
+  const [createdPasscode, setCreatedPasscode] = useState<string | null>(null);
 
   // In-Modal Recording Studio state
   const [isModalRecording, setIsModalRecording] = useState(false);
@@ -246,6 +247,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         setSelectedParticipants(employees.map(e => e.id));
       }
       setCreatedJoinUrl(null);
+      setCreatedPasscode(null);
       setSteps(DEFAULT_PIPELINE_STEPS);
       setIsProcessing(false);
       setCurrentStepIndex(0);
@@ -270,6 +272,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     if (!title.trim()) return;
 
     setIsProcessing(true);
+    setCreatedPasscode(null);
     try {
       let joinUrl = '';
       if (selectedProvider === 'google_meet') {
@@ -286,7 +289,9 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         joinUrl = `https://meet.google.com/${meetCode}`;
       } else if (selectedProvider === 'zoom') {
         const id = Math.floor(1000000000 + Math.random() * 9000000000);
-        joinUrl = `https://zoom.us/j/${id}`;
+        const pwd = 'lk' + Math.floor(1000 + Math.random() * 9000);
+        joinUrl = `https://zoom.us/j/${id}?pwd=${pwd}`;
+        setCreatedPasscode(pwd);
       } else {
         const teamsMeetingId = Math.random().toString(36).substring(2, 10);
         joinUrl = `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${teamsMeetingId}%40thread.v2/0?context=%7b%22Tid%22%3a%22loopkeeper-enterprise-tenant%22%7d`;
@@ -357,7 +362,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
       <div className="flex items-center gap-2 mb-4 border-b border-slate-200 dark:border-zinc-800 pb-3 flex-wrap">
         <button
           type="button"
-          onClick={() => { setModalTab('schedule'); setCreatedJoinUrl(null); }}
+          onClick={() => { setModalTab('schedule'); setCreatedJoinUrl(null); setCreatedPasscode(null); }}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             modalTab === 'schedule'
               ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-md'
@@ -368,7 +373,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         </button>
         <button
           type="button"
-          onClick={() => { setModalTab('record'); setCreatedJoinUrl(null); }}
+          onClick={() => { setModalTab('record'); setCreatedJoinUrl(null); setCreatedPasscode(null); }}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
             modalTab === 'record'
               ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-md'
@@ -380,7 +385,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         </button>
         <button
           type="button"
-          onClick={() => { setModalTab('ingest'); setCreatedJoinUrl(null); }}
+          onClick={() => { setModalTab('ingest'); setCreatedJoinUrl(null); setCreatedPasscode(null); }}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             modalTab === 'ingest'
               ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-md'
@@ -418,6 +423,13 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           <div className="p-3 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 font-mono text-xs text-cyan-700 dark:text-cyan-300 select-all overflow-x-auto max-w-lg mx-auto">
             {createdJoinUrl}
           </div>
+
+          {createdPasscode && (
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-mono max-w-lg mx-auto flex items-center justify-between px-4">
+              <span>Zoom Meeting Passcode: <strong className="font-bold text-slate-900 dark:text-white select-all">{createdPasscode}</strong></span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold font-sans">✓ Auto-Embedded in URL</span>
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
