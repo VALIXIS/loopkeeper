@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-[#07090e]/80 backdrop-blur-xl">
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6 max-w-7xl mx-auto">
+      <div className="flex h-16 items-center justify-between px-4 sm:px-6 w-full">
         {/* Left Branding */}
         <div
           onClick={() => navigate('/dashboard')}

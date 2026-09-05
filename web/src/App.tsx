@@ -63,8 +63,8 @@ const MainLayout: React.FC = () => {
         <Sidebar />
 
         {/* Main Content Viewport */}
-        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 h-[calc(100vh-4rem)]">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 h-[calc(100vh-4rem)]">
+          <div className="w-full max-w-[1600px] mx-auto">
             {route.path === 'dashboard' && (
               <DashboardView onOpenCreateMeeting={handleOpenCreateMeeting} />
             )}
