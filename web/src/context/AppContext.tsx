@@ -232,8 +232,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     api.resetStore();
     addToast({
       type: 'info',
-      title: 'Demo Data Reset',
-      message: 'Restored initial sample meetings and action items.'
+      title: 'Workspace Reset',
+      message: 'Restored enterprise sample workspace data and action items.'
     });
     await refreshData();
   };

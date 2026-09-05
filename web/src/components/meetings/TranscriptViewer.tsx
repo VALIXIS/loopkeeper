@@ -14,8 +14,20 @@ export const TranscriptViewer: React.FC<TranscriptViewerProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [copied, setCopied] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const highlightedRef = React.useRef<HTMLDivElement>(null);
 
   const lines = content.split('\n').filter(l => l.trim().length > 0);
+
+  // Auto-scroll to highlighted evidence
+  React.useEffect(() => {
+    if (highlightText && highlightedRef.current) {
+      highlightedRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
+  }, [highlightText]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content);
@@ -30,37 +42,42 @@ export const TranscriptViewer: React.FC<TranscriptViewerProps> = ({
     if (s.includes('bob')) return 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30';
     if (s.includes('charlie')) return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30';
     if (s.includes('diana')) return 'text-purple-400 bg-purple-500/10 border-purple-500/30';
-    return 'text-zinc-300 bg-zinc-800 border-zinc-700';
+    if (s.includes('priya')) return 'text-rose-400 bg-rose-500/10 border-rose-500/30';
+    return 'text-slate-300 bg-slate-800 border-slate-700';
   };
 
   return (
-    <div className="rounded-2xl bg-zinc-950 border border-zinc-800 overflow-hidden shadow-xl flex flex-col h-full">
+    <div className="rounded-3xl bg-slate-950/90 border border-white/[0.08] overflow-hidden shadow-2xl flex flex-col h-full backdrop-blur-xl">
       {/* Controls Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border-b border-zinc-800 bg-zinc-900/60">
-        <div className="flex items-center gap-2">
-          <FileTextIcon size={18} className="text-zinc-400" />
-          <span className="text-xs font-semibold text-zinc-200">
-            {sourceFileName || 'Meeting Transcript'}
-          </span>
-          <span className="text-[10px] text-zinc-500 font-mono">({lines.length} lines)</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border-b border-white/[0.08] bg-slate-900/80">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+            <FileTextIcon size={16} />
+          </div>
+          <div>
+            <span className="text-xs font-bold text-slate-200 block">
+              {sourceFileName || 'Meeting Transcript Stream'}
+            </span>
+            <span className="text-[10px] text-slate-400 font-mono">({lines.length} speech turns indexed)</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Search bar */}
           <div className="relative">
-            <SearchIcon size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+            <SearchIcon size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
               placeholder="Search transcript..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1 rounded-lg bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 w-48"
+              className="pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-white/[0.08] text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-44 font-sans"
             />
           </div>
 
           <button
             onClick={handleCopy}
-            className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-zinc-100 text-xs font-medium border border-zinc-700 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold border border-white/[0.08] transition-colors flex items-center gap-1.5"
           >
             {copied ? (
               <>
@@ -75,9 +92,9 @@ export const TranscriptViewer: React.FC<TranscriptViewerProps> = ({
       </div>
 
       {/* Transcript Body */}
-      <div className="p-4 space-y-3 overflow-y-auto max-h-[550px] font-sans">
+      <div ref={containerRef} className="p-4 space-y-3 overflow-y-auto max-h-[550px] font-sans scroll-smooth">
         {lines.length === 0 ? (
-          <div className="text-center py-12 text-zinc-500 text-xs">
+          <div className="text-center py-12 text-slate-500 text-xs">
             No transcript text available for this meeting.
           </div>
         ) : (
@@ -113,41 +130,54 @@ export const TranscriptViewer: React.FC<TranscriptViewerProps> = ({
             return (
               <div
                 key={idx}
-                className={`p-3 rounded-xl border transition-all ${
+                ref={isHighlighted ? highlightedRef : undefined}
+                className={`p-3.5 rounded-2xl border transition-all duration-300 relative ${
                   isHighlighted
-                    ? 'bg-indigo-950/60 border-cyan-500/70 shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-500'
+                    ? 'bg-indigo-950/70 border-cyan-400 shadow-xl shadow-cyan-500/20 ring-2 ring-cyan-400/60 scale-[1.01]'
                     : isActionTurn
-                    ? 'bg-zinc-900/50 border-zinc-800/80 hover:border-zinc-700'
-                    : 'bg-zinc-950/40 border-zinc-900'
+                    ? 'bg-slate-900/60 border-white/[0.08] hover:border-slate-600'
+                    : 'bg-slate-950/40 border-white/[0.04]'
                 }`}
               >
-                <div className="flex items-center justify-between text-xs mb-1.5">
+                {isHighlighted && (
+                  <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r bg-cyan-400 shadow-lg shadow-cyan-400/80" />
+                )}
+
+                <div className="flex items-center justify-between text-xs mb-2">
                   <div className="flex items-center gap-2">
                     {speaker ? (
                       <span
-                        className={`px-2 py-0.5 rounded-md text-[11px] font-bold border ${getSpeakerColor(
+                        className={`px-2.5 py-0.5 rounded-lg text-[11px] font-bold border font-mono ${getSpeakerColor(
                           speaker
                         )}`}
                       >
                         {speaker}
                       </span>
                     ) : (
-                      <span className="text-zinc-500 text-[11px]">Unknown Speaker</span>
+                      <span className="text-slate-500 text-[11px]">Unknown Speaker</span>
                     )}
 
                     {isActionTurn && (
-                      <span className="inline-flex items-center gap-1 text-[10px] text-cyan-400 font-semibold bg-cyan-950/40 px-1.5 py-0.2 rounded border border-cyan-500/30">
+                      <span className="inline-flex items-center gap-1 text-[10px] text-cyan-400 font-semibold bg-cyan-950/60 px-2 py-0.5 rounded-md border border-cyan-500/30">
                         <SparklesIcon size={10} /> Action Turn
+                      </span>
+                    )}
+
+                    {isHighlighted && (
+                      <span className="inline-flex items-center gap-1 text-[10px] text-emerald-300 font-mono font-bold bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-500/40 animate-pulse">
+                        ● VERIFIED EVIDENCE ANCHOR
                       </span>
                     )}
                   </div>
 
                   {timestamp && (
-                    <span className="text-[10px] font-mono text-zinc-500">{timestamp}</span>
+                    <span className="text-[10px] font-mono text-slate-500">{timestamp}</span>
                   )}
                 </div>
 
-                <p className="text-xs text-zinc-300 leading-relaxed pl-1">{speechText}</p>
+                <p className={`text-xs leading-relaxed pl-1 ${isHighlighted ? 'text-white font-medium' : 'text-slate-300'}`}>
+                  {speechText}
+                </p>
               </div>
             );
           })

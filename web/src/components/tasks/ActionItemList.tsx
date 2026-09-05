@@ -10,7 +10,8 @@ import {
   ClockIcon,
   CheckCircleIcon,
   UsersIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  SparklesIcon
 } from '../common/Icons';
 
 interface ActionItemListProps {
@@ -75,18 +76,19 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300">
-            Total Commitments: <strong className="text-cyan-400">{actionItems.length}</strong>
+          <span className="px-3.5 py-1.5 rounded-xl glass-panel text-xs font-mono text-zinc-300 border border-zinc-800 flex items-center gap-2">
+            <SparklesIcon size={14} className="text-cyan-400" />
+            Active Commitments: <strong className="text-cyan-400">{actionItems.length}</strong>
           </span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-4 shadow-lg">
+      <div className="p-4 rounded-2xl glass-panel border border-zinc-800 space-y-4 shadow-lg">
         {/* Top filter row */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Status Tabs */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-zinc-950 border border-zinc-800 text-xs font-medium">
+          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-zinc-950/80 border border-zinc-800 text-xs font-medium">
             {[
               { id: 'all', label: 'All Commitments' },
               { id: 'pending', label: 'In Progress' },
@@ -99,7 +101,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
                 onClick={() => setStatusFilter(tab.id)}
                 className={`px-3 py-1.5 rounded-lg transition-all ${
                   statusFilter === tab.id
-                    ? 'bg-indigo-600 text-white font-bold shadow-md shadow-indigo-600/20'
+                    ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-bold shadow-md shadow-indigo-600/30'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
                 }`}
               >
@@ -110,11 +112,11 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
 
           {/* Owner Dropdown */}
           <div className="flex items-center gap-2">
-            <UsersIcon size={14} className="text-zinc-500" />
+            <UsersIcon size={14} className="text-zinc-400" />
             <select
               value={ownerFilter}
               onChange={e => setOwnerFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+              className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500 transition-colors"
             >
               <option value="all">All Assignees</option>
               {employees.map(emp => (
@@ -128,13 +130,13 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
 
         {/* Search row */}
         <div className="relative">
-          <SearchIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+          <SearchIcon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
           <input
             type="text"
             placeholder="Search commitments by keyword, assignee, or description..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
           />
         </div>
       </div>
@@ -142,7 +144,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
       {/* Action Items List */}
       <div className="space-y-3">
         {filteredItems.length === 0 ? (
-          <div className="text-center py-20 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-zinc-500 text-xs">
+          <div className="text-center py-20 rounded-2xl glass-panel border border-zinc-800 text-zinc-400 text-xs">
             No commitments match the active filters.
           </div>
         ) : (
@@ -161,12 +163,12 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
               <div
                 key={item.id}
                 onClick={() => onSelectTask(item.id)}
-                className={`group cursor-pointer rounded-2xl p-5 border transition-all duration-200 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                className={`group cursor-pointer rounded-2xl p-5 border transition-all duration-200 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 hover:-translate-y-0.5 ${
                   isDone
-                    ? 'bg-zinc-950/70 border-zinc-800/80 opacity-75 hover:opacity-100'
+                    ? 'bg-zinc-950/60 border-zinc-800/80 opacity-75 hover:opacity-100'
                     : item.status === 'overdue'
                     ? 'bg-rose-950/20 border-rose-600/40 hover:border-rose-500 hover:shadow-rose-500/10'
-                    : 'bg-zinc-900/80 border-zinc-800 hover:border-indigo-500/50 hover:shadow-indigo-500/10'
+                    : 'glass-panel border-zinc-800 hover:border-cyan-500/50 hover:shadow-cyan-500/10'
                 }`}
               >
                 {/* Checkbox and Main Info */}
@@ -175,7 +177,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
                     onClick={e => handleToggleDone(e, item)}
                     className={`mt-1 h-5 w-5 rounded-md border flex items-center justify-center transition-all ${
                       isDone
-                        ? 'bg-emerald-500 border-emerald-500 text-zinc-950'
+                        ? 'bg-emerald-500 border-emerald-500 text-zinc-950 shadow-sm shadow-emerald-500/40'
                         : 'border-zinc-600 hover:border-cyan-400 bg-zinc-950'
                     }`}
                     title={isDone ? 'Mark in progress' : 'Mark completed'}
@@ -194,7 +196,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
                     <h3
                       className={`text-sm font-bold transition-colors ${
                         isDone
-                          ? 'line-through text-zinc-400'
+                          ? 'line-through text-zinc-500'
                           : 'text-zinc-100 group-hover:text-cyan-300'
                       }`}
                     >
@@ -208,8 +210,8 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
                     )}
 
                     <div className="flex flex-wrap items-center gap-3 text-[11px] text-zinc-400 pt-1">
-                      <span className="flex items-center gap-1 text-zinc-300 font-medium">
-                        <UsersIcon size={12} />
+                      <span className="flex items-center gap-1.5 text-zinc-300 font-medium bg-zinc-900/70 px-2 py-0.5 rounded-md border border-zinc-800">
+                        <UsersIcon size={12} className="text-cyan-400" />
                         {item.owner_name}
                       </span>
                       <span>•</span>
@@ -235,7 +237,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
                     <ConfidenceMeter score={item.confidence} size="sm" />
                   </div>
 
-                  <div className="flex items-center gap-1 text-xs text-indigo-400 font-semibold group-hover:translate-x-0.5 transition-transform">
+                  <div className="flex items-center gap-1 text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">
                     <span>Audit & Details</span>
                     <ArrowRightIcon size={14} />
                   </div>

@@ -2,8 +2,62 @@ import type { Employee, Meeting, ActionItem, ActionItemHistory, AIRunTelemetry }
 
 export const MOCK_EMPLOYEES: Employee[] = [
   {
+    id: '11111111-1111-1111-1111-111111111111',
+    name: 'Jyothsna (Lead Architect)',
+    email: 'jyothsna@loopkeeper.io',
+    role: 'Product Lead & Lead Architect',
+    department: 'Engineering',
+    avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+    is_manager: true
+  },
+  {
+    id: '22222222-2222-2222-2222-222222222222',
+    name: 'Alice Johnson',
+    email: 'alice.j@loopkeeper.io',
+    role: 'Senior Backend Engineer',
+    department: 'Platform',
+    avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '33333333-3333-3333-3333-333333333333',
+    name: 'Bob Smith',
+    email: 'bob.smith@loopkeeper.io',
+    role: 'Frontend & UI Specialist',
+    department: 'Client Experience',
+    avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '44444444-4444-4444-4444-444444444444',
+    name: 'Charlie Lee',
+    email: 'charlie.l@loopkeeper.io',
+    role: 'AI & Inference Systems Engineer',
+    department: 'Applied AI',
+    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '55555555-5555-5555-5555-555555555555',
+    name: 'Diana Patel',
+    email: 'diana.p@loopkeeper.io',
+    role: 'Integration & QA Lead',
+    department: 'Quality & Ops',
+    avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '66666666-6666-6666-6666-666666666666',
+    name: 'Priya Sharma',
+    email: 'priya.s@loopkeeper.io',
+    role: 'Senior Backend Engineer',
+    department: 'Platform',
+    avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
     id: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
-    name: 'Jyothsna',
+    name: 'Jyothsna (Valixis)',
     email: 'jyothsna@valixis.com',
     role: 'Product Lead & Lead Architect',
     department: 'Engineering',
@@ -105,10 +159,10 @@ export const MOCK_MEETINGS: Meeting[] = [
   },
   {
     id: 'm1000000-0000-0000-0000-000000000004',
-    title: 'Demo Readiness & Accountability Graph Review',
+    title: 'Release Readiness & Accountability Graph Review',
     meeting_date: '2026-09-05T08:00:00Z',
     source: 'transcript',
-    external_source_id: 'meet-demo-prep',
+    external_source_id: 'meet-release-prep',
     created_by: '11111111-1111-1111-1111-111111111111',
     created_at: '2026-09-05T08:45:00Z',
     updated_at: '2026-09-05T08:45:00Z',
@@ -231,8 +285,8 @@ export const MOCK_ACTION_ITEMS: ActionItem[] = [
     id: 'a1000000-0000-0000-0000-000000000005',
     meeting_id: 'm1000000-0000-0000-0000-000000000002',
     meeting_title: 'VALIXIS Portal Integration & Database Boundary Sync',
-    title: 'Implement in-memory repository fallbacks for local mock stability',
-    description: 'Ensure zero-crash operation during demo even without internet or live PostgreSQL database.',
+    title: 'Implement in-memory repository fallbacks for local stability',
+    description: 'Ensure zero-crash operation even without active database connection.',
     owner_employee_id: '22222222-2222-2222-2222-222222222222',
     owner_name: 'Alice Johnson',
     deadline: '2026-09-05T18:00:00Z',
@@ -290,7 +344,7 @@ export const MOCK_ACTION_ITEMS: ActionItem[] = [
   {
     id: 'a1000000-0000-0000-0000-000000000008',
     meeting_id: 'm1000000-0000-0000-0000-000000000004',
-    meeting_title: 'Demo Readiness & Accountability Graph Review',
+    meeting_title: 'Release Readiness & Accountability Graph Review',
     title: 'Finalize interactive Accountability Graph with zoom & pan controls',
     description: 'Complete signature flow diagram from meeting commitment to verified outcome.',
     owner_employee_id: '33333333-3333-3333-3333-333333333333',
@@ -412,7 +466,7 @@ export const SAMPLE_TRANSCRIPTS = [
   {
     title: 'Sprint Planning & Feature Ownership',
     date: '2026-09-05T11:00:00Z',
-    content: `[00:01:00] Jyothsna: Welcome everyone. Let's assign key deliverables for the next 24 hours.
+    content: `[00:01:00] Jyothsna: Welcome everyone. Let's assign key deliverables for the next sprint.
 [00:01:25] Alice: I will build the FastAPI REST router for export reporting by Saturday 6 PM.
 [00:02:10] Bob: I'll complete the interactive graph node animations and zoom controls by tomorrow afternoon.
 [00:03:00] Charlie: I will benchmark SLM extraction vs Fallback LLM across 50 simulated transcripts by Sept 6th at 8 PM.
@@ -426,10 +480,10 @@ export const SAMPLE_TRANSCRIPTS = [
 [00:02:00] Alice: I will verify the PostgreSQL connection pooling parameters to prevent timeout spikes by 8 PM.`
   },
   {
-    title: 'VALIXIS Portal Integration Review',
+    title: 'Payment Integration & API Continuity Sync',
     date: '2026-09-05T16:30:00Z',
-    content: `[00:00:45] Diana: Audited all endpoints against VALIXIS schema. All employee Lookups use Read-Only mode.
-[00:01:30] Bob: The web integration view displays VALIXIS live sync status and employee directory perfectly.
-[00:02:15] Jyothsna: Verified. Zero writes occurred on VALIXIS tables.`
+    content: `[00:00:45] Jyothsna: Let's check in on the core platform components. Priya, what is the status of the payment API?
+[00:01:10] Priya: Priya will complete the payment API by Friday.
+[00:02:00] Alice: Backend webhook handlers for payment notifications are in place.`
   }
 ];

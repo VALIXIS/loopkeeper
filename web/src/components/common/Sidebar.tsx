@@ -75,11 +75,12 @@ export const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 shrink-0 border-r border-zinc-800 bg-zinc-950/60 hidden md:flex flex-col justify-between p-4 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto">
+    <aside className="w-64 shrink-0 border-r border-white/[0.08] bg-[#07090e]/60 backdrop-blur-xl hidden md:flex flex-col justify-between p-4 h-[calc(100vh-4rem)] sticky top-16 overflow-y-auto">
       <div className="space-y-6">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 px-3 mb-2">
-            Navigation
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2 flex items-center justify-between">
+            <span>Navigation</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/80 animate-pulse" />
           </div>
           <nav className="space-y-1">
             {items.map(item => {
@@ -93,19 +94,22 @@ export const Sidebar: React.FC = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 group relative overflow-hidden ${
                     isActive
-                      ? 'bg-gradient-to-r from-indigo-600/25 to-cyan-600/15 text-white border border-indigo-500/30 shadow-sm'
-                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/80'
+                      ? 'bg-gradient-to-r from-indigo-600/30 via-indigo-600/20 to-cyan-600/10 text-white border border-indigo-500/40 shadow-sm shadow-indigo-500/10'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04]'
                   }`}
                 >
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r bg-cyan-400" />
+                  )}
                   <div className="flex items-center gap-3">
                     <Icon
-                      size={18}
+                      size={17}
                       className={
                         isActive
                           ? 'text-cyan-400'
-                          : 'text-zinc-500 group-hover:text-zinc-300 transition-colors'
+                          : 'text-slate-500 group-hover:text-slate-300 transition-colors'
                       }
                     />
                     <span>{item.label}</span>
@@ -113,8 +117,8 @@ export const Sidebar: React.FC = () => {
 
                   {item.badge !== undefined && item.badge > 0 && (
                     <span
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
-                        item.badgeColor || 'bg-zinc-800 text-zinc-300'
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold ${
+                        item.badgeColor || 'bg-slate-800 text-slate-300 border border-slate-700'
                       }`}
                     >
                       {item.badge}
@@ -129,31 +133,31 @@ export const Sidebar: React.FC = () => {
         {overdueCount > 0 && (
           <div
             onClick={() => setActiveTab('tasks')}
-            className="cursor-pointer p-3.5 rounded-xl bg-gradient-to-br from-rose-950/40 to-zinc-900 border border-rose-600/30 hover:border-rose-500/60 transition-all shadow-lg"
+            className="cursor-pointer p-3.5 rounded-2xl bg-gradient-to-br from-rose-950/40 to-slate-900 border border-rose-600/40 hover:border-rose-400/80 transition-all shadow-lg hover:shadow-rose-500/10 group"
           >
             <div className="flex items-center gap-2 text-rose-400 font-bold text-xs">
-              <AlertTriangleIcon size={16} />
+              <AlertTriangleIcon size={15} className="animate-pulse" />
               <span>{overdueCount} Overdue Commitment{overdueCount > 1 ? 's' : ''}</span>
             </div>
-            <p className="text-[11px] text-zinc-400 mt-1 leading-snug">
+            <p className="text-[11px] text-slate-400 mt-1 leading-snug group-hover:text-slate-300 transition-colors">
               Immediate attention required to prevent cross-sprint cascade.
             </p>
           </div>
         )}
       </div>
 
-      <div className="p-3 rounded-xl bg-zinc-900/50 border border-zinc-800 text-[11px] text-zinc-400 space-y-1">
+      <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-white/[0.07] text-[11px] text-slate-400 space-y-1.5 shadow-sm">
         <div className="flex items-center justify-between">
-          <span>Engine Model</span>
-          <span className="font-mono text-cyan-400 text-[10px]">SLM v1.2</span>
+          <span className="text-slate-400">Inference Core</span>
+          <span className="font-mono text-cyan-400 text-[10px] font-bold">SLM v1.2 ONNX</span>
         </div>
         <div className="flex items-center justify-between">
-          <span>Vector Index</span>
-          <span className="font-mono text-emerald-400 text-[10px]">Cosine 1536</span>
+          <span className="text-slate-400">Vector Dedupe</span>
+          <span className="font-mono text-emerald-400 text-[10px] font-bold">Cosine 1536</span>
         </div>
         <div className="flex items-center justify-between">
-          <span>VALIXIS Mode</span>
-          <span className="font-mono text-indigo-300 text-[10px]">Read-Only</span>
+          <span className="text-slate-400">VALIXIS Mode</span>
+          <span className="font-mono text-indigo-300 text-[10px] font-bold">Read-Only</span>
         </div>
       </div>
     </aside>

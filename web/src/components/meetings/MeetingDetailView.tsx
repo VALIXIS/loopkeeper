@@ -94,27 +94,29 @@ export const MeetingDetailView: React.FC = () => {
       </div>
 
       {/* Meeting Executive Banner */}
-      <div className="rounded-3xl bg-zinc-900 border border-zinc-800 p-6 shadow-xl space-y-4">
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-          <div className="space-y-2 max-w-3xl">
+      <div className="rounded-3xl bg-slate-900/80 border border-white/[0.08] p-6 sm:p-8 shadow-2xl space-y-4 backdrop-blur-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 relative z-10">
+          <div className="space-y-2.5 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
-                {meeting.source.toUpperCase()}
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                {meeting.source.toUpperCase()} SOURCE
               </span>
-              <span className="text-xs text-zinc-400 font-mono flex items-center gap-1">
-                <CalendarIcon size={13} />
+              <span className="text-xs text-slate-400 font-mono flex items-center gap-1">
+                <CalendarIcon size={13} className="text-cyan-400" />
                 {formattedDate}
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               {meeting.title}
             </h1>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            <div className="px-4 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-right">
-              <span className="text-[10px] text-zinc-500 uppercase font-bold block">
+            <div className="px-4 py-2.5 rounded-2xl bg-slate-950 border border-white/[0.08] text-right shadow-inner">
+              <span className="text-[10px] text-slate-400 uppercase font-bold block">
                 Commitments
               </span>
               <span className="text-xl font-bold font-mono text-cyan-400">
@@ -123,19 +125,19 @@ export const MeetingDetailView: React.FC = () => {
             </div>
             <button
               onClick={() => setActiveTab('graph')}
-              className="flex items-center gap-1.5 px-4 py-3 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 text-xs font-bold border border-indigo-500/40 transition-colors"
+              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 text-xs font-bold border border-indigo-500/40 transition-all hover:scale-[1.03] active:scale-[0.98] shadow-md"
             >
-              <NetworkIcon size={16} />
+              <NetworkIcon size={16} className="text-cyan-400" />
               <span>Trace in Graph</span>
             </button>
           </div>
         </div>
 
         {/* Participants Avatars */}
-        <div className="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-400">
-          <div className="flex items-center gap-2">
-            <UsersIcon size={14} />
-            <span>Participants:</span>
+        <div className="pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 relative z-10">
+          <div className="flex items-center gap-2.5">
+            <UsersIcon size={14} className="text-indigo-400" />
+            <span className="font-semibold text-slate-300">Participants:</span>
             <div className="flex items-center -space-x-1.5">
               {meeting.participants?.map(p => (
                 <img
@@ -143,28 +145,30 @@ export const MeetingDetailView: React.FC = () => {
                   src={p.avatar_url}
                   alt={p.name}
                   title={p.name}
-                  className="h-6 w-6 rounded-full ring-2 ring-zinc-900 object-cover"
+                  className="h-6 w-6 rounded-full ring-2 ring-slate-900 object-cover"
                 />
               ))}
             </div>
-            <span className="text-zinc-300 font-medium ml-1">
+            <span className="text-slate-300 font-medium ml-1">
               {meeting.participants?.map(p => p.name.split(' ')[0]).join(', ')}
             </span>
           </div>
 
-          <div className="font-mono text-[11px] text-zinc-500">ID: {meeting.id}</div>
+          <div className="font-mono text-[11px] text-slate-500">
+            Meeting ID: <span className="text-slate-400">{meeting.id.slice(0, 8)}...</span>
+          </div>
         </div>
       </div>
 
       {/* Navigation Controls Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-2">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveDetailTab('items')}
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all ${
               activeTab === 'items'
                 ? 'border-cyan-400 text-cyan-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <CheckSquareIcon size={16} />
@@ -176,7 +180,7 @@ export const MeetingDetailView: React.FC = () => {
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all ${
               activeTab === 'transcript'
                 ? 'border-cyan-400 text-cyan-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <FileTextIcon size={16} />
@@ -188,7 +192,7 @@ export const MeetingDetailView: React.FC = () => {
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold border-b-2 transition-all ${
               activeTab === 'telemetry'
                 ? 'border-cyan-400 text-cyan-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
             <BrainIcon size={16} />
@@ -197,23 +201,23 @@ export const MeetingDetailView: React.FC = () => {
         </div>
 
         {/* View Layout Toggle */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-950 border border-zinc-800 self-start sm:self-auto">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950 border border-white/[0.08] self-start sm:self-auto">
           <button
             onClick={() => setViewLayout('split')}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               viewLayout === 'split'
                 ? 'bg-indigo-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-zinc-200'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Side-by-Side Evidence
           </button>
           <button
             onClick={() => setViewLayout('tabs')}
-            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               viewLayout === 'tabs'
                 ? 'bg-indigo-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-zinc-200'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Full Width Tabs
@@ -227,17 +231,17 @@ export const MeetingDetailView: React.FC = () => {
           {/* Left Column: Action Items List */}
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                 Extracted Commitments ({meeting.action_items.length})
               </h3>
-              <span className="text-[11px] text-cyan-400 font-mono">
-                Click item to highlight evidence ➔
+              <span className="text-[11px] text-cyan-400 font-mono font-semibold animate-pulse">
+                Click card to tether transcript evidence ➔
               </span>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               {meeting.action_items.length === 0 ? (
-                <div className="text-center py-16 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-zinc-500 text-xs">
+                <div className="text-center py-16 rounded-3xl bg-slate-900/40 border border-white/[0.08] text-slate-500 text-xs">
                   No action items extracted from this meeting transcript.
                 </div>
               ) : (
@@ -256,13 +260,13 @@ export const MeetingDetailView: React.FC = () => {
                     <div
                       key={item.id}
                       onClick={() => handleInspectSnippet(item.source_text || null)}
-                      className={`group cursor-pointer rounded-2xl border p-4 shadow-lg transition-all flex flex-col justify-between gap-3 ${
+                      className={`group cursor-pointer rounded-3xl border p-5 shadow-xl transition-all duration-200 flex flex-col justify-between gap-3.5 backdrop-blur-xl ${
                         isSelected
-                          ? 'bg-indigo-950/50 border-cyan-500 ring-1 ring-cyan-500/50 shadow-cyan-500/10'
-                          : 'bg-zinc-900/80 border-zinc-800 hover:border-indigo-500/50'
+                          ? 'bg-indigo-950/60 border-cyan-400 ring-2 ring-cyan-400/40 shadow-cyan-500/15 scale-[1.01]'
+                          : 'bg-slate-900/80 border-white/[0.08] hover:border-indigo-500/50 hover:bg-slate-900/95 hover:-translate-y-0.5'
                       }`}
                     >
-                      <div className="space-y-2">
+                      <div className="space-y-2.5">
                         <div className="flex flex-wrap items-center gap-2">
                           <StatusBadge status={item.status} />
                           <VerificationBadge confidence={item.confidence} />
@@ -270,26 +274,26 @@ export const MeetingDetailView: React.FC = () => {
                           <PostponementBadge count={item.postponement_count} />
                         </div>
 
-                        <h3 className="text-sm font-bold text-zinc-100 group-hover:text-cyan-300 transition-colors">
+                        <h3 className="text-sm font-bold text-slate-100 group-hover:text-cyan-300 transition-colors leading-snug">
                           {item.title}
                         </h3>
 
                         {item.source_text && (
-                          <div className="space-y-1">
+                          <div className="space-y-1 pt-1">
                             <span className="text-[10px] text-cyan-400 font-mono uppercase font-bold block">
                               AI Transcript Evidence Quote
                             </span>
-                            <p className="text-xs text-zinc-300 italic bg-zinc-950 p-2.5 rounded-xl border border-zinc-800 font-mono leading-relaxed">
+                            <p className="text-xs text-slate-300 italic bg-slate-950/80 p-3 rounded-2xl border border-white/[0.06] font-mono leading-relaxed">
                               "{item.source_text}"
                             </p>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between gap-3 pt-3 border-t border-zinc-800 text-xs">
+                      <div className="flex items-center justify-between gap-3 pt-3.5 border-t border-white/[0.06] text-xs">
                         <div>
-                          <span className="text-[10px] text-zinc-500 uppercase block">Assignee</span>
-                          <span className="font-semibold text-zinc-200">{item.owner_name}</span>
+                          <span className="text-[10px] text-slate-500 uppercase block font-semibold">Assignee</span>
+                          <span className="font-semibold text-slate-200">{item.owner_name}</span>
                         </div>
 
                         <button
@@ -297,16 +301,16 @@ export const MeetingDetailView: React.FC = () => {
                             e.stopPropagation();
                             navigateToTask(item.id);
                           }}
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/80 text-indigo-300 hover:text-indigo-200 text-[11px] font-bold border border-indigo-500/30 transition-colors shadow-sm"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-950/80 hover:bg-indigo-900 text-indigo-200 text-[11px] font-bold border border-indigo-500/40 transition-colors shadow-sm"
                           title="Inspect cross-meeting history and audit timeline for this commitment"
                         >
-                          <HistoryIcon size={12} className="text-cyan-400" />
+                          <HistoryIcon size={13} className="text-cyan-400" />
                           <span>Audit Timeline</span>
                         </button>
 
                         <div className="text-right">
-                          <span className="text-[10px] text-zinc-500 uppercase block">Target Deadline</span>
-                          <span className="font-mono text-zinc-300">{formattedDeadline}</span>
+                          <span className="text-[10px] text-slate-500 uppercase block font-semibold">Target Deadline</span>
+                          <span className="font-mono text-slate-300 font-medium">{formattedDeadline}</span>
                         </div>
                       </div>
                     </div>
@@ -319,12 +323,12 @@ export const MeetingDetailView: React.FC = () => {
           {/* Right Column: Transcript Viewer with Active Highlight */}
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                 Source Transcript & Evidence Verification
               </h3>
               {selectedEvidenceSnippet && (
-                <span className="text-[11px] text-emerald-400 font-mono">
-                  Evidence Snippet Highlighted
+                <span className="text-[11px] text-emerald-400 font-mono font-bold">
+                  ● Evidence Synchronized
                 </span>
               )}
             </div>

@@ -54,11 +54,19 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-zinc-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#07090e] text-zinc-100 flex flex-col font-sans relative overflow-x-hidden">
+      {/* Ambient Depth Background */}
+      <div className="ambient-glow-bg">
+        <div className="ambient-glow-orb-1" />
+        <div className="ambient-glow-orb-2" />
+        <div className="ambient-glow-orb-3" />
+        <div className="absolute inset-0 bg-tech-grid opacity-30" />
+      </div>
+
       {/* Navbar */}
       <Navbar onOpenCreateMeeting={() => handleOpenCreateMeeting()} />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative z-10">
         {/* Desktop Executive Sidebar */}
         <Sidebar />
 
