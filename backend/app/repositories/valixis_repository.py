@@ -1,3 +1,4 @@
+import os
 from typing import List, Optional
 from uuid import UUID
 from app.models.models import Employee, Task
@@ -18,7 +19,88 @@ class ValixisRepository:
             {"id": "11111111-1111-1111-1111-111111111111", "name": "Rahul", "email": "rahul@valixis.com", "role": "manager", "department": "Product"},
             {"id": "55555555-5555-5555-5555-555555555555", "name": "Priya", "email": "priya@valixis.com", "role": "employee", "department": "QA"}
         ]
-        self._mock_tasks: List[dict] = []
+        self._mock_tasks: List[dict] = [
+            {
+                "id": "b3abaad6-0000-4000-8000-000000000001",
+                "title": "Background Health Connect and Periodic Step Sync Engine",
+                "description": "Background service for periodic health step metrics synchronization.",
+                "priority": "Critical",
+                "owner": "Adithya",
+                "deadline": "2026-09-03T23:59:59Z"
+            },
+            {
+                "id": "7f0d7f4f-0000-4000-8000-000000000002",
+                "title": "AdMob Native Advanced Ads Feed Integration",
+                "description": "Native advanced ad units insertion into feed streams.",
+                "priority": "High",
+                "owner": "Vaseem",
+                "deadline": "2026-09-03T23:59:59Z"
+            },
+            {
+                "id": "33a040d0-0000-4000-8000-000000000003",
+                "title": "Accessibility (A11y) and Minimum Touch Target Audit",
+                "description": "Audit and compliance for minimum touch target sizes across screens.",
+                "priority": "Medium",
+                "owner": "Krishna",
+                "deadline": "2026-09-03T23:59:59Z"
+            },
+            {
+                "id": "74b1b0ba-0000-4000-8000-000000000004",
+                "title": "SQLite Local Storage and Multi-Month Trend Analytics Database",
+                "description": "Offline local storage schema for multi-month trend metrics.",
+                "priority": "Critical",
+                "owner": "Adithya",
+                "deadline": "2026-09-04T23:59:59Z"
+            },
+            {
+                "id": "b63c218a-0000-4000-8000-000000000005",
+                "title": "Interactive Hydration and Sleep Goal Reminder Engine",
+                "description": "Interactive local notifications for hydration and sleep tracking.",
+                "priority": "High",
+                "owner": "Vaseem",
+                "deadline": "2026-09-04T23:59:59Z"
+            },
+            {
+                "id": "cf4e96e3-0000-4000-8000-000000000006",
+                "title": "Performance Profiling and Memory Leak Optimization",
+                "description": "Profile heap memory allocation and fix listener leaks.",
+                "priority": "Medium",
+                "owner": "Krishna",
+                "deadline": "2026-09-04T23:59:59Z"
+            },
+            {
+                "id": "b4eeffc0-0000-4000-8000-000000000007",
+                "title": "Exportable Progress and Streak Milestone Story Cards",
+                "description": "Render shareable milestone achievement cards.",
+                "priority": "High",
+                "owner": "Vaseem",
+                "deadline": "2026-09-05T23:59:59Z"
+            },
+            {
+                "id": "0a56f3a4-0000-4000-8000-000000000008",
+                "title": "Cloud Backup and Sync Protocol (Firebase / Supabase)",
+                "description": "Secure sync protocol for cloud database synchronization.",
+                "priority": "Critical",
+                "owner": "Adithya",
+                "deadline": "2026-09-05T23:59:59Z"
+            },
+            {
+                "id": "138ea956-0000-4000-8000-000000000009",
+                "title": "UI Micro-Interactions and Haptic Feedback Polish",
+                "description": "Add tactile haptic feedback for user actions.",
+                "priority": "Medium",
+                "owner": "Krishna",
+                "deadline": "2026-09-05T23:59:59Z"
+            },
+            {
+                "id": "084c3eeb-0000-4000-8000-000000000010",
+                "title": "VIGNESH - SEP 2ND",
+                "description": "VALIXIS Portal submission task for Vignesh.",
+                "priority": "High",
+                "owner": "Vignesh",
+                "deadline": "2026-09-02T00:00:00Z"
+            }
+        ]
 
     def _get_db(self):
         if self.db is not None:

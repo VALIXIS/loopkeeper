@@ -1,4 +1,5 @@
 import math
+import re
 from typing import List, Optional
 from uuid import UUID
 from app.schemas.ai import ExtractedActionItem, MatchDecision
@@ -84,7 +85,10 @@ class TaskMatchingEngine:
         valixis_tasks = self.valixis_repo.search_existing_tasks(extracted_item.title[:20])
         valixis_match_id = None
         if valixis_tasks:
-            valixis_match_id = UUID(valixis_tasks[0]["id"])
+            try:
+                valixis_match_id = UUID(valixis_tasks[0]["id"])
+            except (ValueError, TypeError):
+                valixis_match_id = None
 
         # Decision threshold evaluation
         if best_score >= 0.82 and best_match:
@@ -114,3 +118,74 @@ class TaskMatchingEngine:
                 ai_confidence=0.95,
                 match_reason="No close existing task found. Creating new action item."
             )
+
+    def match_action_item_to_valixis_tasks(self, item: dict) -> dict:
+        """
+        Match an extracted action item dictionary directly against VALIXIS tasks.
+        """
+        title = item.get("title", "")
+        owner_name = item.get("owner_name", "Unassigned")
+        dl_val = item.get("deadline")
+        dl_str = dl_val.isoformat() if hasattr(dl_val, "isoformat") else str(dl_val) if dl_val else "Not specified"
+        extracted = ExtractedActionItem(
+            title=title,
+            description=item.get("description") or "",
+            owner_name=owner_name or "Unassigned",
+            deadline=dl_str,
+            status=item.get("status") or "pending"
+        )
+        emb = self.embedding_provider.generate_embedding(extracted.title)
+        
+        valixis_tasks = self.valixis_repo.list_valixis_tasks()
+        best_valixis_match = None
+        best_score = 0.0
+        
+        for vt in valixis_tasks:
+            t1 = title.lower()
+            t2 = vt["title"].lower()
+            
+            # Extract meaningful keywords (length >= 4)
+            words1 = set(re.findall(r'\b[a-z0-9]{4,}\b', t1))
+            words2 = set(re.findall(r'\b[a-z0-9]{4,}\b', t2))
+            overlap = words1.intersection(words2)
+            
+            sim = 0.0
+            if t1 == t2:
+                sim = 1.0
+            elif t1 in t2 or t2 in t1:
+                sim = 0.85
+            elif len(overlap) >= 2:
+                sim = 0.75 + min(0.2, len(overlap) * 0.05)
+            elif len(overlap) == 1:
+                sim = 0.55
+            else:
+                vt_emb = self.embedding_provider.generate_embedding(vt["title"])
+                raw_sim = self._cosine_similarity(emb, vt_emb)
+                sim = min(0.40, raw_sim * 0.4)
+            
+            if vt.get("owner") and owner_name != "Unassigned":
+                if vt["owner"].lower() == owner_name.lower():
+                    sim = min(1.0, sim + 0.1)
+                    
+            if sim > best_score:
+                best_score = sim
+                best_valixis_match = vt
+                
+        decision = "unmatched"
+        matched_id = None
+        if best_score >= 0.75 and best_valixis_match:
+            decision = "matched"
+            matched_id = best_valixis_match["id"]
+        elif best_score >= 0.50 and best_valixis_match:
+            decision = "uncertain"
+            matched_id = best_valixis_match["id"]
+        else:
+            decision = "new"
+            
+        return {
+            "decision": decision,
+            "matched_valixis_task_id": matched_id,
+            "similarity_score": round(best_score, 4),
+            "matched_task": best_valixis_match
+        }
+
