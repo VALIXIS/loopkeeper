@@ -288,9 +288,9 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         const meetCode = `${getAlpha(3)}-${getAlpha(4)}-${getAlpha(3)}`;
         joinUrl = `https://meet.google.com/${meetCode}`;
       } else if (selectedProvider === 'zoom') {
-        const id = Math.floor(1000000000 + Math.random() * 9000000000);
+        // Use Zoom instant meeting launcher (https://zoom.us/start/videomeeting) to prevent 'Invalid Meeting ID (3000)' errors
         const pwd = 'lk' + Math.floor(1000 + Math.random() * 9000);
-        joinUrl = `https://zoom.us/j/${id}?pwd=${pwd}`;
+        joinUrl = `https://zoom.us/start/videomeeting`;
         setCreatedPasscode(pwd);
       } else {
         const teamsMeetingId = Math.random().toString(36).substring(2, 10);
@@ -453,6 +453,17 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                 title="Start a real live Google Meet call in Google Meet"
               >
                 <span>Start Live Google Meet ↗</span>
+                <ExternalLinkIcon size={12} />
+              </a>
+            ) : selectedProvider === 'zoom' ? (
+              <a
+                href="https://zoom.us/start/videomeeting"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
+                title="Start a real live Zoom meeting directly in Zoom Workplace"
+              >
+                <span>Start Live Zoom Meeting ↗</span>
                 <ExternalLinkIcon size={12} />
               </a>
             ) : (
