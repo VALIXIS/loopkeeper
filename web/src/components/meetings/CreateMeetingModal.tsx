@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext';
 import { SAMPLE_TRANSCRIPTS } from '../../services/mockData';
 import { AIPipelineVisualizer } from './AIPipelineVisualizer';
 import type { PipelineStep } from './AIPipelineVisualizer';
-import { SparklesIcon, PlayIcon } from '../common/Icons';
+import { SparklesIcon, PlayIcon, CalendarIcon, UsersIcon, FileTextIcon } from '../common/Icons';
 
 interface CreateMeetingModalProps {
   isOpen: boolean;
@@ -175,20 +175,26 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800 space-y-2">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
-              <SparklesIcon size={14} />
-              <span>Load Sample Transcripts</span>
+          <div className="p-4 rounded-2xl glass-panel border border-indigo-500/30 space-y-2.5">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <SparklesIcon size={14} className="text-cyan-400" />
+                <span>Multi-Meeting Continuity Sequence Presets</span>
+              </span>
+              <span className="text-[10px] font-mono text-zinc-500">1-Click Load</span>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {SAMPLE_TRANSCRIPTS.map((preset, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => loadPreset(idx)}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-cyan-300 text-xs font-medium border border-zinc-700/80 transition-colors"
+                  className="px-3.5 py-2 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-300 hover:text-cyan-300 text-xs font-semibold border border-zinc-800 hover:border-cyan-500/40 transition-all text-left truncate flex items-center gap-2 group"
                 >
-                  Sample {idx + 1}: {preset.title.split(':')[0]}
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/20 text-indigo-300 group-hover:bg-cyan-500/20 group-hover:text-cyan-300 transition-colors">
+                    M{idx + 1}
+                  </span>
+                  <span className="truncate">{preset.title.split(':')[0]}</span>
                 </button>
               ))}
             </div>
@@ -196,30 +202,37 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Meeting Title *</label>
+              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                <FileTextIcon size={14} className="text-cyan-400" />
+                Meeting Title *
+              </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="e.g. Sprint 15 Architecture & Delivery Review"
-                className="w-full px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Meeting Timestamp</label>
+              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                <CalendarIcon size={14} className="text-cyan-400" />
+                Meeting Timestamp
+              </label>
               <input
                 type="datetime-local"
                 value={meetingDate}
                 onChange={e => setMeetingDate(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 focus:outline-none focus:border-indigo-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-300">
+            <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+              <UsersIcon size={14} className="text-cyan-400" />
               Meeting Participants ({selectedParticipants.length} selected)
             </label>
             <div className="flex flex-wrap gap-2">
@@ -232,8 +245,8 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                     onClick={() => toggleParticipant(emp.id)}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
                       isSelected
-                        ? 'bg-indigo-600/20 border-indigo-500 text-indigo-200'
-                        : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                        ? 'bg-gradient-to-r from-indigo-600/30 to-cyan-600/30 border-cyan-500/60 text-cyan-200 shadow-sm shadow-cyan-500/20'
+                        : 'bg-zinc-950/80 border-zinc-800 text-zinc-400 hover:border-zinc-700'
                     }`}
                   >
                     <img
@@ -253,7 +266,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
               <label className="text-xs font-semibold text-zinc-300">
                 Meeting Transcript Text *
               </label>
-              <span className="text-[11px] text-zinc-500">
+              <span className="text-[11px] text-zinc-500 font-mono">
                 Accepts speaker tags like [00:01:15] Alice: ...
               </span>
             </div>
@@ -263,7 +276,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
               value={transcriptContent}
               onChange={e => setTranscriptContent(e.target.value)}
               placeholder={`[00:01:00] Jyothsna: Let's review commitments for tomorrow.\n[00:01:20] Alice: I will deploy the pgvector migration by Friday 5 PM.\n[00:02:00] Bob: I will resolve the auth token refresh bug by tomorrow.`}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-indigo-500 leading-relaxed"
+              className="w-full px-3.5 py-2.5 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 leading-relaxed transition-all"
             />
           </div>
 
@@ -278,7 +291,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             <button
               type="submit"
               disabled={!title.trim() || !transcriptContent.trim()}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
             >
               <PlayIcon size={14} className="fill-current" />
               <span>Launch AI Extraction Pipeline</span>

@@ -5,7 +5,9 @@ import {
   AlertTriangleIcon,
   UsersIcon,
   ArrowRightIcon,
-  ShieldAlertIcon
+  ShieldAlertIcon,
+  SparklesIcon,
+  ClockIcon
 } from '../common/Icons';
 
 export const PostponementRadar: React.FC = () => {
@@ -17,11 +19,15 @@ export const PostponementRadar: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Header Banner */}
-      <div className="rounded-3xl bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-900 border border-amber-500/30 p-6 sm:p-8 shadow-2xl space-y-3">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-950 border border-amber-500/30 p-6 sm:p-8 shadow-2xl space-y-3">
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
-            <AlertTriangleIcon size={14} />
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-sm shadow-amber-500/20">
+            <AlertTriangleIcon size={14} className="animate-pulse" />
             Chronic Slippage Detection
+          </span>
+          <span className="text-xs font-mono text-zinc-500 hidden sm:inline">
+            Cross-Meeting Drift Analyzer
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
@@ -34,11 +40,15 @@ export const PostponementRadar: React.FC = () => {
 
       {/* Summary Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-lg">
-          <span className="text-xs text-zinc-500 uppercase font-semibold block">
-            Chronic Postponements (≥2x)
-          </span>
-          <span className="text-3xl font-bold font-mono text-rose-400 mt-2 block">
+        <div className="p-5 rounded-2xl glass-panel-elevated border border-rose-500/30 shadow-lg relative overflow-hidden group hover:border-rose-500/50 transition-all">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full blur-2xl group-hover:bg-rose-500/10 transition-colors" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-zinc-400 uppercase font-semibold block tracking-wider">
+              Chronic Postponements (≥2x)
+            </span>
+            <ShieldAlertIcon size={18} className="text-rose-400" />
+          </div>
+          <span className="text-3xl font-black font-mono text-rose-400 mt-2 block">
             {chronicItems.length}
           </span>
           <span className="text-xs text-zinc-400 mt-1 block">
@@ -46,11 +56,15 @@ export const PostponementRadar: React.FC = () => {
           </span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-lg">
-          <span className="text-xs text-zinc-500 uppercase font-semibold block">
-            Single Slippage (1x)
-          </span>
-          <span className="text-3xl font-bold font-mono text-amber-300 mt-2 block">
+        <div className="p-5 rounded-2xl glass-panel-elevated border border-amber-500/30 shadow-lg relative overflow-hidden group hover:border-amber-500/50 transition-all">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-zinc-400 uppercase font-semibold block tracking-wider">
+              Single Slippage (1x)
+            </span>
+            <AlertTriangleIcon size={18} className="text-amber-400" />
+          </div>
+          <span className="text-3xl font-black font-mono text-amber-300 mt-2 block">
             {postponedItems.length - chronicItems.length}
           </span>
           <span className="text-xs text-zinc-400 mt-1 block">
@@ -58,11 +72,15 @@ export const PostponementRadar: React.FC = () => {
           </span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-lg">
-          <span className="text-xs text-zinc-500 uppercase font-semibold block">
-            Audit State Events
-          </span>
-          <span className="text-3xl font-bold font-mono text-cyan-400 mt-2 block">
+        <div className="p-5 rounded-2xl glass-panel-elevated border border-cyan-500/30 shadow-lg relative overflow-hidden group hover:border-cyan-500/50 transition-all">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl group-hover:bg-cyan-500/10 transition-colors" />
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-zinc-400 uppercase font-semibold block tracking-wider">
+              Audit State Events
+            </span>
+            <SparklesIcon size={18} className="text-cyan-400" />
+          </div>
+          <span className="text-3xl font-black font-mono text-cyan-400 mt-2 block">
             {postponedItems.reduce((acc, curr) => acc + (curr.postponement_count || 0), 0)}
           </span>
           <span className="text-xs text-zinc-400 mt-1 block">
@@ -75,12 +93,12 @@ export const PostponementRadar: React.FC = () => {
       <div className="space-y-4">
         <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
           <ShieldAlertIcon size={18} className="text-rose-400" />
-          Flagged High-Risk Deliverables
+          Flagged High-Risk Deliverables ({postponedItems.length})
         </h3>
 
         <div className="space-y-3">
           {postponedItems.length === 0 ? (
-            <div className="text-center py-16 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-zinc-500 text-xs">
+            <div className="text-center py-16 rounded-2xl glass-panel border border-zinc-800 text-zinc-400 text-xs">
               No tasks have suffered postponements yet. Team execution velocity is on schedule!
             </div>
           ) : (
@@ -93,8 +111,8 @@ export const PostponementRadar: React.FC = () => {
                   onClick={() => navigateToTask(item.id)}
                   className={`group cursor-pointer rounded-2xl p-5 border transition-all duration-200 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 ${
                     isChronic
-                      ? 'bg-rose-950/20 border-rose-500/40 hover:border-rose-400 hover:shadow-rose-500/10'
-                      : 'bg-zinc-900/90 border-amber-600/30 hover:border-amber-500'
+                      ? 'bg-rose-950/20 border-rose-500/40 hover:border-rose-400 hover:shadow-rose-500/10 hover:-translate-y-0.5'
+                      : 'glass-panel border-amber-600/30 hover:border-amber-500 hover:shadow-amber-500/10 hover:-translate-y-0.5'
                   }`}
                 >
                   <div className="space-y-2 flex-1">
@@ -109,18 +127,21 @@ export const PostponementRadar: React.FC = () => {
                     </h4>
 
                     {item.source_text && (
-                      <p className="text-xs text-zinc-300 font-mono italic bg-zinc-950/80 p-2.5 rounded-xl border border-zinc-800 leading-relaxed">
-                        "{item.source_text}"
-                      </p>
+                      <div className="text-xs text-zinc-300 font-mono italic bg-zinc-950/90 p-3 rounded-xl border border-zinc-800 leading-relaxed flex items-start gap-2">
+                        <span className="text-amber-400 not-italic font-bold">❝</span>
+                        <span className="flex-1">{item.source_text}</span>
+                        <span className="text-amber-400 not-italic font-bold">❞</span>
+                      </div>
                     )}
 
                     <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400 pt-1">
-                      <span className="flex items-center gap-1 text-zinc-300 font-semibold">
-                        <UsersIcon size={13} />
+                      <span className="flex items-center gap-1.5 text-zinc-300 font-semibold bg-zinc-900/80 px-2 py-0.5 rounded-md border border-zinc-800">
+                        <UsersIcon size={12} className="text-cyan-400" />
                         {item.owner_name}
                       </span>
                       <span>•</span>
-                      <span className="font-mono text-zinc-400">
+                      <span className="font-mono text-zinc-400 flex items-center gap-1">
+                        <ClockIcon size={12} />
                         Target: {item.deadline ? new Date(item.deadline).toLocaleDateString() : 'None'}
                       </span>
                       {item.meeting_title && (
@@ -136,7 +157,7 @@ export const PostponementRadar: React.FC = () => {
 
                   <div className="flex items-center md:flex-col items-end justify-between gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-zinc-800">
                     <div className="text-right">
-                      <span className="text-[10px] text-zinc-500 uppercase block font-bold">
+                      <span className="text-[10px] text-zinc-500 uppercase block font-bold tracking-wider">
                         Slippage Index
                       </span>
                       <span
@@ -148,7 +169,7 @@ export const PostponementRadar: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 text-xs text-indigo-400 font-semibold group-hover:translate-x-1 transition-transform">
+                    <div className="flex items-center gap-1.5 text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">
                       <span>Inspect Audit Trail</span>
                       <ArrowRightIcon size={14} />
                     </div>
