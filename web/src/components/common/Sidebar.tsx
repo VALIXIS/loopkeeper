@@ -40,7 +40,7 @@ export const Sidebar: React.FC = () => {
     },
     {
       id: 'tasks',
-      label: 'Action Items',
+      label: 'Commitments',
       icon: CheckSquareIcon,
       badge: openCount,
       badgeColor: 'bg-zinc-800 text-zinc-300'

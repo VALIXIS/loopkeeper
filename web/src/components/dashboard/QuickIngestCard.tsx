@@ -71,6 +71,11 @@ export const QuickIngestCard: React.FC<QuickIngestCardProps> = ({ onOpenCreateMe
       <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
         {SAMPLE_TRANSCRIPTS.map((preset, index) => {
           const isProcessing = processingPreset === index;
+          const sequencePhases = [
+            'Meeting 1 of 3 • Initial Commitments',
+            'Meeting 2 of 3 • Revisions & Postponement',
+            'Meeting 3 of 3 • Delivery & Verification'
+          ];
 
           return (
             <div
@@ -79,11 +84,11 @@ export const QuickIngestCard: React.FC<QuickIngestCardProps> = ({ onOpenCreateMe
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400">
-                    Preset #{index + 1}
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 font-mono">
+                    {sequencePhases[index] || `Preset #${index + 1}`}
                   </span>
                   <span className="text-[10px] text-zinc-500 font-mono">
-                    {preset.content.split('\n').length} speaker turns
+                    {preset.content.split('\n').length} turns
                   </span>
                 </div>
                 <h4 className="text-xs font-bold text-zinc-200 mt-1 line-clamp-2 group-hover:text-cyan-300 transition-colors">

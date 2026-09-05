@@ -61,7 +61,7 @@ export const OverloadedMembersCard: React.FC = () => {
                       {member.employee_name}
                     </div>
                     <div className="text-[10px] text-zinc-400 flex items-center gap-2 mt-0.5">
-                      <span>{member.open_task_count} active tasks</span>
+                      <span>{member.open_task_count} active commitments</span>
                       {member.overdue_task_count > 0 && (
                         <span className="text-rose-400 font-semibold flex items-center gap-0.5">
                           <AlertTriangleIcon size={10} />

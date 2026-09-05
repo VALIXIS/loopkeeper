@@ -29,12 +29,19 @@ const MainLayout: React.FC = () => {
   const {
     activeTab,
     setActiveTab,
+    selectedTaskId,
     setSelectedTaskId
   } = useApp();
 
   const [isCreateMeetingOpen, setIsCreateMeetingOpen] = useState(false);
   const [initialPresetIndex, setInitialPresetIndex] = useState<number | undefined>(undefined);
   const [detailModalTaskId, setDetailModalTaskId] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (selectedTaskId) {
+      setDetailModalTaskId(selectedTaskId);
+    }
+  }, [selectedTaskId]);
 
   const handleOpenCreateMeeting = (presetIdx?: number) => {
     setInitialPresetIndex(presetIdx);
@@ -130,7 +137,10 @@ const MainLayout: React.FC = () => {
       <ActionItemDetailModal
         taskId={detailModalTaskId}
         isOpen={detailModalTaskId !== null}
-        onClose={() => setDetailModalTaskId(null)}
+        onClose={() => {
+          setDetailModalTaskId(null);
+          setSelectedTaskId(null);
+        }}
       />
 
       {/* Toast Notification Layer */}

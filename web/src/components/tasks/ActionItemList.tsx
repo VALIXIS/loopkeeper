@@ -67,10 +67,10 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
         <div>
           <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
             <CheckSquareIcon size={24} className="text-cyan-400" />
-            Action Items & Commitments
+            Meeting Commitments
           </h1>
           <p className="text-xs text-zinc-400 mt-0.5">
-            Cross-meeting extracted tasks with vector deduplication, ownership, and state tracking
+            Cross-meeting extracted commitments with vector deduplication, ownership, and state tracking
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
           {/* Status Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-zinc-950 border border-zinc-800 text-xs font-medium">
             {[
-              { id: 'all', label: 'All Tasks' },
+              { id: 'all', label: 'All Commitments' },
               { id: 'pending', label: 'In Progress' },
               { id: 'overdue', label: 'Overdue' },
               { id: 'done', label: 'Completed' },
@@ -131,7 +131,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
           <SearchIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
           <input
             type="text"
-            placeholder="Search action items by keyword, assignee, or description..."
+            placeholder="Search commitments by keyword, assignee, or description..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
@@ -143,7 +143,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
       <div className="space-y-3">
         {filteredItems.length === 0 ? (
           <div className="text-center py-20 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-zinc-500 text-xs">
-            No action items match the active filters.
+            No commitments match the active filters.
           </div>
         ) : (
           filteredItems.map(item => {
