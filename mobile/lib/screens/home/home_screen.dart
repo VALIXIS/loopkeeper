@@ -18,6 +18,8 @@ import '../meetings/meeting_detail_screen.dart';
 import '../ai_status/ai_status_screen.dart';
 import '../insights/insights_screen.dart';
 
+import '../settings/settings_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -36,12 +38,12 @@ class HomeScreen extends StatelessWidget {
         : 88.5;
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
+      backgroundColor: AppColors.bgAppOf(context),
       body: AmbientBackground(
         child: RefreshIndicator(
           onRefresh: () => provider.refreshAll(),
-          color: AppColors.brandPrimary,
-          backgroundColor: AppColors.bgSurface,
+          color: AppColors.brandPrimaryOf(context),
+          backgroundColor: AppColors.bgSurfaceOf(context),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 12.0, bottom: 90.0),
@@ -52,8 +54,16 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          FadeSlidePageRoute(page: const SettingsScreen()),
+                        );
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        children: [
+
                         Container(
                           width: 44,
                           height: 44,
@@ -88,8 +98,8 @@ class HomeScreen extends StatelessWidget {
                           children: [
                             Text(
                               provider.currentUser.name,
-                              style: const TextStyle(
-                                color: AppColors.textPrimary,
+                              style: TextStyle(
+                                color: AppColors.textPrimaryOf(context),
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -108,8 +118,8 @@ class HomeScreen extends StatelessWidget {
                                 const SizedBox(width: 6),
                                 Text(
                                   '${provider.currentUser.role} • ${provider.currentUser.department}',
-                                  style: const TextStyle(
-                                    color: AppColors.textTertiary,
+                                  style: TextStyle(
+                                    color: AppColors.textTertiaryOf(context),
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -120,8 +130,9 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
+                  ),
+                  Row(
+                    children: [
                         _HeaderIconButton(
                           icon: Icons.auto_awesome_rounded,
                           color: AppColors.brandAccent,
@@ -135,7 +146,7 @@ class HomeScreen extends StatelessWidget {
                         const SizedBox(width: 8),
                         _HeaderIconButton(
                           icon: Icons.insights_rounded,
-                          color: AppColors.brandPrimary,
+                          color: AppColors.brandPrimaryOf(context),
                           tooltip: 'Accountability Insights',
                           onPressed: () {
                             Navigator.of(context).push(
@@ -161,7 +172,7 @@ class HomeScreen extends StatelessWidget {
                   borderRadius: 20,
                   blur: 16,
                   borderColor: AppColors.brandPrimary.withAlpha(70),
-                  backgroundColor: AppColors.bgSurface.withAlpha(220),
+                  backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(220),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.brandPrimary.withAlpha(20),
@@ -178,7 +189,7 @@ class HomeScreen extends StatelessWidget {
                             percentage: healthScore,
                             size: 100,
                             strokeWidth: 9,
-                            primaryColor: AppColors.brandPrimary,
+                            primaryColor: AppColors.brandPrimaryOf(context),
                             secondaryColor: AppColors.brandAccent,
                             centerChild: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -186,16 +197,16 @@ class HomeScreen extends StatelessWidget {
                                 AnimatedCounter(
                                   value: healthScore,
                                   suffix: '%',
-                                  style: const TextStyle(
-                                    color: AppColors.textPrimary,
+                                  style: TextStyle(
+                                    color: AppColors.textPrimaryOf(context),
                                     fontSize: 18,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                                const Text(
+                                Text(
                                   'Health',
                                   style: TextStyle(
-                                    color: AppColors.textTertiary,
+                                    color: AppColors.textTertiaryOf(context),
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -208,19 +219,19 @@ class HomeScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Accountability Index',
                                   style: TextStyle(
-                                    color: AppColors.textPrimary,
+                                    color: AppColors.textPrimaryOf(context),
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                const Text(
+                                Text(
                                   'Real-time meeting commitment tracking engine',
                                   style: TextStyle(
-                                    color: AppColors.textSecondary,
+                                    color: AppColors.textSecondaryOf(context),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -260,20 +271,20 @@ class HomeScreen extends StatelessWidget {
                             border: Border.all(color: AppColors.brandPrimary.withAlpha(70)),
                           ),
                           child: Row(
-                            children: const [
-                              Icon(Icons.psychology_rounded, size: 16, color: AppColors.brandAccent),
-                              SizedBox(width: 8),
+                            children: [
+                              const Icon(Icons.psychology_rounded, size: 16, color: AppColors.brandAccent),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   'SLM Pipeline Active • 98.4% Match Accuracy',
                                   style: TextStyle(
-                                    color: AppColors.textPrimary,
+                                    color: AppColors.textPrimaryOf(context),
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
-                              Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.textTertiary),
+                              Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.textTertiaryOf(context)),
                             ],
                           ),
                         ),
@@ -298,7 +309,7 @@ class HomeScreen extends StatelessWidget {
                       value: '${myOpen.length}',
                       subtitle: 'Requires action',
                       icon: Icons.assignment_late_outlined,
-                      accentColor: AppColors.brandPrimary,
+                      accentColor: AppColors.brandPrimaryOf(context),
                     ),
                     MetricCard(
                       title: 'Overdue Tasks',
@@ -332,13 +343,13 @@ class HomeScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
-                        children: const [
-                          Icon(Icons.warning_amber_rounded, size: 18, color: AppColors.statusOverdue),
-                          SizedBox(width: 6),
+                        children: [
+                          const Icon(Icons.warning_amber_rounded, size: 18, color: AppColors.statusOverdue),
+                          const SizedBox(width: 6),
                           Text(
                             'High Risk & Overdue',
                             style: TextStyle(
-                              color: AppColors.textPrimary,
+                              color: AppColors.textPrimaryOf(context),
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -385,11 +396,11 @@ class HomeScreen extends StatelessWidget {
                 // My Open Commitments Section
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Text(
                       'Priority Action Items',
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimaryOf(context),
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -402,10 +413,10 @@ class HomeScreen extends StatelessWidget {
                 else if (myOpen.isEmpty)
                   GlassContainer(
                     padding: const EdgeInsets.all(20),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'No pending open commitments assigned to you.',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 13),
                       ),
                     ),
                   )
@@ -431,11 +442,11 @@ class HomeScreen extends StatelessWidget {
                 // Recent Meetings Section
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Text(
                       'Recent Meetings',
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.textPrimaryOf(context),
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -444,7 +455,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 if (meetings.isEmpty)
-                  const Text('No recent meetings recorded.')
+                  Text('No recent meetings recorded.', style: TextStyle(color: AppColors.textSecondaryOf(context)))
                 else
                   ...meetings.take(3).toList().asMap().entries.map(
                     (entry) => FadeInEntrance(
@@ -489,7 +500,7 @@ class _HeaderIconButton extends StatelessWidget {
       borderRadius: 12,
       blur: 8,
       padding: EdgeInsets.zero,
-      backgroundColor: AppColors.bgSurface.withAlpha(200),
+      backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(200),
       borderColor: color.withAlpha(60),
       child: IconButton(
         icon: Icon(icon, size: 20, color: color),

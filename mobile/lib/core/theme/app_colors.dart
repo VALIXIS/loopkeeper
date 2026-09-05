@@ -50,5 +50,45 @@ class AppColors {
   static const Color textSecondaryLight = Color(0xFF475569);
   static const Color textTertiaryLight = Color(0xFF94A3B8);
   static const Color brandPrimaryLight = Color(0xFF4F46E5);
+  // Theme-Aware Dynamic Color Resolvers
+  static Color bgAppOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? bgApp : bgAppLight;
+  }
+
+  static Color bgSurfaceOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? bgSurface : bgSurfaceLight;
+  }
+
+  static Color bgSurfaceHoverOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? bgSurfaceHover : bgSurfaceHoverLight;
+  }
+
+  static Color borderSubtleOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? borderSubtle : borderSubtleLight;
+  }
+
+  static Color borderDefaultOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? borderDefault : borderDefaultLight;
+  }
+
+  static Color textPrimaryOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? textPrimary : textPrimaryLight;
+  }
+
+  static Color textSecondaryOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? textSecondary : textSecondaryLight;
+  }
+
+  static Color textTertiaryOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? textTertiary : textTertiaryLight;
+  }
+
+  static Color brandPrimaryOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? brandPrimary : brandPrimaryLight;
+  }
+
+  static Color dividerColorOf(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? const Color(0x1FFFFFFF) : const Color(0x0F000000);
+  }
 }
 

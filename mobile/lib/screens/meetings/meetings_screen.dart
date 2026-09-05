@@ -40,7 +40,7 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
         return GlassContainer(
           borderRadius: 24,
           blur: 20,
-          backgroundColor: AppColors.bgSurface.withAlpha(240),
+          backgroundColor: AppColors.bgSurfaceOf(ctx).withAlpha(240),
           borderColor: AppColors.brandPrimary.withAlpha(90),
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
@@ -55,22 +55,22 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Record New Meeting',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimaryOf(ctx),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded, color: AppColors.textTertiary),
+                    icon: Icon(Icons.close_rounded, color: AppColors.textTertiaryOf(ctx)),
                     onPressed: () => Navigator.of(ctx).pop(),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              const Text('Meeting Title', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              Text('Meeting Title', style: TextStyle(color: AppColors.textSecondaryOf(ctx), fontSize: 13)),
               const SizedBox(height: 6),
               TextField(
                 controller: titleController,
@@ -79,7 +79,7 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text('Meeting Transcript (Optional)', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              Text('Meeting Transcript (Optional)', style: TextStyle(color: AppColors.textSecondaryOf(ctx), fontSize: 13)),
               const SizedBox(height: 6),
               TextField(
                 controller: transcriptController,
@@ -94,7 +94,7 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
                 child: GlassContainer(
                   borderRadius: 14,
                   padding: EdgeInsets.zero,
-                  backgroundColor: AppColors.brandPrimary,
+                  backgroundColor: AppColors.brandPrimaryOf(ctx),
                   borderColor: AppColors.brandAccent.withAlpha(100),
                   child: InkWell(
                     onTap: () async {
@@ -156,7 +156,7 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
+      backgroundColor: AppColors.bgAppOf(context),
       appBar: AppBar(
         title: const Text('Meetings Workspace'),
         elevation: 0,
@@ -165,7 +165,7 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 80.0),
         child: FloatingActionButton.extended(
-          backgroundColor: AppColors.brandPrimary,
+          backgroundColor: AppColors.brandPrimaryOf(context),
           foregroundColor: Colors.white,
           elevation: 6,
           icon: const Icon(Icons.add_rounded),
@@ -181,16 +181,16 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
               child: GlassContainer(
                 borderRadius: 14,
                 padding: EdgeInsets.zero,
-                backgroundColor: AppColors.bgSurface.withAlpha(200),
+                backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(200),
                 child: TextField(
                   controller: _searchController,
                   onChanged: (val) => setState(() => _searchQuery = val),
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textTertiary),
+                    prefixIcon: Icon(Icons.search_rounded, color: AppColors.textTertiaryOf(context)),
                     hintText: 'Search meetings or transcripts...',
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear_rounded, color: AppColors.textTertiary),
+                            icon: Icon(Icons.clear_rounded, color: AppColors.textTertiaryOf(context)),
                             onPressed: () {
                               _searchController.clear();
                               setState(() => _searchQuery = '');
@@ -223,28 +223,28 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
                       child: const Icon(Icons.fiber_manual_record_rounded, color: AppColors.statusOverdue, size: 22),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'LoopKeeper Native Recording',
                             style: TextStyle(
-                              color: AppColors.textPrimary,
+                              color: AppColors.textPrimaryOf(context),
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
                             'Record live meeting audio for instant AI commitment extraction',
-                            style: TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                            style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 11),
                           ),
                         ],
                       ),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.brandPrimary,
+                        backgroundColor: AppColors.brandPrimaryOf(context),
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       ),
                       onPressed: () {
@@ -260,8 +260,8 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => provider.refreshAll(),
-                color: AppColors.brandPrimary,
-                backgroundColor: AppColors.bgSurface,
+                color: AppColors.brandPrimaryOf(context),
+                backgroundColor: AppColors.bgSurfaceOf(context),
                 child: provider.isLoading
                     ? const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.0),

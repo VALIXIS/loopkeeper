@@ -12,8 +12,13 @@ class AmbientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgApp = isDark ? AppColors.bgApp : AppColors.bgAppLight;
+    final orb1Color = isDark ? AppColors.brandPrimary.withAlpha(35) : AppColors.brandPrimaryLight.withAlpha(20);
+    final orb2Color = isDark ? AppColors.brandAccent.withAlpha(25) : AppColors.brandAccent.withAlpha(15);
+
     return Container(
-      color: AppColors.bgApp,
+      color: bgApp,
       child: Stack(
         children: [
           // Top-right subtle glowing orb
@@ -27,8 +32,8 @@ class AmbientBackground extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.brandPrimary.withAlpha(35),
-                    AppColors.brandPrimary.withAlpha(0),
+                    orb1Color,
+                    orb1Color.withAlpha(0),
                   ],
                 ),
               ),
@@ -45,8 +50,8 @@ class AmbientBackground extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.brandAccent.withAlpha(25),
-                    AppColors.brandAccent.withAlpha(0),
+                    orb2Color,
+                    orb2Color.withAlpha(0),
                   ],
                 ),
               ),
@@ -65,4 +70,5 @@ class AmbientBackground extends StatelessWidget {
       ),
     );
   }
+
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
-import '../../providers/app_state_provider.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/meetings/meetings_screen.dart';
 import '../../screens/action_items/my_action_items_screen.dart';
 import '../../screens/team/team_overview_screen.dart';
-import '../../screens/alerts/alerts_screen.dart';
 import '../motion/glass_container.dart';
+import '../../screens/settings/settings_screen.dart';
+
+
 
 class MainNavigationWrapper extends StatefulWidget {
   const MainNavigationWrapper({super.key});
@@ -24,7 +24,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
     MeetingsScreen(),
     MyActionItemsScreen(),
     TeamOverviewScreen(),
-    AlertsScreen(),
+    SettingsScreen(),
   ];
 
   final List<_NavItem> _navItems = const [
@@ -32,15 +32,15 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
     _NavItem(icon: Icons.video_call_outlined, activeIcon: Icons.video_call_rounded, label: 'Meetings'),
     _NavItem(icon: Icons.task_alt_outlined, activeIcon: Icons.task_alt_rounded, label: 'My Tasks'),
     _NavItem(icon: Icons.groups_outlined, activeIcon: Icons.groups_rounded, label: 'Team'),
-    _NavItem(icon: Icons.notifications_none_rounded, activeIcon: Icons.notifications_rounded, label: 'Alerts', isAlert: true),
+    _NavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile'),
   ];
+
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AppStateProvider>(context);
-    final unreadAlerts = provider.unreadAlertsCount;
-
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return PopScope(
+
       canPop: _currentIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && _currentIndex != 0) {
@@ -50,7 +50,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.bgApp,
+        backgroundColor: AppColors.bgAppOf(context),
         body: Stack(
           children: [
             IndexedStack(
@@ -64,11 +64,11 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
               child: GlassContainer(
                 borderRadius: 24,
                 blur: 16,
-                backgroundColor: AppColors.bgSurface.withAlpha(235),
+                backgroundColor: AppColors.bgSurfaceOf(context).withAlpha(235),
                 borderColor: const Color(0x336366F1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(90),
+                    color: Colors.black.withAlpha(isDark ? 90 : 25),
                     blurRadius: 20,
                     spreadRadius: 2,
                     offset: const Offset(0, 8),
@@ -102,11 +102,11 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.brandPrimary.withAlpha(45)
+                              ? AppColors.brandPrimaryOf(context).withAlpha(45)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                           border: isSelected
-                              ? Border.all(color: AppColors.brandPrimary.withAlpha(120), width: 1)
+                              ? Border.all(color: AppColors.brandPrimaryOf(context).withAlpha(120), width: 1)
                               : Border.all(color: Colors.transparent),
                         ),
                         child: Column(
@@ -122,44 +122,20 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                                     isSelected ? item.activeIcon : item.icon,
                                     size: 20,
                                     color: isSelected
-                                        ? AppColors.textPrimary
-                                        : AppColors.textTertiary,
+                                        ? AppColors.brandPrimaryOf(context)
+                                        : AppColors.textTertiaryOf(context),
                                   ),
                                 ),
-                                if (item.isAlert && unreadAlerts > 0)
-                                  Positioned(
-                                    top: -4,
-                                    right: -6,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(3),
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.statusOverdue,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      constraints: const BoxConstraints(
-                                        minWidth: 14,
-                                        minHeight: 14,
-                                      ),
-                                      child: Text(
-                                        '$unreadAlerts',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                               ],
                             ),
+
                             const SizedBox(height: 3),
                             Text(
                               item.label,
                               style: TextStyle(
                                 color: isSelected
-                                    ? AppColors.textPrimary
-                                    : AppColors.textTertiary,
+                                    ? AppColors.textPrimaryOf(context)
+                                    : AppColors.textTertiaryOf(context),
                                 fontSize: 11,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                               ),
@@ -183,12 +159,11 @@ class _NavItem {
   final IconData icon;
   final IconData activeIcon;
   final String label;
-  final bool isAlert;
 
   const _NavItem({
     required this.icon,
     required this.activeIcon,
     required this.label,
-    this.isAlert = false,
   });
 }
+

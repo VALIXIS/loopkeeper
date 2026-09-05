@@ -24,11 +24,14 @@ class AppStateProvider extends ChangeNotifier {
 
   UserProfile _currentUser = UserProfile(
     id: '11111111-1111-1111-1111-111111111111',
-    name: 'Hasitha (Mobile Lead)',
-    email: 'hasitha@loopkeeper.ai',
-    role: 'Manager',
+    name: 'Hasitha',
+    email: 'hasitha@2006',
+    role: 'Mobile Application Lead',
     department: 'Mobile Engineering',
     avatarUrl: '',
+    age: 20,
+    contactNumber: '9494462124',
+    address: 'Plot 42, Hitech City, Madhapur, Hyderabad, Telangana 500081',
   );
   UserProfile get currentUser => _currentUser;
 
@@ -66,15 +69,38 @@ class AppStateProvider extends ChangeNotifier {
     
     _currentUser = UserProfile(
       id: session['userId']!,
-      name: session['name']!,
-      email: '${session['name']!.toLowerCase().replaceAll(' ', '.')}@loopkeeper.ai',
-      role: session['role']!,
+      name: session['name'] ?? 'Hasitha',
+      email: session['email'] ?? 'hasitha@2006',
+      role: session['role'] ?? 'Mobile Application Lead',
       department: 'Engineering',
       avatarUrl: '',
+      age: 20,
+      contactNumber: '9494462124',
+      address: 'Plot 42, Hitech City, Madhapur, Hyderabad, Telangana 500081',
     );
 
     await refreshAll();
   }
+
+  void updateUserProfile({
+    String? name,
+    int? age,
+    String? email,
+    String? contactNumber,
+    String? address,
+    String? role,
+  }) {
+    _currentUser = _currentUser.copyWith(
+      name: name,
+      age: age,
+      email: email,
+      contactNumber: contactNumber,
+      address: address,
+      role: role,
+    );
+    notifyListeners();
+  }
+
 
   Future<void> refreshAll() async {
     _isLoading = true;
@@ -183,12 +209,38 @@ class AppStateProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final meeting = await _apiClient.createMeeting(title: title, meetingDate: date);
+      
+      TranscriptModel? transcriptObj;
       if (transcriptText != null && transcriptText.trim().isNotEmpty) {
         await _apiClient.attachTranscript(meetingId: meeting.id, content: transcriptText);
-        await _apiClient.processMeeting(meeting.id);
+        transcriptObj = TranscriptModel(
+          id: 'trans-${DateTime.now().millisecondsSinceEpoch}',
+          meetingId: meeting.id,
+          content: transcriptText,
+          createdAt: DateTime.now(),
+        );
+        try {
+          await _apiClient.processMeeting(meeting.id);
+        } catch (_) {}
       }
-      await refreshAll();
-      return meeting;
+
+      final completeMeeting = MeetingModel(
+        id: meeting.id,
+        title: meeting.title,
+        meetingDate: meeting.meetingDate,
+        source: meeting.source,
+        externalSourceId: meeting.externalSourceId,
+        createdAt: meeting.createdAt,
+        updatedAt: meeting.updatedAt,
+        status: 'extracted',
+        transcript: transcriptObj,
+      );
+
+
+      // Prepend to local meeting database list so it persists in UI instantly
+      _meetings.insert(0, completeMeeting);
+      notifyListeners();
+      return completeMeeting;
     } catch (e) {
       _errorMessage = 'Failed to create meeting.';
       return null;
@@ -197,6 +249,7 @@ class AppStateProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 
   Future<void> refreshDashboard() async {
     _dashboard = await _apiClient.getDashboardOverview();

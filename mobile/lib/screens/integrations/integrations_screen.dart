@@ -73,7 +73,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
+      backgroundColor: AppColors.bgAppOf(context),
       appBar: AppBar(
         title: const Text('External Integrations'),
         elevation: 0,
@@ -87,10 +87,10 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
               GlassContainer(
                 borderRadius: 20,
                 padding: const EdgeInsets.all(16),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.hub_rounded, color: AppColors.brandPrimary, size: 28),
-                    SizedBox(width: 12),
+                    Icon(Icons.hub_rounded, color: AppColors.brandPrimaryOf(context), size: 28),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,15 +98,15 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                           Text(
                             'Integrations Engine',
                             style: TextStyle(
-                              color: AppColors.textPrimary,
+                              color: AppColors.textPrimaryOf(context),
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 2),
+                          const SizedBox(height: 2),
                           Text(
                             'Connect meeting platforms and execution tools to track accountability drift.',
-                            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                            style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 12),
                           ),
                         ],
                       ),
@@ -115,10 +115,10 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Connected & Available Platforms',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: AppColors.textPrimaryOf(context),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -155,16 +155,16 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                                 children: [
                                   Text(
                                     item['name'],
-                                    style: const TextStyle(
-                                      color: AppColors.textPrimary,
+                                    style: TextStyle(
+                                      color: AppColors.textPrimaryOf(context),
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     item['category'],
-                                    style: const TextStyle(
-                                      color: AppColors.textTertiary,
+                                    style: TextStyle(
+                                      color: AppColors.textTertiaryOf(context),
                                       fontSize: 11,
                                     ),
                                   ),
@@ -192,7 +192,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                         const SizedBox(height: 12),
                         Text(
                           item['detail'],
-                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.3),
+                          style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 12, height: 1.3),
                         ),
                         const SizedBox(height: 12),
                         Row(
@@ -200,7 +200,7 @@ class _IntegrationsScreenState extends State<IntegrationsScreen> {
                           children: [
                             Text(
                               'Last sync: ${item['lastSync']}',
-                              style: const TextStyle(color: AppColors.textTertiary, fontSize: 11),
+                              style: TextStyle(color: AppColors.textTertiaryOf(context), fontSize: 11),
                             ),
                             TextButton(
                               onPressed: () {
