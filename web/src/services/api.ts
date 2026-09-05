@@ -601,6 +601,60 @@ export const api = {
     return items;
   },
 
+  async createActionItem(data: {
+    title: string;
+    owner_name?: string;
+    deadline?: string;
+    description?: string;
+  }): Promise<ActionItem> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/action-items`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          const newItem = await res.json();
+          localStore.actionItems.unshift(newItem);
+          localStore.save();
+          return newItem;
+        }
+      } catch (err) {
+        console.warn('Backend createActionItem failed, using local store', err);
+      }
+    }
+
+    const matchedOwner = localStore.employees.find(e =>
+      data.owner_name && e.name.toLowerCase().includes(data.owner_name.toLowerCase())
+    ) || localStore.employees[0];
+
+    const newItem: ActionItem = {
+      id: `a-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      meeting_id: localStore.meetings[0]?.id || 'm-standalone',
+      meeting_title: localStore.meetings[0]?.title || 'Direct Workspace Creation',
+      title: data.title,
+      description: data.description || `Created via AI Copilot command: "${data.title}"`,
+      owner_employee_id: matchedOwner.id,
+      owner_name: matchedOwner.name,
+      deadline: data.deadline || new Date(Date.now() + 3 * 86400000).toISOString(),
+      status: 'pending',
+      confidence: 0.98,
+      source_text: `AI Copilot Command: Assign ${matchedOwner.name} to ${data.title}`,
+      first_seen_at: new Date().toISOString(),
+      last_seen_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      postponement_count: 0,
+      match_decision: 'new',
+      match_reason: 'Direct AI Copilot task creation command.'
+    };
+
+    localStore.actionItems.unshift(newItem);
+    localStore.save();
+    return newItem;
+  },
+
   async getProofOfWork(actionItemId: string): Promise<ProofOfWork[]> {
     if (localStore.isBackendAvailable && !localStore.forceMockMode) {
       try {

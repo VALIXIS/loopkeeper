@@ -67,6 +67,7 @@ interface AppContextType {
   ) => Promise<{ meeting: Meeting; actionItems: ActionItem[] }>;
   deleteMeeting: (id: string) => Promise<void>;
   updateTask: (id: string, updates: ActionItemUpdate) => Promise<ActionItem>;
+  createTask: (data: { title: string; owner_name?: string; deadline?: string; description?: string }) => Promise<ActionItem>;
   resetDemoData: () => Promise<void>;
 }
 
@@ -304,6 +305,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const createTask = async (data: { title: string; owner_name?: string; deadline?: string; description?: string }) => {
+    try {
+      const created = await api.createActionItem(data);
+      setActionItems(prev => [created, ...prev]);
+      addToast({
+        type: 'success',
+        title: 'Commitment Created',
+        message: `Task "${created.title}" assigned to ${created.owner_name}.`
+      });
+      await refreshData();
+      return created;
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Task Creation Failed',
+        message: err.message || 'Could not create task.'
+      });
+      throw err;
+    }
+  };
+
   const resetDemoData = async () => {
     api.resetStore();
     addToast({
@@ -342,6 +364,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         createMeetingAndProcess,
         deleteMeeting,
         updateTask,
+        createTask,
         resetDemoData
       }}
     >
