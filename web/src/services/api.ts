@@ -85,6 +85,15 @@ class LocalStateStore {
 
 export const localStore = new LocalStateStore();
 
+function getAuthHeaders(extraHeaders: Record<string, string> = {}): Record<string, string> {
+  const token = localStorage.getItem('loopkeeper_auth_token') || 'dev-token-loopkeeper';
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    ...extraHeaders
+  };
+}
+
 async function fetchWithTimeout(url: string, options: RequestInit = {}, timeout = 3000): Promise<Response> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -720,6 +729,22 @@ export const api = {
       recent_meetings: localStore.meetings.slice(0, 4),
       recent_ai_runs: localStore.aiRuns.slice(0, 5)
     };
+  },
+
+  async getExecutionDrift(actionItemId: string): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/accountability/execution-drift/${actionItemId}`, {
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (err) {
+        console.warn('Backend getExecutionDrift failed', err);
+      }
+    }
+    return null;
   },
 
   resetStore() {
