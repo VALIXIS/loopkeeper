@@ -91,7 +91,8 @@ class ZoomProvider(MeetingProvider):
             except Exception as e:
                 logger.warning(f"Zoom OAuth token exchange failed: {e}")
 
-        access_token = tokens.get("access_token", f"zoom_access_{code[:10]}")
+        import uuid
+        access_token = tokens.get("access_token") or f"zoom_access_{uuid.uuid4().hex}"
         refresh_token = tokens.get("refresh_token")
 
         saved = self.integration_repo.save_integration(

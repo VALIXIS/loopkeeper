@@ -108,7 +108,8 @@ class MicrosoftTeamsProvider(MeetingProvider):
             except Exception as e:
                 logger.warning(f"Microsoft Teams OAuth token exchange failed: {e}")
 
-        access_token = tokens.get("access_token", f"ms_access_{code[:10]}")
+        import uuid
+        access_token = tokens.get("access_token") or f"ms_access_{uuid.uuid4().hex}"
         refresh_token = tokens.get("refresh_token")
 
         saved = self.integration_repo.save_integration(

@@ -8,6 +8,10 @@ from app.core.config import settings
 logger = logging.getLogger("app.core.token_encryption")
 
 class TokenEncryptionService:
+    """
+    Token Encryption Service utilizing Fernet symmetric authenticated encryption
+    (AES-128 in CBC mode with PKCS7 padding + HMAC with SHA256 for authentication).
+    """
     def __init__(self, master_key_source: Optional[str] = None):
         key_material = (
             master_key_source
@@ -15,7 +19,7 @@ class TokenEncryptionService:
             or getattr(settings, "SUPABASE_KEY", "")
             or "loopkeeper-master-encryption-secret-key-2026"
         )
-        # Derive a 32-byte urlsafe base64 key suitable for Fernet
+        # Derive a 32-byte urlsafe base64 key suitable for Fernet (16 bytes HMAC key + 16 bytes AES-128 key)
         key_hash = hashlib.sha256(key_material.encode("utf-8")).digest()
         fernet_key = base64.urlsafe_b64encode(key_hash)
         self.fernet = Fernet(fernet_key)
