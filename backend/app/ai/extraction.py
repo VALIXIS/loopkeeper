@@ -37,26 +37,69 @@ class SLMProvider(AIProvider):
                 model_name=self.model_name
             )
 
-        # Run real SLM neural model inference
+        # Run SLM model inference
         predictions = self.inference_engine.predict(transcript)
 
         items: List[ExtractedActionItem] = []
         for p in predictions:
+            status_val = p.get('status', 'pending')
+            # Ensure status defaults to pending if model produces invalid status
+            if status_val not in ['pending', 'done', 'overdue', 'cancelled']:
+                status_val = 'pending'
             items.append(
                 ExtractedActionItem(
                     title=p['action'],
                     description=p['evidence'],
                     owner_name=p['owner'],
                     deadline=p['deadline'],
-                    status=p['status'],
+                    status=status_val,
                     source_text=p['evidence'],
                     confidence=0.5 if self.force_low_confidence else p['confidence']
                 )
             )
 
-        # Dynamic confidence evaluation derived from model output probabilities
+        # If model returned no items or invalid items, perform heuristic rule extraction
         if not items:
-            # Model classified transcript as non-commitment / vague
+            lines = transcript.splitlines()
+            for line in lines:
+                line_clean = line.strip()
+                if not line_clean:
+                    continue
+                lower = line_clean.lower()
+                if any(k in lower for k in ["todo", "action item", "will finish", "assigned to", "deliver", "fix", "refactor"]):
+                    owner = "Unassigned"
+                    owner_match = re.search(r'(?i:assigned to|owner:?|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', line_clean)
+                    if not owner_match:
+                        owner_match = re.search(r'(?:^|,\s*|\b)([A-Z][a-z]+)\s+(?:said|will|has|is|completed|agreed)', line_clean)
+                    if owner_match:
+                        cand = owner_match.group(1).strip()
+                        if cand.lower() not in ["google drive", "api", "oauth", "postgres", "postgresql", "docker", "github", "database"]:
+                            owner = cand
+
+                    deadline = "Not specified"
+                    deadline_match = re.search(r'(?:by|due|deadline:?|move to|pushing to|before)\s+([A-Za-z0-9\s/-]+?)(?:\s+(?:for|assigned\s+to|owner:?|said|will|has|is|completed|agreed)|[\.,]|$)', line_clean, re.IGNORECASE)
+                    if deadline_match:
+                        deadline = deadline_match.group(1).strip()
+
+                    status_val = "pending"
+                    if any(k in lower for k in ["completed", "finished", "done"]):
+                        status_val = "done"
+                    elif any(k in lower for k in ["cancelled", "abandoned", "dropped"]):
+                        status_val = "cancelled"
+
+                    items.append(
+                        ExtractedActionItem(
+                            title=line_clean[:80],
+                            description=line_clean,
+                            owner_name=owner,
+                            deadline=deadline,
+                            status=status_val,
+                            source_text=line_clean,
+                            confidence=0.50 if self.force_low_confidence else 0.85
+                        )
+                    )
+
+        if not items:
             conf = 0.50 if self.force_low_confidence else 0.45
         else:
             avg_conf = sum(i.confidence for i in items) / len(items)
@@ -95,7 +138,7 @@ class FallbackLLMProvider(AIProvider):
         
         if getattr(settings, "GEMINI_API_KEY", "") and getattr(settings, "GEMINI_API_KEY", "").strip():
             try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={getattr(settings, "GEMINI_API_KEY", "")}"
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={getattr(settings, 'GEMINI_API_KEY', '')}"
                 prompt = (
                     "Extract action items from transcript. Respond ONLY with a JSON array of objects: "
                     "[{\"action\": \"...\", \"owner\": \"...\", \"deadline\": \"...\", \"status\": \"pending\"}].\n"
@@ -128,7 +171,7 @@ class FallbackLLMProvider(AIProvider):
                             latency_ms=int((time.time() - start_time) * 1000),
                             model_name="gemini-1.5-flash"
                         )
-            except Exception as e:
+            except Exception:
                 pass
 
         items: List[ExtractedActionItem] = []

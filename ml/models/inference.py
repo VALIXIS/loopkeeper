@@ -41,6 +41,8 @@ class SLMInferenceWrapper:
             return []
 
         status_name, status_prob = self.model.predict_status(clean_text)
+        if status_name == 'cancelled' and not any(k in clean_text.lower() for k in ['cancelled', 'dropped', 'abandoned', 'cancel', 'drop']):
+            status_name = 'pending'
 
         output_items = []
         lines = clean_text.splitlines()

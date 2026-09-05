@@ -2,15 +2,24 @@ from typing import List, Optional
 from uuid import UUID
 from app.repositories.action_item_repository import ActionItemRepository
 from app.services.state_engine import StateEngine
+from app.services.jira_service import JiraIntegrationService
+from app.services.execution_drift_service import ExecutionDriftEngine
 
 class ActionItemService:
     def __init__(
         self,
         action_item_repo: Optional[ActionItemRepository] = None,
-        state_engine: Optional[StateEngine] = None
+        state_engine: Optional[StateEngine] = None,
+        jira_service: Optional[JiraIntegrationService] = None,
+        execution_drift_engine: Optional[ExecutionDriftEngine] = None
     ):
         self.repo = action_item_repo or ActionItemRepository()
         self.state_engine = state_engine or StateEngine(action_item_repo=self.repo)
+        self.jira_service = jira_service or JiraIntegrationService(action_item_repo=self.repo)
+        self.execution_drift_engine = execution_drift_engine or ExecutionDriftEngine(
+            action_item_repo=self.repo,
+            jira_service=self.jira_service
+        )
 
     def list_action_items(
         self,
@@ -30,8 +39,13 @@ class ActionItemService:
             return None
         
         history = self.repo.get_history(item_id)
+        jira_links = self.jira_service.get_jira_links_for_commitment(item_id)
+        drift = self.execution_drift_engine.analyze_execution_drift(item_id)
+
         res = dict(item)
         res["history"] = history
+        res["jira_link"] = jira_links[-1] if jira_links else None
+        res["execution_drift"] = drift
         return res
 
     def update_action_item(self, item_id: UUID, updates: dict) -> Optional[dict]:
@@ -62,7 +76,6 @@ class ActionItemService:
                 new_owner_id=updates["owner_employee_id"]
             )
 
-        # Standard field updates
         scalar_updates = {k: v for k, v in updates.items() if k not in ["status", "deadline", "owner_employee_id"] and v is not None}
         if scalar_updates:
             item = self.repo.update_action_item(item_id, scalar_updates)

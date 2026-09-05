@@ -58,27 +58,146 @@ def test_meeting_platform_providers_honest_status():
     zoom_status = zoom.get_status()
     assert "is_connected" in zoom_status
 
-def test_jira_integration_and_execution_drift():
+# 1. Completed + Jira Done -> ALIGNED
+def test_drift_scenario_completed_plus_jira_done():
     action_repo = ActionItemRepository()
     meeting_repo = MeetingRepository()
-    
-    m = meeting_repo.create_meeting(title="API Review Meeting")
-    item = action_repo.create_action_item(
-        meeting_id=m["id"],
-        title="Deploy OAuth2 endpoint",
-        status="done",
-        source_text="Vignesh finished deploy of OAuth2 endpoint."
-    )
+    m = meeting_repo.create_meeting(title="Sprint Review")
+    item = action_repo.create_action_item(meeting_id=m["id"], title="Payment API", status="done", source_text="Payment API completed.")
     
     jira_service = JiraIntegrationService(action_item_repo=action_repo)
-    jira_link = jira_service.create_jira_issue_for_commitment(action_item_id=item["id"])
-    assert jira_link["jira_issue_key"] is not None
-    assert jira_link["action_item_id"] == item["id"]
+    link = jira_service.create_jira_issue_for_commitment(action_item_id=item["id"])
+    link["jira_status"] = "Done"
+    link["normalized_status"] = "done"
 
     drift_engine = ExecutionDriftEngine(action_item_repo=action_repo, jira_service=jira_service)
     analysis = drift_engine.analyze_execution_drift(action_item_id=item["id"])
-    assert "drift_status" in analysis
-    assert analysis["drift_status"] in ["aligned", "execution_drift", "execution_evidence_present", "insufficient_evidence"]
+
+    assert analysis["drift_status"] == "aligned"
+    assert analysis["is_drift"] is False
+
+# 2. Completed + Jira In Progress -> EXECUTION_DRIFT
+def test_drift_scenario_completed_plus_jira_in_progress():
+    action_repo = ActionItemRepository()
+    meeting_repo = MeetingRepository()
+    m = meeting_repo.create_meeting(title="Sprint Review")
+    item = action_repo.create_action_item(meeting_id=m["id"], title="Payment Gateway", status="done", source_text="Payment Gateway is completed.")
+    
+    jira_service = JiraIntegrationService(action_item_repo=action_repo)
+    link = jira_service.create_jira_issue_for_commitment(action_item_id=item["id"])
+    link["jira_status"] = "In Progress"
+    link["normalized_status"] = "in_progress"
+
+    drift_engine = ExecutionDriftEngine(action_item_repo=action_repo, jira_service=jira_service)
+    analysis = drift_engine.analyze_execution_drift(action_item_id=item["id"])
+
+    assert analysis["drift_status"] == "execution_drift"
+    assert analysis["is_drift"] is True
+
+# 3. Completed + Jira To Do -> EXECUTION_DRIFT
+def test_drift_scenario_completed_plus_jira_to_do():
+    action_repo = ActionItemRepository()
+    meeting_repo = MeetingRepository()
+    m = meeting_repo.create_meeting(title="Sprint Standup")
+    item = action_repo.create_action_item(meeting_id=m["id"], title="Authentication Screen", status="done", source_text="Authentication screen done.")
+    
+    jira_service = JiraIntegrationService(action_item_repo=action_repo)
+    link = jira_service.create_jira_issue_for_commitment(action_item_id=item["id"])
+    link["jira_status"] = "To Do"
+    link["normalized_status"] = "todo"
+
+    drift_engine = ExecutionDriftEngine(action_item_repo=action_repo, jira_service=jira_service)
+    analysis = drift_engine.analyze_execution_drift(action_item_id=item["id"])
+
+    assert analysis["drift_status"] == "execution_drift"
+    assert analysis["is_drift"] is True
+
+# 4. In Progress + Jira In Progress -> ALIGNED
+def test_drift_scenario_in_progress_plus_jira_in_progress():
+    action_repo = ActionItemRepository()
+    meeting_repo = MeetingRepository()
+    m = meeting_repo.create_meeting(title="Mid-Week Sync")
+    item = action_repo.create_action_item(meeting_id=m["id"], title="Database Indexing", status="pending", source_text="Working on database indexing.")
+    
+    jira_service = JiraIntegrationService(action_item_repo=action_repo)
+    link = jira_service.create_jira_issue_for_commitment(action_item_id=item["id"])
+    link["jira_status"] = "In Progress"
+    link["normalized_status"] = "in_progress"
+
+    drift_engine = ExecutionDriftEngine(action_item_repo=action_repo, jira_service=jira_service)
+    analysis = drift_engine.analyze_execution_drift(action_item_id=item["id"])
+
+    assert analysis["drift_status"] == "aligned"
+    assert analysis["is_drift"] is False
+
+# 5. Missing Jira mapping -> UNLINKED
+def test_drift_scenario_missing_jira_mapping():
+    action_repo = ActionItemRepository()
+    meeting_repo = MeetingRepository()
+    m = meeting_repo.create_meeting(title="Standalone Discussion")
+    item = action_repo.create_action_item(meeting_id=m["id"], title="Unlinked Task", status="pending")
+
+    drift_engine = ExecutionDriftEngine(action_item_repo=action_repo)
+    analysis = drift_engine.analyze_execution_drift(action_item_id=item["id"])
+
+    assert analysis["drift_status"] == "unlinked"
+    assert analysis["is_drift"] is False
+
+# 6. Jira unavailable / network failure handling
+def test_jira_unavailable_network_failure_handling():
+    jira_service = JiraIntegrationService()
+    # Attempting to fetch non-existent or unauthenticated Jira issue returns None safely
+    res = jira_service.fetch_live_jira_issue("INVALID-999")
+    assert res is None
+
+# 7. Invalid Jira credentials handling
+def test_invalid_jira_credentials_handling():
+    jira_service = JiraIntegrationService()
+
+    status_data = jira_service.get_status()
+    assert "is_connected" in status_data
+    if not jira_service.is_connected():
+        assert status_data["is_connected"] is False
+        assert "Not connected" in status_data["status_message"]
+
+# 8. Postponement without drift
+def test_postponement_without_drift():
+    action_repo = ActionItemRepository()
+    meeting_repo = MeetingRepository()
+    m = meeting_repo.create_meeting(title="Sprint Planning")
+    item = action_repo.create_action_item(meeting_id=m["id"], title="UI Refactor", status="pending", postponement_count=2)
+
+    drift_engine = ExecutionDriftEngine(action_item_repo=action_repo)
+    analysis = drift_engine.analyze_execution_drift(action_item_id=item["id"])
+
+    assert analysis["drift_status"] == "postponement"
+    assert analysis["is_drift"] is False
+
+# 9. Drift with previous postponements
+def test_drift_with_previous_postponements():
+    action_repo = ActionItemRepository()
+    meeting_repo = MeetingRepository()
+    m = meeting_repo.create_meeting(title="Sprint Review")
+    item = action_repo.create_action_item(meeting_id=m["id"], title="OAuth Flow", status="done", postponement_count=1)
+
+    jira_service = JiraIntegrationService(action_item_repo=action_repo)
+    link = jira_service.create_jira_issue_for_commitment(action_item_id=item["id"])
+    link["jira_status"] = "In Progress"
+    link["normalized_status"] = "in_progress"
+
+    drift_engine = ExecutionDriftEngine(action_item_repo=action_repo, jira_service=jira_service)
+    analysis = drift_engine.analyze_execution_drift(action_item_id=item["id"])
+
+    assert analysis["drift_status"] == "execution_drift"
+    assert analysis["is_drift"] is True
+
+# 10. No fake fallback behavior: Status normalization check
+def test_no_fake_fallback_status_normalization():
+    assert JiraIntegrationService.normalize_jira_status("In Progress") == "in_progress"
+    assert JiraIntegrationService.normalize_jira_status("CLOSED") == "done"
+    assert JiraIntegrationService.normalize_jira_status("Backlog") == "todo"
+    assert JiraIntegrationService.normalize_jira_status("On Hold") == "blocked"
+    assert JiraIntegrationService.normalize_jira_status("Random Status") == "unknown"
 
 def test_recording_service_lifecycle():
     meeting_repo = MeetingRepository()

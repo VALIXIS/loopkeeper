@@ -7,7 +7,7 @@
     "action_extraction_f1": 0.6667,
     "owner_extraction_accuracy": 0.4,
     "deadline_extraction_accuracy": 0.4,
-    "status_classification_accuracy": 0.0,
+    "status_classification_accuracy": 0.6,
     "json_validity_rate": 1.0
   },
   "failure_cases": [

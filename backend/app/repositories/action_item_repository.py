@@ -30,7 +30,8 @@ class ActionItemRepository:
         status: str = "pending",
         confidence: float = 1.0,
         source_text: Optional[str] = None,
-        embedding: Optional[List[float]] = None
+        embedding: Optional[List[float]] = None,
+        postponement_count: int = 0
     ) -> dict:
         item_id = uuid.uuid4()
         now = datetime.utcnow()
@@ -78,6 +79,7 @@ class ActionItemRepository:
                     "confidence": float(item_obj.confidence),
                     "source_text": item_obj.source_text,
                     "embedding": embedding,
+                    "postponement_count": postponement_count,
                     "first_seen_at": item_obj.first_seen_at,
                     "last_seen_at": item_obj.last_seen_at,
                     "completed_at": item_obj.completed_at,
@@ -102,6 +104,7 @@ class ActionItemRepository:
             "confidence": confidence,
             "source_text": source_text,
             "embedding": embedding,
+            "postponement_count": postponement_count,
             "first_seen_at": now,
             "last_seen_at": now,
             "completed_at": now if status == "done" else None,
@@ -124,6 +127,8 @@ class ActionItemRepository:
             try:
                 item = db.query(LoopKeeperActionItem).filter(LoopKeeperActionItem.id == item_id).first()
                 if item:
+                    history = self.get_history(item_id)
+                    postp_cnt = len([h for h in history if h.get("event_type") == "postponed"])
                     return {
                         "id": item.id,
                         "meeting_id": item.meeting_id,
@@ -134,6 +139,7 @@ class ActionItemRepository:
                         "status": item.status,
                         "confidence": float(item.confidence),
                         "source_text": item.source_text,
+                        "postponement_count": postp_cnt,
                         "first_seen_at": item.first_seen_at,
                         "last_seen_at": item.last_seen_at,
                         "completed_at": item.completed_at,
@@ -143,7 +149,14 @@ class ActionItemRepository:
             finally:
                 if is_local:
                     db.close()
-        return self._in_memory_items.get(item_id)
+
+        item = self._in_memory_items.get(item_id)
+        if item:
+            history = self.get_history(item_id)
+            postp_cnt = len([h for h in history if h.get("event_type") == "postponed"])
+            if postp_cnt > 0:
+                item["postponement_count"] = max(item.get("postponement_count", 0), postp_cnt)
+        return item
 
     def list_action_items(
         self,
@@ -163,8 +176,11 @@ class ActionItemRepository:
                     query = query.filter(LoopKeeperActionItem.status == status)
                 
                 items = query.order_by(LoopKeeperActionItem.created_at.desc()).all()
-                return [
-                    {
+                res = []
+                for i in items:
+                    history = self.get_history(i.id)
+                    postp_cnt = len([h for h in history if h.get("event_type") == "postponed"])
+                    res.append({
                         "id": i.id,
                         "meeting_id": i.meeting_id,
                         "title": i.title,
@@ -174,14 +190,14 @@ class ActionItemRepository:
                         "status": i.status,
                         "confidence": float(i.confidence),
                         "source_text": i.source_text,
+                        "postponement_count": postp_cnt,
                         "first_seen_at": i.first_seen_at,
                         "last_seen_at": i.last_seen_at,
                         "completed_at": i.completed_at,
                         "created_at": i.created_at,
                         "updated_at": i.updated_at
-                    }
-                    for i in items
-                ]
+                    })
+                return res
             finally:
                 if is_local:
                     db.close()

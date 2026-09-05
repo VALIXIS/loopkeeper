@@ -32,6 +32,22 @@ class JiraIntegrationService:
             "status_message": "Connected to Atlassian Jira Cloud REST API." if connected else "Not connected. Jira API credentials not configured in environment variables."
         }
 
+    @staticmethod
+    def normalize_jira_status(status_str: Optional[str]) -> str:
+        """Normalize raw Jira issue status strings into standard LoopKeeper execution states."""
+        if not status_str:
+            return "unknown"
+        s = status_str.strip().lower()
+        if any(k in s for k in ["done", "closed", "resolved", "complete"]):
+            return "done"
+        if any(k in s for k in ["in progress", "in review", "in dev", "qa", "testing"]):
+            return "in_progress"
+        if any(k in s for k in ["to do", "todo", "open", "backlog", "new"]):
+            return "todo"
+        if any(k in s for k in ["blocked", "on hold", "waiting"]):
+            return "blocked"
+        return "unknown"
+
     def create_jira_issue_for_commitment(
         self,
         action_item_id: UUID,
@@ -43,6 +59,7 @@ class JiraIntegrationService:
 
         proj = project_key or self.jira_project_key
         issue_key = f"{proj}-{abs(hash(str(action_item_id))) % 900 + 100}"
+        raw_status = "To Do" if item.get("status") == "pending" else "Done"
         now = datetime.utcnow()
 
         if self.is_connected():
@@ -66,7 +83,7 @@ class JiraIntegrationService:
                     data = resp.json()
                     issue_key = data.get("key", issue_key)
             except Exception as e:
-                logger.warning(f"Jira API call failed: {e}. Generating execution link locally.")
+                logger.warning(f"Jira API call failed: {e}. Generating local execution link.")
 
         link_record = {
             "id": uuid.uuid4(),
@@ -74,7 +91,8 @@ class JiraIntegrationService:
             "jira_issue_key": issue_key,
             "jira_issue_id": f"100{abs(hash(issue_key)) % 90}",
             "jira_issue_url": f"https://{self.jira_domain or 'jira.atlassian.net'}/browse/{issue_key}",
-            "jira_status": "To Do" if item["status"] == "pending" else "Done",
+            "jira_status": raw_status,
+            "normalized_status": self.normalize_jira_status(raw_status),
             "jira_assignee": item.get("owner_name", "Unassigned"),
             "synced_at": now,
             "created_at": now
@@ -88,11 +106,39 @@ class JiraIntegrationService:
     def get_jira_links_for_commitment(self, action_item_id: UUID) -> List[dict]:
         return self._jira_links.get(action_item_id, [])
 
+    def fetch_live_jira_issue(self, issue_key: str) -> Optional[Dict[str, Any]]:
+        """Fetch live Jira issue details from Atlassian API if credentials exist."""
+        if not self.is_connected():
+            return None
+        try:
+            url = f"https://{self.jira_domain.rstrip('/')}/rest/api/3/issue/{issue_key}"
+            resp = requests.get(
+                url,
+                auth=(self.jira_email, self.jira_api_token),
+                timeout=5.0
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                status_name = data.get("fields", {}).get("status", {}).get("name", "Unknown")
+                return {
+                    "jira_issue_key": issue_key,
+                    "jira_status": status_name,
+                    "normalized_status": self.normalize_jira_status(status_name),
+                    "assignee": data.get("fields", {}).get("assignee", {}).get("displayName", "Unassigned")
+                }
+        except Exception as e:
+            logger.warning(f"Failed to fetch live Jira issue {issue_key}: {e}")
+        return None
+
     def sync_jira_status(self, action_item_id: UUID) -> List[dict]:
         links = self.get_jira_links_for_commitment(action_item_id)
         if not links:
             return []
         
         for link in links:
+            live = self.fetch_live_jira_issue(link["jira_issue_key"])
+            if live:
+                link["jira_status"] = live["jira_status"]
+                link["normalized_status"] = live["normalized_status"]
             link["synced_at"] = datetime.utcnow()
         return links

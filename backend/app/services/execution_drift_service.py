@@ -24,57 +24,95 @@ class ExecutionDriftEngine:
             raise ValueError(f"Action item {action_item_id} not found.")
 
         meeting_statement = item.get("source_text") or item["title"]
-        meeting_status = item.get("status", "pending")
+        spoken_status = item.get("status", "pending")
+        postponement_count = item.get("postponement_count", 0)
+
+        # Check for postponements in history
+        history = self.action_item_repo.get_history(action_item_id)
+        postponed_events = [h for h in history if h.get("event_type") == "postponed"]
+        if postponed_events:
+            postponement_count = max(postponement_count, len(postponed_events))
 
         jira_links = self.jira_service.get_jira_links_for_commitment(action_item_id)
 
+        # Handle unlinked execution state
         if not jira_links:
+            drift_status = "unlinked"
+            reason = "Unlinked execution: No linked Jira issue found to verify spoken statement against."
+            if postponement_count >= 1 and spoken_status != "done":
+                drift_status = "postponement"
+                reason = f"Task deadline postponed {postponement_count}x; no linked Jira execution task found."
+
             return {
                 "id": uuid.uuid4(),
                 "action_item_id": action_item_id,
+                "meeting_id": item.get("meeting_id"),
                 "meeting_statement": meeting_statement,
-                "external_system": "jira",
-                "external_evidence": "No external Jira issue or repository task linked.",
-                "drift_status": "insufficient_evidence",
-                "discrepancy_reason": "No linked execution evidence found to verify meeting statement.",
+                "spoken_status": spoken_status,
+                "jira_issue_key": None,
+                "jira_status": None,
+                "normalized_execution_status": "unlinked",
+                "drift_status": drift_status,
+                "is_drift": False,
+                "reason": reason,
                 "confidence": 1.0,
-                "created_at": datetime.utcnow()
+                "evaluated_at": datetime.utcnow(),
+                "evaluation_source": "LoopKeeper Execution Drift Engine v1.0"
             }
 
         latest_link = jira_links[-1]
-        jira_status = latest_link.get("jira_status", "To Do")
+        raw_jira_status = latest_link.get("jira_status", "To Do")
         jira_key = latest_link.get("jira_issue_key")
+        normalized_exec_status = JiraIntegrationService.normalize_jira_status(raw_jira_status)
 
-        # Evaluate execution alignment vs drift
-        if meeting_status == "done" and jira_status.lower() in ["done", "closed", "resolved"]:
-            status_result = "aligned"
-            reason = f"Meeting statement claims completed, and Jira issue {jira_key} status is '{jira_status}'."
-            conf = 0.98
-        elif meeting_status == "done" and jira_status.lower() in ["in progress", "to do", "open"]:
-            status_result = "execution_drift"
-            reason = f"EXECUTION DRIFT DETECTED: Meeting statement claims task is completed, but Jira issue {jira_key} is currently '{jira_status}'."
-            conf = 0.95
-        elif meeting_status == "pending" and jira_status.lower() in ["in progress", "in review"]:
-            status_result = "execution_evidence_present"
-            reason = f"Active execution evidence present: Jira issue {jira_key} is in progress."
-            conf = 0.90
-        elif meeting_status == "overdue" and jira_status.lower() in ["to do", "backlog"]:
-            status_result = "execution_drift"
-            reason = f"EXECUTION DRIFT DETECTED: Task is overdue, and Jira issue {jira_key} remains unstarted ('{jira_status}')."
-            conf = 0.92
+        is_drift = False
+        drift_status = "aligned"
+        reason = ""
+
+        # Drift Decision Rules Matrix
+        if spoken_status == "done" and normalized_exec_status == "done":
+            drift_status = "aligned"
+            is_drift = False
+            reason = f"Spoken completion claim aligns with verified Jira status '{raw_jira_status}' on issue {jira_key}."
+        elif spoken_status == "done" and normalized_exec_status in ["in_progress", "todo", "blocked"]:
+            drift_status = "execution_drift"
+            is_drift = True
+            reason = f"EXECUTION DRIFT DETECTED: Meeting transcript claims completion, but linked Jira issue {jira_key} is '{raw_jira_status}' ({normalized_exec_status})."
+        elif spoken_status == "pending" and normalized_exec_status == "in_progress":
+            drift_status = "aligned"
+            is_drift = False
+            reason = f"Spoken pending commitment aligns with active Jira in-progress execution on issue {jira_key}."
+        elif spoken_status == "pending" and normalized_exec_status == "todo":
+            drift_status = "execution_evidence_present"
+            is_drift = False
+            reason = f"Commitment pending; linked Jira issue {jira_key} is queued in '{raw_jira_status}' state."
+        elif spoken_status == "overdue" and normalized_exec_status in ["todo", "in_progress", "blocked"]:
+            drift_status = "execution_drift"
+            is_drift = True
+            reason = f"EXECUTION DRIFT DETECTED: Task is overdue, and linked Jira issue {jira_key} remains incomplete ('{raw_jira_status}')."
         else:
-            status_result = "aligned"
-            reason = f"Meeting statement status ('{meeting_status}') aligns with Jira issue {jira_key} status ('{jira_status}')."
-            conf = 0.88
+            if postponement_count >= 1:
+                drift_status = "postponement"
+                is_drift = False
+                reason = f"Task deadline postponed {postponement_count}x. Jira issue {jira_key} status is '{raw_jira_status}'."
+            else:
+                drift_status = "aligned"
+                is_drift = False
+                reason = f"Spoken status ('{spoken_status}') aligns with Jira issue {jira_key} status ('{raw_jira_status}')."
 
         return {
             "id": uuid.uuid4(),
             "action_item_id": action_item_id,
+            "meeting_id": item.get("meeting_id"),
             "meeting_statement": meeting_statement,
-            "external_system": "jira",
-            "external_evidence": f"Jira Issue {jira_key} status: '{jira_status}', assignee: '{latest_link.get('jira_assignee')}'",
-            "drift_status": status_result,
-            "discrepancy_reason": reason,
-            "confidence": conf,
-            "created_at": datetime.utcnow()
+            "spoken_status": spoken_status,
+            "jira_issue_key": jira_key,
+            "jira_status": raw_jira_status,
+            "normalized_execution_status": normalized_exec_status,
+            "drift_status": drift_status,
+            "is_drift": is_drift,
+            "reason": reason,
+            "confidence": 0.95 if is_drift else 0.90,
+            "evaluated_at": datetime.utcnow(),
+            "evaluation_source": "LoopKeeper Execution Drift Engine v1.0"
         }
