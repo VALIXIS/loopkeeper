@@ -28,23 +28,19 @@ export const SettingsView: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 p-6 sm:p-8 shadow-2xl space-y-3">
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 flex items-center gap-1.5 shadow-sm">
+      {/* Sleek Compact Header Bar */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 flex items-center gap-1.5 shadow-sm shrink-0">
             <SettingsIcon size={14} className="text-cyan-400" />
-            System Configuration & Integrations
+            System Configuration
           </span>
-          <span className="text-xs font-mono text-zinc-500 hidden sm:inline">
-            FastAPI + pgvector + VALIXIS Boundaries
-          </span>
+          <h1 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
+            Settings & External Boundaries
+          </h1>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
-          Settings & External Boundaries
-        </h1>
-        <p className="text-sm text-zinc-300 max-w-3xl leading-relaxed">
-          Manage VALIXIS portal integration boundaries, AI inference threshold parameters, and backend REST endpoints.
+        <p className="text-xs text-zinc-400 font-medium">
+          VALIXIS portal boundaries, SLM threshold parameters & FastAPI REST endpoints.
         </p>
       </div>
 

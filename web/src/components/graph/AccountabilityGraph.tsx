@@ -32,19 +32,20 @@ export const AccountabilityGraph: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">
-      {/* Header Banner */}
-      <div className="rounded-3xl bg-gradient-to-br from-indigo-950/60 via-slate-900/90 to-slate-950 border border-indigo-500/40 p-6 sm:p-8 shadow-2xl space-y-4 backdrop-blur-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-md shadow-indigo-500/25 flex items-center gap-1.5 font-mono">
-              <SparklesIcon size={14} />
-              Signature Graph Visualization
+      {/* Sleek Compact Header Bar */}
+      <div className="rounded-2xl bg-gradient-to-r from-indigo-950/60 via-slate-900/90 to-slate-950 border border-indigo-500/40 p-4 sm:px-5 sm:py-3.5 shadow-lg space-y-3 backdrop-blur-xl relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+          <div className="flex items-center gap-3">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-indigo-500 to-cyan-500 text-white shadow-md shadow-indigo-500/25 flex items-center gap-1.5 font-mono shrink-0">
+              <NetworkIcon size={14} className="text-cyan-300" />
+              Accountability Graph
             </span>
+            <h1 className="text-sm sm:text-base font-bold text-white tracking-tight">
+              Cross-Meeting Node Lineage & Commitment Evolution
+            </h1>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setZoomLevel(prev => Math.min(prev + 0.15, 1.3))}
               className="p-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 border border-white/[0.08] transition-colors shadow-sm"
@@ -69,16 +70,8 @@ export const AccountabilityGraph: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-3 relative z-10">
-          <NetworkIcon size={28} className="text-cyan-400 animate-pulse-glow" />
-          The Accountability Graph
-        </h1>
-        <p className="text-sm text-slate-300 max-w-3xl leading-relaxed relative z-10">
-          Traces conversational commitments from the originating meeting through assignment, deadline evolutions, consecutive standup revisions, and final delivery outcomes.
-        </p>
-
         {/* Legend */}
-        <div className="pt-4 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-4 text-xs relative z-10">
+        <div className="pt-2 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-4 text-xs relative z-10">
           <div className="flex flex-wrap items-center gap-4 text-slate-400 font-mono text-[11px]">
             <span className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50" /> 1. Meeting

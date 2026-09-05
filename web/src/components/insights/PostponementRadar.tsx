@@ -18,23 +18,19 @@ export const PostponementRadar: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-950 border border-amber-500/30 p-6 sm:p-8 shadow-2xl space-y-3">
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-sm shadow-amber-500/20">
-            <AlertTriangleIcon size={14} className="animate-pulse" />
-            Chronic Slippage Detection
+      {/* Sleek Compact Header Bar */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-950 border border-amber-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
+            <AlertTriangleIcon size={14} className="animate-pulse text-amber-400" />
+            Chronic Slippage Radar
           </span>
-          <span className="text-xs font-mono text-zinc-500 hidden sm:inline">
-            Cross-Meeting Drift Analyzer
-          </span>
+          <h1 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
+            Repeated Postponement Radar
+          </h1>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
-          Repeated Postponement Radar
-        </h1>
-        <p className="text-sm text-zinc-300 max-w-3xl leading-relaxed">
-          LoopKeeper automatically flags action items that have suffered 2 or more deadline shifts or postponements across consecutive meetings. This detects systemic delivery bottlenecks before deadlines pass.
+        <p className="text-xs text-zinc-400 font-medium">
+          Automatically flagging commitments delayed 2+ times across consecutive meetings.
         </p>
       </div>
 

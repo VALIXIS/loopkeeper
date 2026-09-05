@@ -23,23 +23,19 @@ export const AccountabilityInsights: React.FC = () => {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-950/40 via-zinc-900 to-zinc-950 border border-indigo-500/30 p-6 sm:p-8 shadow-2xl space-y-3">
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 flex items-center gap-1.5 shadow-sm shadow-indigo-500/20">
+      {/* Sleek Compact Header Bar */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-950/40 via-zinc-900 to-zinc-950 border border-indigo-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
             <BrainIcon size={14} className="text-cyan-400" />
             AI Analytics & Velocity
           </span>
-          <span className="text-xs font-mono text-zinc-500 hidden sm:inline">
-            Telemetry Model v1.0
-          </span>
+          <h1 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
+            Executive Accountability Intelligence
+          </h1>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
-          Executive Accountability Intelligence
-        </h1>
-        <p className="text-sm text-zinc-300 max-w-3xl leading-relaxed">
-          Deep behavioral insights derived from consecutive meeting transcripts. Analyzes team follow-through reliability, deadline drift curves, and SLM extraction accuracy.
+        <p className="text-xs text-zinc-400 font-medium">
+          Follow-through reliability curves, deadline drift rates & SLM model telemetry.
         </p>
       </div>
 
