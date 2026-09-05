@@ -188,7 +188,6 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textTertiary),
                     hintText: 'Search meetings or transcripts...',
-                    border: InputBorder.none,
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear_rounded, color: AppColors.textTertiary),
@@ -198,10 +197,66 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
                             },
                           )
                         : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
               ),
             ),
+
+            // Start Live Native Recording Card
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              child: GlassContainer(
+                borderRadius: 16,
+                padding: const EdgeInsets.all(14),
+                borderColor: AppColors.brandPrimary.withAlpha(100),
+                backgroundColor: AppColors.brandPrimary.withAlpha(25),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.statusOverdue.withAlpha(35),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.fiber_manual_record_rounded, color: AppColors.statusOverdue, size: 22),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'LoopKeeper Native Recording',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Record live meeting audio for instant AI commitment extraction',
+                            style: TextStyle(color: AppColors.textSecondary, fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.brandPrimary,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/recording');
+                      },
+                      child: const Text('Record', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => provider.refreshAll(),

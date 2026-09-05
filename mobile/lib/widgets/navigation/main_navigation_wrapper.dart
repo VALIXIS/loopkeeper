@@ -40,130 +40,140 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
     final provider = Provider.of<AppStateProvider>(context);
     final unreadAlerts = provider.unreadAlertsCount;
 
-    return Scaffold(
-      backgroundColor: AppColors.bgApp,
-      body: Stack(
-        children: [
-          IndexedStack(
-            index: _currentIndex,
-            children: _screens,
-          ),
-          Positioned(
-            left: 12,
-            right: 12,
-            bottom: 16,
-            child: GlassContainer(
-              borderRadius: 24,
-              blur: 16,
-              backgroundColor: AppColors.bgSurface.withAlpha(235),
-              borderColor: const Color(0x336366F1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(90),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: AppColors.brandPrimary.withAlpha(25),
-                  blurRadius: 15,
-                  spreadRadius: 0,
-                ),
-              ],
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(_navItems.length, (index) {
-                  final item = _navItems[index];
-                  final isSelected = index == _currentIndex;
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _currentIndex != 0) {
+          setState(() {
+            _currentIndex = 0;
+          });
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.bgApp,
+        body: Stack(
+          children: [
+            IndexedStack(
+              index: _currentIndex,
+              children: _screens,
+            ),
+            Positioned(
+              left: 12,
+              right: 12,
+              bottom: 16,
+              child: GlassContainer(
+                borderRadius: 24,
+                blur: 16,
+                backgroundColor: AppColors.bgSurface.withAlpha(235),
+                borderColor: const Color(0x336366F1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(90),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: AppColors.brandPrimary.withAlpha(25),
+                    blurRadius: 15,
+                    spreadRadius: 0,
+                  ),
+                ],
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: List.generate(_navItems.length, (index) {
+                    final item = _navItems[index];
+                    final isSelected = index == _currentIndex;
 
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _currentIndex = index;
-                      });
-                    },
-                    behavior: HitTestBehavior.opaque,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeOutCubic,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.brandPrimary.withAlpha(45)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(16),
-                        border: isSelected
-                            ? Border.all(color: AppColors.brandPrimary.withAlpha(120), width: 1)
-                            : Border.all(color: Colors.transparent),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              AnimatedScale(
-                                scale: isSelected ? 1.1 : 1.0,
-                                duration: const Duration(milliseconds: 200),
-                                child: Icon(
-                                  isSelected ? item.activeIcon : item.icon,
-                                  size: 20,
-                                  color: isSelected
-                                      ? AppColors.textPrimary
-                                      : AppColors.textTertiary,
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeOutCubic,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.brandPrimary.withAlpha(45)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
+                          border: isSelected
+                              ? Border.all(color: AppColors.brandPrimary.withAlpha(120), width: 1)
+                              : Border.all(color: Colors.transparent),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                AnimatedScale(
+                                  scale: isSelected ? 1.1 : 1.0,
+                                  duration: const Duration(milliseconds: 200),
+                                  child: Icon(
+                                    isSelected ? item.activeIcon : item.icon,
+                                    size: 20,
+                                    color: isSelected
+                                        ? AppColors.textPrimary
+                                        : AppColors.textTertiary,
+                                  ),
                                 ),
-                              ),
-                              if (item.isAlert && unreadAlerts > 0)
-                                Positioned(
-                                  top: -4,
-                                  right: -6,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(3),
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.statusOverdue,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    constraints: const BoxConstraints(
-                                      minWidth: 14,
-                                      minHeight: 14,
-                                    ),
-                                    child: Text(
-                                      '$unreadAlerts',
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.bold,
+                                if (item.isAlert && unreadAlerts > 0)
+                                  Positioned(
+                                    top: -4,
+                                    right: -6,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(3),
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.statusOverdue,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 14,
+                                        minHeight: 14,
+                                      ),
+                                      child: Text(
+                                        '$unreadAlerts',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            item.label,
-                            style: TextStyle(
-                              color: isSelected
-                                  ? AppColors.textPrimary
-                                  : AppColors.textTertiary,
-                              fontSize: 11,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                              ],
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 3),
+                            Text(
+                              item.label,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? AppColors.textPrimary
+                                    : AppColors.textTertiary,
+                                fontSize: 11,
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -9,4 +9,7 @@ class ApiEndpoints {
   static String actionItemDetail(String id) => '/action-items/$id';
 
   static const String dashboardOverview = '/dashboard/overview';
+  static const String employees = '/employees';
+  static const String integrations = '/google-drive'; // Google Drive & Integrations
 }
+

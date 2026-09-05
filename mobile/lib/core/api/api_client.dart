@@ -312,4 +312,31 @@ class ApiClient {
 
     return MockData.getMockDashboard();
   }
+
+  // Get employees/team data
+  Future<List<Map<String, dynamic>>> getEmployees() async {
+    final isOffline = await SessionStorage.isOfflineMode();
+    if (isOffline) {
+      return [
+        {'id': '11111111-1111-1111-1111-111111111111', 'name': 'Hasitha (Mobile Lead)', 'role': 'Manager', 'department': 'Mobile'},
+        {'id': '22222222-2222-2222-2222-222222222222', 'name': 'Jyothsna (Backend Lead)', 'role': 'Backend Lead', 'department': 'Core Platform'},
+        {'id': '33333333-3333-3333-3333-333333333333', 'name': 'Vignesh (Web Lead)', 'role': 'Frontend Lead', 'department': 'Web Platform'},
+        {'id': '44444444-4444-4444-4444-444444444444', 'name': 'Alex Rivera', 'role': 'Engineer', 'department': 'Infrastructure'},
+      ];
+    }
+
+    try {
+      final uri = await _buildUri(ApiEndpoints.employees);
+      final headers = await _getHeaders();
+      final response = await _httpClient.get(uri, headers: headers).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final List data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      }
+    } catch (_) {}
+
+    return [];
+  }
 }
+
