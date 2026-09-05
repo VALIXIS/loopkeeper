@@ -81,7 +81,9 @@ html.light .glass-panel-elevated {
 }
 
 html.light .bg-zinc-950,
-html.light .bg-zinc-900 {
+html.light .bg-zinc-900,
+html.light .bg-slate-950,
+html.light .bg-slate-900 {
   background-color: #ffffff !important;
   color: #0f172a !important;
 }
@@ -89,44 +91,85 @@ html.light .bg-zinc-900 {
 html.light .bg-zinc-950\/80,
 html.light .bg-zinc-950\/90,
 html.light .bg-zinc-900\/80,
-html.light .bg-zinc-900\/90 {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+html.light .bg-zinc-900\/90,
+html.light .bg-slate-900\/90,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/40,
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/90 {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+  color: #0f172a !important;
+}
+
+html.light .bg-slate-800,
+html.light .bg-slate-800\/90,
+html.light .bg-slate-800\/80 {
+  background-color: #f1f5f9 !important;
   color: #0f172a !important;
 }
 
 html.light .border-zinc-800,
-html.light .border-zinc-700 {
-  border-color: rgba(15, 23, 42, 0.1) !important;
+html.light .border-zinc-700,
+html.light .border-white\/\[0\.08\],
+html.light .border-white\/\[0\.1\],
+html.light .border-white\/\[0\.06\],
+html.light .border-white\/\[0\.04\] {
+  border-color: rgba(15, 23, 42, 0.12) !important;
 }
 
 html.light .text-zinc-100,
-html.light .text-zinc-200 {
+html.light .text-zinc-200,
+html.light .text-slate-100,
+html.light .text-slate-200 {
   color: #0f172a !important;
 }
 
 html.light .text-zinc-300,
-html.light .text-zinc-400 {
-  color: #475569 !important;
+html.light .text-zinc-400,
+html.light .text-slate-300,
+html.light .text-slate-400 {
+  color: #334155 !important;
 }
 
-html.light .text-zinc-500 {
+html.light .text-zinc-500,
+html.light .text-slate-500 {
   color: #64748b !important;
+}
+
+html.light .bg-rose-950\/60,
+html.light .bg-rose-950\/40,
+html.light .bg-rose-950\/30 {
+  background-color: #fff1f2 !important;
+  color: #be123c !important;
+}
+
+html.light .text-rose-300 {
+  color: #e11d48 !important;
+}
+
+html.light .text-indigo-300 {
+  color: #4f46e5 !important;
+}
+
+html.light .text-cyan-300 {
+  color: #0284c7 !important;
 }
 
 html.light .bg-tech-grid {
   background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
 }
 
 html.light header {
-  background-color: rgba(255, 255, 255, 0.85) !important;
-  border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.1) !important;
 }
 
 html.light aside {
-  background-color: rgba(255, 255, 255, 0.75) !important;
-  border-right-color: rgba(15, 23, 42, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  border-right-color: rgba(15, 23, 42, 0.1) !important;
 }
 
 /* Custom Scrollbars */

@@ -59,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
               </button>
             </div>
             <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
-              From Meeting Promises to Completed Work
+              From Spoken Commitments to Verified Deliverables
             </p>
           </div>
         </div>
