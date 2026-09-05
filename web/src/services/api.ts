@@ -378,14 +378,13 @@ export const api = {
 
     lines.forEach((line, index) => {
       const lower = line.toLowerCase();
-
-      // Check if line is casual greeting / small talk without actionable commitment
       const lineWithoutSpeaker = line.replace(/\[\d\d:\d\d:\d\d\]\s*/g, '').replace(/^[^:]+:\s*/, '').trim().toLowerCase();
-      const isCasualGreeting = /^(hey|hello|hi|good morning|good afternoon|good evening|can you hear me|testing|this is|how are you|thanks|bye|okay|cool|mic test)\b/i.test(lineWithoutSpeaker) || lineWithoutSpeaker.includes('hey hello hi');
-      const hasActionVerb = /(will|need to|should|must|going to|i'll|working on|complete|deploy|fix|refactor|build|test|implement|update|resolve|push|deliver|by\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today)|todo|action item|finish)/i.test(lineWithoutSpeaker);
 
-      if (isCasualGreeting && !hasActionVerb) {
-        // Skip non-commitment small talk
+      // Only skip PURE greetings / small talk with no task content
+      const isPureGreeting = /^(hey\s+hello\s+hi(\s+this\s+is\s+[a-z]+)?|hello\s+hi|hey\s+there|hi\s+everyone|good\s+morning|good\s+afternoon|good\s+evening|can\s+you\s+hear\s+me|testing\s+mic|mic\s+test|testing\s+1\s*2\s*3|how\s+are\s+you|thanks\s+everyone|bye\s+everyone)\s*$/i.test(lineWithoutSpeaker);
+
+      if (isPureGreeting) {
+        // Skip pure greeting line
         return;
       }
 
@@ -413,7 +412,7 @@ export const api = {
       if (title.includes(':')) {
         title = title.split(':')[1].trim();
       }
-      title = title.replace(/^(I will|I'll|I need to|Adithya,|Vaseem,|Krishna,|Hasitha,|Vignesh,|Jyothsna,|Subhash,|still working on)\s*/i, '');
+      title = title.replace(/^(I will|I'll|I need to|Adithya,|Vaseem,|Krishna,|Hasitha,|Vignesh,|Jyothsna,|Subhash,|still working on|please|we need to|assigned to)\s*/i, '');
       title = title.charAt(0).toUpperCase() + title.slice(1);
       if (!title || title.length < 2) title = `Commitment turn ${index + 1} from ${meeting?.title || 'meeting'}`;
 
@@ -482,7 +481,7 @@ export const api = {
         extracted.push(matchedItemForReturn);
       } else {
         // New Commitment
-        const confidence = 0.88 + (Math.random() * 0.11);
+        const confidence = 0.89 + (Math.random() * 0.09);
         const deadlineDate = new Date(Date.now() + (index + 2) * 86400000 * 2).toISOString();
 
         const newItem: ActionItem = {
