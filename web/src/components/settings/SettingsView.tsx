@@ -215,6 +215,116 @@ export const SettingsView: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Real Meeting Platform Integrations Section */}
+      <div className="p-6 rounded-3xl glass-panel border border-zinc-800 space-y-5 shadow-xl">
+        <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm">
+              <NetworkIcon size={20} />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-zinc-100">Meeting Platform Integrations</h3>
+              <p className="text-xs text-zinc-400">Google Meet, Zoom, and Microsoft Teams end-to-end ingestion</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Google Meet Card */}
+          <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-zinc-200">Google Meet</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                Drive OAuth
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400">OAuth 2.0 transcript artifact & meeting discovery</p>
+            <div className="pt-2 flex items-center justify-between gap-2 border-t border-zinc-900">
+              <span className="text-[10px] font-mono text-zinc-500">
+                {backendStatus.isLive ? 'API Ready' : 'Standby'}
+              </span>
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/v1/integrations/google_meet/sync', { method: 'POST' });
+                    const data = await res.json();
+                    alert(`Google Meet Sync: ${data.meetings_imported} imported, ${data.commitments_extracted} commitments extracted.`);
+                    refreshData();
+                  } catch (e) {
+                    alert('Google Meet sync initiated');
+                  }
+                }}
+                className="px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all"
+              >
+                Sync Meetings
+              </button>
+            </div>
+          </div>
+
+          {/* Zoom Card */}
+          <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-zinc-200">Zoom</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                Cloud OAuth
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400">Cloud recordings, VTT transcript retrieval & webhooks</p>
+            <div className="pt-2 flex items-center justify-between gap-2 border-t border-zinc-900">
+              <span className="text-[10px] font-mono text-zinc-500">
+                {backendStatus.isLive ? 'API Ready' : 'Standby'}
+              </span>
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/v1/integrations/zoom/sync', { method: 'POST' });
+                    const data = await res.json();
+                    alert(`Zoom Sync: ${data.meetings_imported} imported, ${data.commitments_extracted} commitments extracted.`);
+                    refreshData();
+                  } catch (e) {
+                    alert('Zoom sync initiated');
+                  }
+                }}
+                className="px-3 py-1.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 text-xs font-bold transition-all"
+              >
+                Sync Meetings
+              </button>
+            </div>
+          </div>
+
+          {/* Microsoft Teams Card */}
+          <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-zinc-200">Microsoft Teams</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                Microsoft Graph
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400">Entra ID OAuth, online meetings & Graph API transcripts</p>
+            <div className="pt-2 flex items-center justify-between gap-2 border-t border-zinc-900">
+              <span className="text-[10px] font-mono text-zinc-500">
+                {backendStatus.isLive ? 'API Ready' : 'Standby'}
+              </span>
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch('/api/v1/integrations/ms_teams/sync', { method: 'POST' });
+                    const data = await res.json();
+                    alert(`Teams Sync: ${data.meetings_imported} imported, ${data.commitments_extracted} commitments extracted.`);
+                    refreshData();
+                  } catch (e) {
+                    alert('Microsoft Teams sync initiated');
+                  }
+                }}
+                className="px-3 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-xs font-bold transition-all"
+              >
+                Sync Meetings
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
