@@ -19,17 +19,17 @@ export const PostponementRadar: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Sleek Compact Header Bar */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-950 border border-amber-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="relative overflow-hidden rounded-2xl glass-panel border border-amber-500/30 dark:border-amber-500/40 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
-            <AlertTriangleIcon size={14} className="animate-pulse text-amber-400" />
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
+            <AlertTriangleIcon size={14} className="animate-pulse text-amber-600 dark:text-amber-400" />
             Chronic Slippage Radar
           </span>
-          <h1 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
+          <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
             Repeated Postponement Radar
           </h1>
         </div>
-        <p className="text-xs text-zinc-400 font-medium">
+        <p className="text-xs text-slate-600 dark:text-zinc-400 font-medium">
           Automatically flagging commitments delayed 2+ times across consecutive meetings.
         </p>
       </div>

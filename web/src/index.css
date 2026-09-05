@@ -139,9 +139,20 @@ html.light .text-slate-500 {
 
 html.light .bg-rose-950\/60,
 html.light .bg-rose-950\/40,
-html.light .bg-rose-950\/30 {
+html.light .bg-rose-950\/30,
+html.light .bg-rose-950\/20,
+html.light .bg-rose-950\/10 {
   background-color: #fff1f2 !important;
   color: #be123c !important;
+}
+
+html.light .bg-amber-950\/60,
+html.light .bg-amber-950\/40,
+html.light .bg-amber-950\/30,
+html.light .bg-amber-950\/20,
+html.light .bg-amber-950\/10 {
+  background-color: #fffbeb !important;
+  color: #b45309 !important;
 }
 
 html.light .text-rose-300 {

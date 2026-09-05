@@ -114,17 +114,17 @@ export const ExecutionDriftView: React.FC = () => {
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">
       {/* Sleek Compact Header Bar */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-rose-950/40 via-zinc-900 to-zinc-950 border border-rose-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="relative overflow-hidden rounded-2xl glass-panel border border-rose-500/30 dark:border-rose-500/40 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
             <ShieldAlertIcon size={14} className="animate-pulse" />
             Execution Drift Radar
           </span>
-          <h1 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
+          <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
             Verbal Commitments vs Tracker Discrepancies
           </h1>
         </div>
-        <p className="text-xs text-zinc-400 font-medium">
+        <p className="text-xs text-slate-600 dark:text-zinc-400 font-medium">
           Cross-referencing spoken meeting claims against Jira & GitHub PR states.
         </p>
       </div>
@@ -204,93 +204,93 @@ export const ExecutionDriftView: React.FC = () => {
               className="p-6 rounded-3xl glass-panel-elevated border border-rose-500/40 shadow-xl space-y-5 hover:border-rose-400/70 transition-all"
             >
               {/* Card Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-zinc-800">
                 <div className="flex items-center gap-3">
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                       item.driftSeverity === 'critical'
-                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse'
-                        : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                        ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/40 animate-pulse'
+                        : 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30'
                     }`}
                   >
                     {item.driftSeverity.toUpperCase()} DRIFT
                   </span>
-                  <h4 className="text-base font-bold text-zinc-100">
+                  <h4 className="text-base font-bold text-slate-900 dark:text-zinc-100">
                     {item.commitmentTitle}
                   </h4>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+                <div className="flex items-center gap-2 text-xs font-mono text-slate-600 dark:text-zinc-400">
                   <span className="flex items-center gap-1">
-                    <UsersIcon size={13} className="text-cyan-400" />
+                    <UsersIcon size={13} className="text-cyan-600 dark:text-cyan-400" />
                     {item.ownerName}
                   </span>
                   <span>•</span>
-                  <span className="text-indigo-400 font-bold">{item.jiraIssueKey}</span>
+                  <span className="text-indigo-600 dark:text-indigo-400 font-bold">{item.jiraIssueKey}</span>
                 </div>
               </div>
 
               {/* Side-by-Side Comparison Matrix */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Left Side: Meeting Spoken Claim */}
-                <div className="p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800 space-y-2 relative overflow-hidden">
+                <div className="p-4 rounded-2xl bg-slate-100 dark:bg-zinc-950/90 border border-slate-200 dark:border-zinc-800 space-y-2 relative overflow-hidden">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-cyan-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                    <span className="font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                       <SparklesIcon size={12} />
                       Verbal Statement in Meeting
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
                       {item.spokenStatus}
                     </span>
                   </div>
 
-                  <p className="text-xs text-zinc-200 font-mono italic leading-relaxed pt-1">
+                  <p className="text-xs text-slate-800 dark:text-zinc-200 font-mono italic leading-relaxed pt-1">
                     "{item.spokenStatement}"
                   </p>
 
-                  <div className="text-[10px] text-zinc-500 pt-2 flex items-center justify-between border-t border-zinc-800/60">
+                  <div className="text-[10px] text-slate-500 dark:text-zinc-500 pt-2 flex items-center justify-between border-t border-slate-200 dark:border-zinc-800/60">
                     <span>Source: {item.meetingTitle}</span>
                     <span>{item.spokenDate}</span>
                   </div>
                 </div>
 
                 {/* Right Side: External Tracker (Jira) State */}
-                <div className="p-4 rounded-2xl bg-zinc-950/90 border border-rose-500/30 space-y-2 relative overflow-hidden">
+                <div className="p-4 rounded-2xl bg-rose-50/50 dark:bg-zinc-950/90 border border-rose-200 dark:border-rose-500/30 space-y-2 relative overflow-hidden">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-rose-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                    <span className="font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                       <ExternalLinkIcon size={12} />
                       External Issue Tracker (Jira)
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
                       {item.jiraStatus}
                     </span>
                   </div>
 
-                  <p className="text-xs text-zinc-300 leading-relaxed font-mono pt-1">
+                  <p className="text-xs text-slate-800 dark:text-zinc-300 leading-relaxed font-mono pt-1">
                     {item.jiraLastUpdated}
                   </p>
 
-                  <div className="text-[10px] text-zinc-500 pt-2 flex items-center justify-between border-t border-zinc-800/60">
+                  <div className="text-[10px] text-slate-500 dark:text-zinc-500 pt-2 flex items-center justify-between border-t border-slate-200 dark:border-zinc-800/60">
                     <span>Assignee: {item.jiraAssignee}</span>
-                    <span className="text-indigo-400 font-mono font-bold">{item.jiraIssueKey}</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-mono font-bold">{item.jiraIssueKey}</span>
                   </div>
                 </div>
               </div>
 
               {/* Discrepancy & Mitigation Row */}
-              <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/30 space-y-3">
-                <div className="text-xs font-bold text-rose-300 flex items-center justify-between gap-2">
+              <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-500/30 space-y-3">
+                <div className="text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
                     <AlertTriangleIcon size={14} />
                     <span>Drift Analysis: {item.discrepancySummary}</span>
                   </div>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-500/40">
                     Action Required
                   </span>
                 </div>
 
-                <p className="text-xs text-zinc-300 leading-relaxed pl-5">
-                  <strong className="text-cyan-300">Action Plan:</strong> {item.mitigationRecommendation}
+                <p className="text-xs text-slate-700 dark:text-zinc-300 leading-relaxed pl-5">
+                  <strong className="text-cyan-700 dark:text-cyan-300">Action Plan:</strong> {item.mitigationRecommendation}
                 </p>
 
                 <div className="pt-2 border-t border-rose-500/20 flex flex-wrap items-center justify-between gap-2 text-xs">
