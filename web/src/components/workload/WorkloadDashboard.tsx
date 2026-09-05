@@ -102,13 +102,13 @@ export const WorkloadDashboard: React.FC = () => {
   return (
     <div className="space-y-6 pb-12 animate-fade-in-up">
       {/* Sleek Compact Header Bar */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-950/40 via-zinc-900 to-zinc-950 border border-cyan-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="relative overflow-hidden rounded-2xl glass-panel border border-cyan-500/30 p-4 sm:px-5 sm:py-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
-            <ActivityIcon size={14} className="text-cyan-400" />
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/40 flex items-center gap-1.5 shadow-sm shrink-0">
+            <ActivityIcon size={14} className="text-cyan-600 dark:text-cyan-400" />
             Live Capacity Radar
           </span>
-          <h1 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
+          <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
             Team Workload & Cognitive Capacity
           </h1>
         </div>
@@ -167,38 +167,38 @@ export const WorkloadDashboard: React.FC = () => {
               onClick={() => setSelectedMemberId(isSelected ? null : emp.id)}
               className={`group cursor-pointer rounded-2xl p-5 border transition-all duration-200 shadow-lg flex flex-col justify-between gap-4 hover:-translate-y-0.5 ${
                 isSelected
-                  ? 'bg-indigo-950/40 border-cyan-400 ring-2 ring-cyan-500/40 shadow-cyan-500/20'
+                  ? 'bg-indigo-900/10 dark:bg-indigo-950/40 border-cyan-500 ring-2 ring-cyan-500/40 shadow-cyan-500/20'
                   : isOverloaded
                   ? 'glass-panel border-amber-600/40 hover:border-amber-400 hover:shadow-amber-500/10'
-                  : 'glass-panel border-zinc-800 hover:border-zinc-700 hover:shadow-cyan-500/5'
+                  : 'glass-panel border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 hover:shadow-cyan-500/5'
               }`}
             >
               <div>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="relative">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-800 text-cyan-300 font-bold text-base ring-2 ring-zinc-700 group-hover:ring-cyan-400 transition-all shadow-md shrink-0">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-cyan-700 dark:text-cyan-300 font-bold text-base ring-2 ring-slate-300 dark:ring-zinc-700 group-hover:ring-cyan-400 transition-all shadow-md shrink-0">
                         {emp.name.charAt(0)}
                       </div>
                       {isOverloaded && (
-                        <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-rose-500 rounded-full border-2 border-zinc-950 flex items-center justify-center animate-ping" />
+                        <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-rose-500 rounded-full border-2 border-white dark:border-zinc-950 flex items-center justify-center animate-ping" />
                       )}
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-zinc-100 group-hover:text-cyan-300 transition-colors">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
                         {emp.name}
                       </h3>
-                      <p className="text-[11px] text-zinc-400 font-medium">{emp.role}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">{emp.role}</p>
                     </div>
                   </div>
 
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                       workloadScore >= 8 || overdueCount >= 2
-                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse'
+                        ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/40 animate-pulse'
                         : workloadScore >= 5 || overdueCount >= 1
-                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-                        : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                        ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30'
+                        : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30'
                     }`}
                   >
                     {workloadScore >= 8 || overdueCount >= 2
@@ -210,12 +210,12 @@ export const WorkloadDashboard: React.FC = () => {
                 </div>
 
                 {/* Score Bar */}
-                <div className="mt-4 p-3 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-2">
+                <div className="mt-4 p-3 rounded-xl bg-slate-100/90 dark:bg-zinc-950/80 border border-slate-200 dark:border-zinc-800/80 space-y-2">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-zinc-400 font-medium">Workload Index</span>
-                    <span className="font-mono font-bold text-cyan-400">{workloadScore} / 10.0</span>
+                    <span className="text-slate-600 dark:text-zinc-400 font-medium">Workload Index</span>
+                    <span className="font-mono font-bold text-cyan-700 dark:text-cyan-400">{workloadScore} / 10.0</span>
                   </div>
-                  <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden p-0.5 border border-zinc-800">
+                  <div className="w-full bg-slate-200 dark:bg-zinc-900 h-2 rounded-full overflow-hidden p-0.5 border border-slate-300 dark:border-zinc-800">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
                         workloadScore >= 7
@@ -231,24 +231,24 @@ export const WorkloadDashboard: React.FC = () => {
               </div>
 
               {/* Task Counters Row */}
-              <div className="grid grid-cols-3 gap-2 text-center text-xs pt-3 border-t border-zinc-800">
-                <div className="p-2 rounded-xl bg-zinc-950/60 border border-zinc-900">
-                  <span className="text-zinc-500 block text-[10px] uppercase font-bold tracking-wider">Active</span>
-                  <span className="font-mono font-bold text-zinc-200">{openCount}</span>
+              <div className="grid grid-cols-3 gap-2 text-center text-xs pt-3 border-t border-slate-200 dark:border-zinc-800">
+                <div className="p-2 rounded-xl bg-slate-100/80 dark:bg-zinc-950/60 border border-slate-200/80 dark:border-zinc-900">
+                  <span className="text-slate-500 dark:text-zinc-500 block text-[10px] uppercase font-bold tracking-wider">Active</span>
+                  <span className="font-mono font-bold text-slate-800 dark:text-zinc-200">{openCount}</span>
                 </div>
-                <div className="p-2 rounded-xl bg-zinc-950/60 border border-zinc-900">
-                  <span className="text-zinc-500 block text-[10px] uppercase font-bold tracking-wider">Overdue</span>
+                <div className="p-2 rounded-xl bg-slate-100/80 dark:bg-zinc-950/60 border border-slate-200/80 dark:border-zinc-900">
+                  <span className="text-slate-500 dark:text-zinc-500 block text-[10px] uppercase font-bold tracking-wider">Overdue</span>
                   <span
                     className={`font-mono font-bold ${
-                      overdueCount > 0 ? 'text-rose-400' : 'text-zinc-400'
+                      overdueCount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-600 dark:text-zinc-400'
                     }`}
                   >
                     {overdueCount}
                   </span>
                 </div>
-                <div className="p-2 rounded-xl bg-zinc-950/60 border border-zinc-900">
-                  <span className="text-zinc-500 block text-[10px] uppercase font-bold tracking-wider">Done</span>
-                  <span className="font-mono font-bold text-emerald-400">{completedCount}</span>
+                <div className="p-2 rounded-xl bg-slate-100/80 dark:bg-zinc-950/60 border border-slate-200/80 dark:border-zinc-900">
+                  <span className="text-slate-500 dark:text-zinc-500 block text-[10px] uppercase font-bold tracking-wider">Done</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{completedCount}</span>
                 </div>
               </div>
             </div>
@@ -259,16 +259,16 @@ export const WorkloadDashboard: React.FC = () => {
       {/* Drilldown Drawer for Selected Member */}
       {selectedMember && (
         <div className="p-6 rounded-3xl glass-panel-elevated border border-cyan-500/40 space-y-4 shadow-2xl animate-in fade-in duration-200">
-          <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-zinc-800">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-cyan-300 font-bold text-sm ring-2 ring-cyan-400 shadow-md shrink-0">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-cyan-700 dark:text-cyan-300 font-bold text-sm ring-2 ring-cyan-400 shadow-md shrink-0">
                 {selectedMember.name.charAt(0)}
               </div>
               <div>
-                <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
                   Assigned Commitments for {selectedMember.name}
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-slate-500 dark:text-zinc-400">
                   {memberTasks.length} total tasks tracked across all meetings
                 </p>
               </div>
@@ -276,7 +276,7 @@ export const WorkloadDashboard: React.FC = () => {
 
             <button
               onClick={() => setSelectedMemberId(null)}
-              className="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition-colors"
+              className="text-xs text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 transition-colors"
             >
               Close Drilldown
             </button>
@@ -284,7 +284,7 @@ export const WorkloadDashboard: React.FC = () => {
 
           <div className="space-y-2.5">
             {memberTasks.length === 0 ? (
-              <div className="text-center py-8 text-xs text-zinc-500">
+              <div className="text-center py-8 text-xs text-slate-500 dark:text-zinc-500">
                 No active commitments assigned to this member.
               </div>
             ) : (
@@ -292,20 +292,20 @@ export const WorkloadDashboard: React.FC = () => {
                 <div
                   key={task.id}
                   onClick={() => navigateToTask(task.id)}
-                  className="group cursor-pointer p-3.5 rounded-xl bg-zinc-950/90 border border-zinc-800 hover:border-cyan-500/50 flex items-center justify-between gap-4 transition-all hover:-translate-x-0.5"
+                  className="group cursor-pointer p-3.5 rounded-xl bg-slate-100/90 dark:bg-zinc-950/90 border border-slate-200 dark:border-zinc-800 hover:border-cyan-500/50 flex items-center justify-between gap-4 transition-all hover:-translate-x-0.5"
                 >
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center gap-2">
                       <StatusBadge status={task.status} size="sm" />
                       <PostponementBadge count={task.postponement_count} />
                     </div>
-                    <div className="text-xs font-bold text-zinc-200 group-hover:text-cyan-300 transition-colors">
+                    <div className="text-xs font-bold text-slate-800 dark:text-zinc-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
                       {task.title}
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-xs font-mono text-zinc-400 flex items-center gap-1">
+                    <span className="text-xs font-mono text-slate-500 dark:text-zinc-400 flex items-center gap-1">
                       <ClockIcon size={12} />
                       {task.deadline
                         ? new Date(task.deadline).toLocaleDateString('en-US', {
@@ -314,7 +314,7 @@ export const WorkloadDashboard: React.FC = () => {
                           })
                         : 'No date'}
                     </span>
-                    <ArrowRightIcon size={14} className="text-cyan-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRightIcon size={14} className="text-cyan-500 dark:text-cyan-400 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               ))
