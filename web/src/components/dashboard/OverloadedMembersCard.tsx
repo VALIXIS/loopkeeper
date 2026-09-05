@@ -1,9 +1,11 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useRouter } from '../../context/RouterContext';
 import { UsersIcon, AlertTriangleIcon, ArrowRightIcon } from '../common/Icons';
 
 export const OverloadedMembersCard: React.FC = () => {
-  const { dashboardOverview, setActiveTab } = useApp();
+  const { dashboardOverview } = useApp();
+  const { navigate } = useRouter();
 
   const members = dashboardOverview?.overloaded_members || [];
 
@@ -21,7 +23,7 @@ export const OverloadedMembersCard: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveTab('workload')}
+            onClick={() => navigate('/workload')}
             className="text-xs text-indigo-400 hover:text-cyan-300 font-semibold flex items-center gap-1 group transition-colors"
           >
             <span>Full Grid</span>
@@ -49,7 +51,7 @@ export const OverloadedMembersCard: React.FC = () => {
             return (
               <div
                 key={member.employee_id}
-                onClick={() => setActiveTab('workload')}
+                onClick={() => navigate('/workload')}
                 className="group cursor-pointer flex items-center justify-between p-2.5 rounded-xl bg-slate-950/70 hover:bg-slate-800/70 border border-white/[0.06] hover:border-slate-700 transition-all"
               >
                 <div className="flex items-center gap-2.5 min-w-0">

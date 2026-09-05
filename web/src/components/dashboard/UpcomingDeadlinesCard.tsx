@@ -1,10 +1,12 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useRouter } from '../../context/RouterContext';
 import { ClockIcon, CalendarIcon, ArrowRightIcon } from '../common/Icons';
 import { PostponementBadge, VerificationBadge } from '../common/Badge';
 
 export const UpcomingDeadlinesCard: React.FC = () => {
-  const { dashboardOverview, navigateToTask, setActiveTab } = useApp();
+  const { dashboardOverview, navigateToTask } = useApp();
+  const { navigate } = useRouter();
 
   const deadlines = dashboardOverview?.upcoming_deadlines || [];
 
@@ -22,7 +24,7 @@ export const UpcomingDeadlinesCard: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setActiveTab('tasks')}
+            onClick={() => navigate('/commitments')}
             className="text-xs text-indigo-400 hover:text-cyan-300 font-semibold flex items-center gap-1 group transition-colors"
           >
             <span>All Items</span>

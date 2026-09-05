@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useRouter } from '../../context/RouterContext';
 import {
   CheckSquareIcon,
   AlertTriangleIcon,
@@ -9,7 +10,8 @@ import {
 } from '../common/Icons';
 
 export const MetricsGrid: React.FC = () => {
-  const { dashboardOverview, setActiveTab } = useApp();
+  const { dashboardOverview } = useApp();
+  const { navigate, navigateToAccountability } = useRouter();
 
   const totalOpen = dashboardOverview?.total_open_tasks || 0;
   const overdue = dashboardOverview?.overdue_tasks || 0;
@@ -23,7 +25,7 @@ export const MetricsGrid: React.FC = () => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* 1. Open Tasks Card */}
       <div
-        onClick={() => setActiveTab('tasks')}
+        onClick={() => navigate('/commitments')}
         className="group cursor-pointer relative overflow-hidden rounded-3xl bg-slate-900/80 p-5 border border-white/[0.08] hover:border-indigo-500/60 transition-all duration-200 shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 backdrop-blur-xl"
       >
         <div className="flex items-center justify-between">
@@ -48,7 +50,7 @@ export const MetricsGrid: React.FC = () => {
 
       {/* 2. Overdue Tasks Card */}
       <div
-        onClick={() => setActiveTab('tasks')}
+        onClick={() => navigate('/commitments')}
         className={`group cursor-pointer relative overflow-hidden rounded-3xl bg-slate-900/80 p-5 border transition-all duration-200 shadow-xl hover:-translate-y-1 backdrop-blur-xl ${
           overdue > 0
             ? 'border-rose-500/50 hover:border-rose-400 hover:shadow-rose-500/15 bg-gradient-to-br from-rose-950/20 to-slate-900/90'
@@ -87,7 +89,7 @@ export const MetricsGrid: React.FC = () => {
 
       {/* 3. Completed Tasks Card */}
       <div
-        onClick={() => setActiveTab('tasks')}
+        onClick={() => navigate('/commitments')}
         className="group cursor-pointer relative overflow-hidden rounded-3xl bg-slate-900/80 p-5 border border-white/[0.08] hover:border-emerald-500/60 transition-all duration-200 shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 backdrop-blur-xl"
       >
         <div className="flex items-center justify-between">
@@ -112,7 +114,7 @@ export const MetricsGrid: React.FC = () => {
 
       {/* 4. Repeatedly Postponed Card */}
       <div
-        onClick={() => setActiveTab('radar')}
+        onClick={() => navigateToAccountability('radar')}
         className={`group cursor-pointer relative overflow-hidden rounded-3xl bg-slate-900/80 p-5 border transition-all duration-200 shadow-xl hover:-translate-y-1 backdrop-blur-xl ${
           postponed > 0
             ? 'border-amber-500/50 hover:border-amber-400 hover:shadow-amber-500/15 bg-gradient-to-br from-amber-950/20 to-slate-900/90'
@@ -151,3 +153,4 @@ export const MetricsGrid: React.FC = () => {
     </div>
   );
 };
+

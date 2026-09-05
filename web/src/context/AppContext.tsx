@@ -73,9 +73,28 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeTab, setActiveTab] = useState<NavigationTab>('dashboard');
+  const [activeTab, setActiveTabState] = useState<NavigationTab>('dashboard');
   const [selectedMeetingId, setSelectedMeetingId] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+
+  const setActiveTab = useCallback((tab: NavigationTab) => {
+    setActiveTabState(tab);
+    let targetUrl = '/dashboard';
+    if ((tab as string) === 'tasks' || (tab as string) === 'commitments') targetUrl = '/commitments';
+    else if (tab === 'workload') targetUrl = '/workload';
+    else if (tab === 'meetings') targetUrl = '/meetings';
+    else if (tab === 'radar') targetUrl = '/accountability?tab=radar';
+    else if (tab === 'insights') targetUrl = '/insights';
+    else if (tab === 'graph') targetUrl = '/accountability?tab=graph';
+    else if (tab === 'settings') targetUrl = '/settings';
+
+    try {
+      window.history.pushState({}, '', targetUrl);
+      window.dispatchEvent(new Event('popstate'));
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
 
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
