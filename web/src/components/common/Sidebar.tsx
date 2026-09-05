@@ -165,16 +165,16 @@ export const Sidebar: React.FC = () => {
 
       <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-white/[0.07] text-[11px] text-slate-400 space-y-1.5 shadow-sm">
         <div className="flex items-center justify-between">
-          <span className="text-slate-400">Inference Core</span>
-          <span className="font-mono text-cyan-400 text-[10px] font-bold">Dual-Inference SLM</span>
+          <span className="text-slate-400">Execution Engine</span>
+          <span className="font-mono text-cyan-400 text-[10px] font-bold">Active Verification</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-slate-400">Vector Dedupe</span>
-          <span className="font-mono text-emerald-400 text-[10px] font-bold">1536-dim Cosine</span>
+          <span className="text-slate-400">Jira Integration</span>
+          <span className="font-mono text-emerald-400 text-[10px] font-bold">REST API v3 Proxy</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-slate-400">Jira Execution</span>
-          <span className="font-mono text-indigo-300 text-[10px] font-bold">Active Sync</span>
+          <span className="text-slate-400">Data Boundary</span>
+          <span className="font-mono text-indigo-300 text-[10px] font-bold">Read-Only Enforced</span>
         </div>
       </div>
     </aside>

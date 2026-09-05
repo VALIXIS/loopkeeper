@@ -5,12 +5,18 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 from uuid import UUID
 from app.repositories.meeting_repository import MeetingRepository
+from app.services.transcription_service import TranscriptionService
 
 logger = logging.getLogger("app.services.recording")
 
 class RecordingService:
-    def __init__(self, meeting_repo: Optional[MeetingRepository] = None):
+    def __init__(
+        self,
+        meeting_repo: Optional[MeetingRepository] = None,
+        transcription_service: Optional[TranscriptionService] = None
+    ):
         self.meeting_repo = meeting_repo or MeetingRepository()
+        self.transcription_service = transcription_service or TranscriptionService()
         self.upload_dir = os.path.join(os.getcwd(), "storage", "recordings")
         os.makedirs(self.upload_dir, exist_ok=True)
         self._recordings: Dict[UUID, dict] = {}
@@ -45,7 +51,6 @@ class RecordingService:
     ) -> Dict[str, Any]:
         rec = self._recordings.get(recording_id)
         if not rec:
-            # Create on demand
             rec_id = recording_id
             now = datetime.utcnow()
             rec = {
@@ -77,16 +82,15 @@ class RecordingService:
 
         rec["status"] = "transcribing"
         
-        # Read or generate transcript from recording metadata
-        simulated_transcript = (
-            f"Meeting Recording Transcript for session {rec['meeting_id']}:\n"
-            f"Vignesh Dev: I will complete the backend API endpoints for recordings by tomorrow.\n"
-            f"Hasitha Tech: I will verify the Flutter audio player integration."
-        )
+        file_path = rec.get("file_path", "")
+        format_ext = rec.get("format", "mp3")
+        mime = f"audio/{format_ext}" if format_ext != "wav" else "audio/wav"
+
+        extracted_text = self.transcription_service.transcribe_audio_file(file_path=file_path, mime_type=mime)
 
         transcript_record = self.meeting_repo.attach_transcript(
             meeting_id=rec["meeting_id"],
-            content=simulated_transcript,
+            content=extracted_text,
             source_file_name=rec["file_name"],
             transcript_format="txt"
         )

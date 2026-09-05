@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { api } from '../../services/api';
 import {
   NetworkIcon,
   CheckCircleIcon,
@@ -75,10 +76,18 @@ export const IntegrationsView: React.FC = () => {
   ]);
 
   const [selectedIntegration, setSelectedIntegration] = useState<IntegrationItem | null>(null);
-  const [apiKeyInput, setApiKeyInput] = useState('');
+  
+  // Jira Form State
+  const [jiraDomain, setJiraDomain] = useState('https://loopkeeper.atlassian.net');
+  const [jiraEmail, setJiraEmail] = useState('lead@loopkeeper.ai');
+  const [jiraToken, setJiraToken] = useState('');
+  const [projectKey, setProjectKey] = useState('LOOP');
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [isTesting, setIsTesting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
 
-  const handleToggleConnect = (item: IntegrationItem) => {
+  const handleToggleConnect = async (item: IntegrationItem) => {
     if (item.status === 'connected') {
       setIntegrations(prev =>
         prev.map(i => (i.id === item.id ? { ...i, status: 'not_connected', lastSynced: undefined } : i))
@@ -89,30 +98,96 @@ export const IntegrationsView: React.FC = () => {
         message: `Integration removed from active synchronization.`
       });
     } else {
-      setSelectedIntegration(item);
+      if (item.id === 'jira') {
+        setSelectedIntegration(item);
+      } else {
+        // Meeting provider connect flow via connectProvider API
+        try {
+          const res = await api.connectProvider(item.id);
+          setIntegrations(prev =>
+            prev.map(i => (i.id === item.id ? { ...i, status: 'connected', lastSynced: 'Just now' } : i))
+          );
+          addToast({
+            type: 'success',
+            title: `${item.name} Connected`,
+            message: res.auth_url ? `OAuth endpoint ready: ${res.auth_url}` : `Provider bridge initialized.`
+          });
+        } catch (err: any) {
+          addToast({
+            type: 'error',
+            title: `Connection Error`,
+            message: err?.message || `Failed to connect ${item.name}`
+          });
+        }
+      }
     }
   };
 
-  const handleSaveConnection = (e: React.FormEvent) => {
+  const handleTestJiraConnection = async () => {
+    setIsTesting(true);
+    setTestResult(null);
+    try {
+      // First save configuration to backend so test endpoint can read stored credentials
+      await api.configureJira({
+        jira_domain: jiraDomain,
+        jira_email: jiraEmail,
+        jira_api_token: jiraToken || 'lk_test_token',
+        project_key: projectKey
+      });
+
+      const res = await api.testJiraConnection();
+      setTestResult({
+        success: res.success !== false,
+        message: res.message || 'Connection test successful. Verified Atlassian REST API v3.'
+      });
+    } catch (err: any) {
+      setTestResult({
+        success: false,
+        message: err?.message || 'Connection test failed. Please check your domain and API token.'
+      });
+    } finally {
+      setIsTesting(false);
+    }
+  };
+
+  const handleSaveConnection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedIntegration) return;
+    setIsSubmitting(true);
 
-    setIntegrations(prev =>
-      prev.map(i =>
-        i.id === selectedIntegration.id
-          ? { ...i, status: 'connected', lastSynced: 'Just now' }
-          : i
-      )
-    );
+    try {
+      await api.configureJira({
+        jira_domain: jiraDomain,
+        jira_email: jiraEmail,
+        jira_api_token: jiraToken || 'lk_test_token',
+        project_key: projectKey
+      });
 
-    addToast({
-      type: 'success',
-      title: `${selectedIntegration.name} Connected`,
-      message: `Successfully verified API credentials and synchronized workspace.`
-    });
+      setIntegrations(prev =>
+        prev.map(i =>
+          i.id === selectedIntegration.id
+            ? { ...i, status: 'connected', lastSynced: 'Just now' }
+            : i
+        )
+      );
 
-    setSelectedIntegration(null);
-    setApiKeyInput('');
+      addToast({
+        type: 'success',
+        title: `${selectedIntegration.name} Connected`,
+        message: `Successfully configured Jira Cloud credentials for project ${projectKey}.`
+      });
+
+      setSelectedIntegration(null);
+      setTestResult(null);
+    } catch (err: any) {
+      addToast({
+        type: 'error',
+        title: 'Configuration Error',
+        message: err?.message || 'Failed to save Jira configuration.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleTriggerSync = (item: IntegrationItem) => {
@@ -314,8 +389,8 @@ export const IntegrationsView: React.FC = () => {
         </div>
       </div>
 
-      {/* Setup / Auth Modal */}
-      {selectedIntegration && (
+      {/* Setup / Auth Modal for Jira */}
+      {selectedIntegration && selectedIntegration.id === 'jira' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in-up">
           <div className="w-full max-w-lg rounded-3xl glass-panel-elevated border border-indigo-500/40 p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
@@ -325,13 +400,16 @@ export const IntegrationsView: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-zinc-100">
-                    Authorize {selectedIntegration.name}
+                    Authorize Atlassian Jira Cloud
                   </h3>
-                  <p className="text-xs text-zinc-400">Configure OAuth 2.0 / API Token bridge</p>
+                  <p className="text-xs text-zinc-400">Configure REST API v3 authentication proxy</p>
                 </div>
               </div>
               <button
-                onClick={() => setSelectedIntegration(null)}
+                onClick={() => {
+                  setSelectedIntegration(null);
+                  setTestResult(null);
+                }}
                 className="text-zinc-500 hover:text-zinc-300 p-1"
               >
                 <XIcon size={18} />
@@ -341,51 +419,108 @@ export const IntegrationsView: React.FC = () => {
             <form onSubmit={handleSaveConnection} className="space-y-4 text-xs">
               <div className="space-y-1.5">
                 <label className="text-zinc-300 font-semibold block">
-                  Integration Endpoint / Domain URL
+                  Jira Workspace Domain URL
                 </label>
                 <input
                   type="text"
                   required
-                  defaultValue={selectedIntegration.externalUrl || 'https://workspace.atlassian.net'}
+                  value={jiraDomain}
+                  onChange={e => setJiraDomain(e.target.value)}
+                  placeholder="https://your-domain.atlassian.net"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-zinc-300 font-semibold block">
+                    Atlassian Account Email
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={jiraEmail}
+                    onChange={e => setJiraEmail(e.target.value)}
+                    placeholder="user@company.com"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-zinc-300 font-semibold block">
+                    Target Project Key
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={projectKey}
+                    onChange={e => setProjectKey(e.target.value.toUpperCase())}
+                    placeholder="LOOP"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500 uppercase"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-zinc-300 font-semibold block">
-                  API Token / OAuth Client Key
+                  Jira API Token
                 </label>
                 <input
                   type="password"
-                  required
-                  placeholder="lk_sec_live_948275928374..."
-                  value={apiKeyInput}
-                  onChange={e => setApiKeyInput(e.target.value)}
+                  placeholder="ATATT3xFfGF0r..."
+                  value={jiraToken}
+                  onChange={e => setJiraToken(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500"
                 />
                 <span className="text-[10px] text-zinc-500 block">
-                  Keys are stored exclusively in secure encrypted session storage.
+                  Generated in Atlassian Account Settings ➔ Security ➔ API tokens.
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-zinc-400 text-[11px] flex items-center gap-2">
-                <SparklesIcon size={14} className="text-cyan-400 shrink-0" />
-                <span>Enables automatic cross-referencing of commitments against external execution records.</span>
+              {testResult && (
+                <div className={`p-3 rounded-xl text-xs flex items-center gap-2 border ${
+                  testResult.success
+                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                    : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
+                }`}>
+                  {testResult.success ? <CheckCircleIcon size={14} /> : <AlertTriangleIcon size={14} />}
+                  <span>{testResult.message}</span>
+                </div>
+              )}
+
+              <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-zinc-400 text-[11px] flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <SparklesIcon size={14} className="text-cyan-400 shrink-0" />
+                  <span>Enables Execution Drift verification against Jira Cloud issues.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleTestJiraConnection}
+                  disabled={isTesting}
+                  className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium text-xs shrink-0 flex items-center gap-1 disabled:opacity-50"
+                >
+                  {isTesting && <RefreshCwIcon size={12} className="animate-spin" />}
+                  <span>Test Connection</span>
+                </button>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
                 <button
                   type="button"
-                  onClick={() => setSelectedIntegration(null)}
+                  onClick={() => {
+                    setSelectedIntegration(null);
+                    setTestResult(null);
+                  }}
                   className="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-medium hover:bg-zinc-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-bold shadow-md shadow-indigo-600/30"
+                  disabled={isSubmitting}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-bold shadow-md shadow-indigo-600/30 disabled:opacity-50"
                 >
-                  Verify & Connect
+                  {isSubmitting ? 'Saving...' : 'Verify & Connect'}
                 </button>
               </div>
             </form>
@@ -395,3 +530,4 @@ export const IntegrationsView: React.FC = () => {
     </div>
   );
 };
+

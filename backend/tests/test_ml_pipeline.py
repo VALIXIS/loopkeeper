@@ -1,3 +1,4 @@
+import os
 import pytest
 from uuid import uuid4
 from ml.preprocessing.transcript_preprocessor import TranscriptPreprocessor
@@ -8,6 +9,11 @@ from app.ai.extraction import SLMProvider
 from app.ai.fallback import FallbackHandler
 from app.services.state_engine import StateEngine
 from app.repositories.action_item_repository import ActionItemRepository
+
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DATA_DIR = os.path.join(REPO_ROOT, "ml", "datasets")
+MODELS_DIR = os.path.join(REPO_ROOT, "ml", "models")
+EVAL_DIR = os.path.join(REPO_ROOT, "ml", "evaluation")
 
 def test_transcript_preprocessor_cleaning():
     raw = '   Action Item:   Rahul to review   PR.   \n\n  '
@@ -21,14 +27,14 @@ def test_preprocessor_target_validation():
     assert TranscriptPreprocessor.validate_target_item(invalid_item) is False
 
 def test_slm_trainer_pipeline():
-    trainer = SLMTrainer(data_dir='ml/datasets', output_dir='ml/models')
+    trainer = SLMTrainer(data_dir=DATA_DIR, output_dir=MODELS_DIR)
     res = trainer.train(epochs=2, seed=42)
     assert res['status'] == 'trained'
     assert res['num_parameters'] > 0
     assert 'model_params' in res
 
 def test_slm_evaluator_metrics():
-    evaluator = SLMEvaluator(data_dir='ml/datasets', output_dir='ml/evaluation')
+    evaluator = SLMEvaluator(data_dir=DATA_DIR, output_dir=EVAL_DIR)
     res = evaluator.evaluate(split='test')
     assert 'metrics' in res
     assert res['metrics']['json_validity_rate'] > 0.8

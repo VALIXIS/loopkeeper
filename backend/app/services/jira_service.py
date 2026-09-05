@@ -29,8 +29,91 @@ class JiraIntegrationService:
             "is_connected": connected,
             "jira_domain": self.jira_domain if connected else None,
             "project_key": self.jira_project_key,
-            "status_message": "Connected to Atlassian Jira Cloud REST API." if connected else "Not connected. Jira API credentials not configured in environment variables."
+            "status_message": "Connected to Atlassian Jira Cloud REST API." if connected else "Not connected. Jira API credentials not configured in environment variables or configuration portal."
         }
+
+    def update_credentials(
+        self,
+        domain: str,
+        email: str,
+        api_token: str,
+        project_key: Optional[str] = None
+    ) -> Dict[str, Any]:
+        self.jira_domain = domain.strip()
+        self.jira_email = email.strip()
+        self.jira_api_token = api_token.strip()
+        if project_key:
+            self.jira_project_key = project_key.strip().upper()
+        return self.get_status()
+
+    def test_connection(self) -> Dict[str, Any]:
+        if not self.is_connected():
+            return {
+                "success": False,
+                "message": "Jira API credentials incomplete. Please configure Domain, Email, and API Token."
+            }
+        try:
+            url = f"https://{self.jira_domain.rstrip('/')}/rest/api/3/myself"
+            resp = requests.get(url, auth=(self.jira_email, self.jira_api_token), timeout=5.0)
+            if resp.status_code == 200:
+                user_data = resp.json()
+                return {
+                    "success": True,
+                    "account_id": user_data.get("accountId"),
+                    "display_name": user_data.get("displayName"),
+                    "email_address": user_data.get("emailAddress"),
+                    "message": f"Successfully authenticated as {user_data.get('displayName', 'Jira User')}."
+                }
+            return {
+                "success": False,
+                "status_code": resp.status_code,
+                "message": f"Jira API returned HTTP {resp.status_code}. Verify API token and account permissions."
+            }
+        except Exception as e:
+            return {"success": False, "message": f"Connection test failed: {str(e)}"}
+
+    def fetch_projects(self) -> List[Dict[str, Any]]:
+        if not self.is_connected():
+            return [{"key": self.jira_project_key, "name": f"Project ({self.jira_project_key})", "is_fallback": True}]
+        try:
+            url = f"https://{self.jira_domain.rstrip('/')}/rest/api/3/project"
+            resp = requests.get(url, auth=(self.jira_email, self.jira_api_token), timeout=5.0)
+            if resp.status_code == 200:
+                projects = resp.json()
+                return [{"key": p.get("key"), "name": p.get("name"), "id": p.get("id")} for p in projects]
+        except Exception as e:
+            logger.warning(f"Failed to fetch Jira projects: {e}")
+        return [{"key": self.jira_project_key, "name": f"Project ({self.jira_project_key})", "is_fallback": True}]
+
+    def link_commitment_to_issue(
+        self,
+        action_item_id: UUID,
+        jira_issue_key: str,
+        jira_status: Optional[str] = None
+    ) -> Dict[str, Any]:
+        item = self.action_item_repo.get_action_item(action_item_id)
+        if not item:
+            raise ValueError(f"Action item {action_item_id} not found.")
+
+        issue_key = jira_issue_key.strip().upper()
+        raw_status = jira_status or ("To Do" if item.get("status") == "pending" else "Done")
+        jira_assignee = item.get("owner_name", "Unassigned")
+
+        live = self.fetch_live_jira_issue(issue_key)
+        if live:
+            raw_status = live.get("jira_status", raw_status)
+            jira_assignee = live.get("assignee", jira_assignee)
+
+        link_record = self.action_item_repo.save_jira_link(
+            action_item_id=action_item_id,
+            jira_issue_key=issue_key,
+            jira_issue_id=f"100{abs(hash(issue_key)) % 90}",
+            jira_issue_url=f"https://{self.jira_domain or 'jira.atlassian.net'}/browse/{issue_key}",
+            jira_status=raw_status,
+            jira_assignee=jira_assignee
+        )
+        link_record["normalized_status"] = self.normalize_jira_status(link_record.get("jira_status", raw_status))
+        return link_record
 
     @staticmethod
     def normalize_jira_status(status_str: Optional[str]) -> str:
@@ -114,13 +197,17 @@ class JiraIntegrationService:
                 timeout=5.0
             )
             if resp.status_code == 200:
-                data = resp.json()
-                status_name = data.get("fields", {}).get("status", {}).get("name", "Unknown")
+                data = resp.json() or {}
+                fields = data.get("fields") or {}
+                status_obj = fields.get("status") or {}
+                status_name = status_obj.get("name", "Unknown")
+                assignee_obj = fields.get("assignee") or {}
+                assignee_name = assignee_obj.get("displayName", "Unassigned")
                 return {
                     "jira_issue_key": issue_key,
                     "jira_status": status_name,
                     "normalized_status": self.normalize_jira_status(status_name),
-                    "assignee": data.get("fields", {}).get("assignee", {}).get("displayName", "Unassigned")
+                    "assignee": assignee_name
                 }
         except Exception as e:
             logger.warning(f"Failed to fetch live Jira issue {issue_key}: {e}")

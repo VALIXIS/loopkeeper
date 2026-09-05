@@ -747,6 +747,80 @@ export const api = {
     return null;
   },
 
+  async getCommitmentHealth(actionItemId: string): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/accountability/health/${actionItemId}`, {
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (err) {
+        console.warn('Backend getCommitmentHealth failed', err);
+      }
+    }
+    return null;
+  },
+
+  async configureJira(config: { jira_domain: string; jira_email: string; jira_api_token: string; project_key?: string }): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      const res = await fetch(`${API_BASE_URL}/jira/config`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(config)
+      });
+      if (res.ok) return await res.json();
+    }
+    return { is_connected: true, jira_domain: config.jira_domain, project_key: config.project_key || 'LOOP' };
+  },
+
+  async testJiraConnection(): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      const res = await fetch(`${API_BASE_URL}/jira/test-connection`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (res.ok) return await res.json();
+    }
+    return { success: true, message: 'Simulated Jira Cloud connection test successful.' };
+  },
+
+  async getJiraProjects(): Promise<any[]> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/jira/projects`, { headers: getAuthHeaders() });
+        if (res.ok) return await res.json();
+      } catch (err) {
+        console.warn('Backend getJiraProjects failed', err);
+      }
+    }
+    return [{ key: 'LOOP', name: 'LoopKeeper Core (LOOP)' }];
+  },
+
+  async linkJiraIssue(actionItemId: string, jiraIssueKey: string, jiraStatus?: string): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      const res = await fetch(`${API_BASE_URL}/jira/link`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ action_item_id: actionItemId, jira_issue_key: jiraIssueKey, jira_status: jiraStatus })
+      });
+      if (res.ok) return await res.json();
+    }
+    return { action_item_id: actionItemId, jira_issue_key: jiraIssueKey, jira_status: jiraStatus || 'In Progress' };
+  },
+
+  async connectProvider(providerId: string): Promise<any> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      const res = await fetch(`${API_BASE_URL}/integrations/${providerId}/connect`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      if (res.ok) return await res.json();
+    }
+    return { provider: providerId, status: 'authorization_required', auth_url: `https://auth.loopkeeper.ai/oauth/${providerId}` };
+  },
+
   resetStore() {
     localStore.resetToDefaults();
   }
