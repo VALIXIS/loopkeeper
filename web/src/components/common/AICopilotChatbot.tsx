@@ -112,11 +112,11 @@ export const AICopilotChatbot: React.FC = () => {
         const drifted = actionItems.filter(a => a.status === 'overdue' || (a.postponement_count || 0) >= 2);
         aiText = `🚨 Execution Drift Analysis: Scanned ${actionItems.length} total commitments. Detected ${drifted.length} item(s) experiencing execution drift or target date slippage. Opening Execution Drift Radar.`;
         actionTaken = 'drift_inspected';
-        navigate('/accountability');
+        navigate('/accountability?tab=drift');
       } else if (lower.includes('graph') || lower.includes('lineage') || lower.includes('node') || lower.includes('3d')) {
         aiText = `🕸️ Accountability Knowledge Graph Opened: Rendering interactive 3D node lineage connecting meeting promises across team members, project clusters, and execution status.`;
         actionTaken = 'graph_opened';
-        navigate('/graph');
+        navigate('/accountability?tab=graph');
       } else if (lower.includes('jira') || lower.includes('ticket') || lower.includes('atlassian') || lower.includes('api key')) {
         aiText = `⚙️ Jira Cloud REST API v3 Integration: LoopKeeper uses Jira API credentials to automatically create Jira tickets from meeting promises, monitor ticket resolution state, and keep team sprint backlogs in 100% sync with verbal commitments. Opening Integrations Portal.`;
         actionTaken = 'jira_opened';

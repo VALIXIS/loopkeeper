@@ -64,8 +64,13 @@ function parseCurrentLocation(): RouteState {
     return { path: 'commitments', params: {}, query };
   }
 
-  if (segments[0] === 'accountability' || segments[0] === 'radar' || segments[0] === 'graph') {
-    return { path: 'accountability', params: {}, query };
+  if (segments[0] === 'accountability' || segments[0] === 'radar' || segments[0] === 'graph' || segments[0] === 'drift' || segments[0] === 'timeline') {
+    let tab = query.tab;
+    if (segments[0] === 'graph') tab = 'graph';
+    else if (segments[0] === 'radar') tab = 'radar';
+    else if (segments[0] === 'drift') tab = 'drift';
+    else if (segments[0] === 'timeline') tab = 'timeline';
+    return { path: 'accountability', params: {}, query: tab ? { ...query, tab } : query };
   }
 
   if (segments[0] === 'insights') {
