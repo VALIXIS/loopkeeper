@@ -47,6 +47,7 @@ class MeetingModel {
   final String? createdBy;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String status;
   final TranscriptModel? transcript;
   final List<ActionItemModel> actionItems;
   final List<String> participantIds;
@@ -60,6 +61,7 @@ class MeetingModel {
     this.createdBy,
     required this.createdAt,
     required this.updatedAt,
+    this.status = 'completed',
     this.transcript,
     this.actionItems = const [],
     this.participantIds = const [],
@@ -100,6 +102,7 @@ class MeetingModel {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
           : DateTime.now(),
+      status: json['status'] ?? 'completed',
       transcript: parsedTranscript,
       actionItems: items,
       participantIds: participants,
@@ -115,6 +118,7 @@ class MeetingModel {
     'created_by': createdBy,
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),
+    'status': status,
     'transcript': transcript?.toJson(),
     'action_items': actionItems.map((a) => a.toJson()).toList(),
     'participant_ids': participantIds,

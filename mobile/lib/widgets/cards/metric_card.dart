@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../motion/glass_container.dart';
+import '../motion/animated_counter.dart';
 
 class MetricCard extends StatelessWidget {
   final String title;
@@ -21,61 +23,102 @@ class MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.all(14.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final parsedValue = num.tryParse(value);
+
+    return GlassContainer(
+      borderRadius: 16,
+      blur: 12,
+      onTap: onTap,
+      borderColor: accentColor.withAlpha(50),
+      backgroundColor: AppColors.bgSurface.withAlpha(200),
+      boxShadow: [
+        BoxShadow(
+          color: accentColor.withAlpha(15),
+          blurRadius: 12,
+          spreadRadius: -2,
+        )
+      ],
+      padding: const EdgeInsets.all(14.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: AppColors.textTertiary,
-                      fontSize: 12,
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.textTertiary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: accentColor.withAlpha(30),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: accentColor.withAlpha(80), width: 1),
+                ),
+                child: Icon(icon, size: 16, color: accentColor),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (parsedValue != null)
+            AnimatedCounter(
+              value: parsedValue,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
+            )
+          else
+            Text(
+              value,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
+            ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: accentColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    subtitle!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: accentColor,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: accentColor.withAlpha(25),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Icon(icon, size: 16, color: accentColor),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'monospace',
-                ),
-              ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  subtitle!,
-                  style: TextStyle(
-                    color: accentColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
                 ),
               ],
-            ],
-          ),
-        ),
+            ),
+          ],
+        ],
       ),
     );
   }

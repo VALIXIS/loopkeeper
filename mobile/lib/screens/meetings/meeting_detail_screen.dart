@@ -7,6 +7,10 @@ import '../../providers/app_state_provider.dart';
 import '../../widgets/cards/task_card.dart';
 import '../../widgets/feedback/empty_state.dart';
 import '../../widgets/feedback/loading_shimmer.dart';
+import '../../widgets/motion/ambient_background.dart';
+import '../../widgets/motion/glass_container.dart';
+import '../../widgets/motion/staggered_entrance.dart';
+import '../../widgets/motion/page_transitions.dart';
 import '../action_items/action_item_detail_screen.dart';
 
 class MeetingDetailScreen extends StatefulWidget {
@@ -54,8 +58,11 @@ class _MeetingDetailScreenState extends State<MeetingDetailScreen> with SingleTi
     final transcript = meeting.transcript;
 
     return Scaffold(
+      backgroundColor: AppColors.bgApp,
       appBar: AppBar(
         title: Text(meeting.title),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         actions: [
           IconButton(
             icon: const Icon(Icons.auto_awesome_rounded, color: AppColors.brandAccent),
@@ -71,8 +78,10 @@ class _MeetingDetailScreenState extends State<MeetingDetailScreen> with SingleTi
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.brandPrimary,
-          labelColor: AppColors.brandPrimary,
+          indicatorWeight: 3,
+          labelColor: AppColors.brandAccent,
           unselectedLabelColor: AppColors.textTertiary,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           tabs: [
             Tab(
               child: Row(
@@ -97,115 +106,119 @@ class _MeetingDetailScreenState extends State<MeetingDetailScreen> with SingleTi
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: AppColors.bgSurface,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+      body: AmbientBackground(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: GlassContainer(
+                borderRadius: 12,
+                blur: 10,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(Icons.event_outlined, size: 14, color: AppColors.textTertiary),
-                    const SizedBox(width: 6),
-                    Text(
-                      DateFormatter.formatDateTime(meeting.meetingDate),
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                    Row(
+                      children: [
+                        const Icon(Icons.event_outlined, size: 14, color: AppColors.textTertiary),
+                        const SizedBox(width: 6),
+                        Text(
+                          DateFormatter.formatDateTime(meeting.meetingDate),
+                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.brandAccent.withAlpha(20),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: AppColors.brandAccent.withAlpha(80)),
+                      ),
+                      child: Text(
+                        'SOURCE: ${meeting.source.toUpperCase()}',
+                        style: const TextStyle(
+                          color: AppColors.brandAccent,
+                          fontSize: 10,
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: AppColors.bgSurfaceHover,
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppColors.borderSubtle),
-                  ),
-                  child: Text(
-                    'Source: ${meeting.source.toUpperCase()}',
-                    style: const TextStyle(
-                      color: AppColors.brandAccent,
-                      fontSize: 10,
-                      fontFamily: 'monospace',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // Tab 1: AI Commitments
-                provider.isLoading
-                    ? const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: LoadingShimmer(count: 3),
-                      )
-                    : commitments.isEmpty
-                        ? EmptyStateWidget(
-                            icon: Icons.psychology_alt_outlined,
-                            title: 'No Commitments Extracted Yet',
-                            message: 'Tap the AI icon in the top right to process the transcript and extract commitments.',
-                            buttonText: 'Process Transcript',
-                            onAction: () async {
-                              await provider.processMeeting(meeting.id);
-                            },
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.all(16.0),
-                            itemCount: commitments.length,
-                            itemBuilder: (context, index) {
-                              final item = commitments[index];
-                              return TaskCard(
-                                item: item,
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => ActionItemDetailScreen(itemId: item.id),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  // Tab 1: AI Commitments
+                  provider.isLoading
+                      ? const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: LoadingShimmer(count: 3),
+                        )
+                      : commitments.isEmpty
+                          ? EmptyStateWidget(
+                              icon: Icons.psychology_alt_outlined,
+                              title: 'No Commitments Extracted Yet',
+                              message: 'Tap the AI icon in the top right to process the transcript and extract commitments.',
+                              buttonText: 'Process Transcript',
+                              onAction: () async {
+                                await provider.processMeeting(meeting.id);
+                              },
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 40.0),
+                              itemCount: commitments.length,
+                              itemBuilder: (context, index) {
+                                final item = commitments[index];
+                                return FadeInEntrance(
+                                  index: index,
+                                  child: TaskCard(
+                                    item: item,
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        FadeSlidePageRoute(
+                                          page: ActionItemDetailScreen(itemId: item.id),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
 
-                // Tab 2: Transcript View
-                transcript == null || transcript.content.isEmpty
-                    ? EmptyStateWidget(
-                        icon: Icons.description_outlined,
-                        title: 'No Transcript Attached',
-                        message: 'Attach a meeting transcript (VTT or plain text) to extract tasks.',
-                      )
-                    : SingleChildScrollView(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.bgSurface,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.borderSubtle),
-                          ),
-                          child: SelectableText(
-                            transcript.content,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 14,
-                              height: 1.6,
-                              fontFamily: 'monospace',
+                  // Tab 2: Transcript View
+                  transcript == null || transcript.content.isEmpty
+                      ? EmptyStateWidget(
+                          icon: Icons.description_outlined,
+                          title: 'No Transcript Attached',
+                          message: 'Attach a meeting transcript (VTT or plain text) to extract tasks.',
+                        )
+                      : SingleChildScrollView(
+                          padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 40.0),
+                          child: GlassContainer(
+                            borderRadius: 16,
+                            blur: 14,
+                            padding: const EdgeInsets.all(18),
+                            child: SelectableText(
+                              transcript.content,
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 13,
+                                height: 1.6,
+                                fontFamily: 'monospace',
+                              ),
                             ),
                           ),
                         ),
-                      ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
