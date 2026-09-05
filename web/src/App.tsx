@@ -54,7 +54,7 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-zinc-100 flex flex-col font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-main)] flex flex-col font-sans relative overflow-x-hidden transition-colors duration-200">
       {/* Ambient Depth Background */}
       <div className="ambient-glow-bg">
         <div className="ambient-glow-orb-1" />

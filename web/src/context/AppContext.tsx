@@ -38,6 +38,9 @@ interface AppContextType {
   navigateToMeeting: (id: string) => void;
   navigateToTask: (id: string) => void;
 
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
+
   meetings: Meeting[];
   actionItems: ActionItem[];
   dashboardOverview: DashboardOverview | null;
@@ -92,6 +95,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [forceMockMode, setForceMockModeState] = useState<boolean>(() => {
     return localStorage.getItem('loopkeeper_force_mock') === 'true';
   });
+
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('loopkeeper_theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return 'dark';
+  });
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('loopkeeper_theme', next);
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+  }, [theme]);
 
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
@@ -249,6 +275,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSelectedTaskId,
         navigateToMeeting,
         navigateToTask,
+        theme,
+        toggleTheme,
         meetings,
         actionItems,
         dashboardOverview,

@@ -6,7 +6,9 @@ import {
   SparklesIcon,
   RefreshCwIcon,
   PlusIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  SunIcon,
+  MoonIcon
 } from './Icons';
 
 interface NavbarProps {
@@ -16,7 +18,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
   const { currentUser, employees, switchUser } = useAuth();
-  const { backendStatus, forceMockMode, setForceMockMode, refreshData, loading } = useApp();
+  const { backendStatus, forceMockMode, setForceMockMode, refreshData, loading, theme, toggleTheme } = useApp();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
@@ -79,6 +81,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
             title="Refresh application data"
           >
             <RefreshCwIcon size={15} className={loading ? 'animate-spin text-cyan-400' : ''} />
+          </button>
+
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-white/[0.08] hover:border-indigo-500/40 transition-all hover:shadow-md"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Theme`}
+          >
+            {theme === 'dark' ? (
+              <SunIcon size={15} className="text-amber-400" />
+            ) : (
+              <MoonIcon size={15} className="text-indigo-400" />
+            )}
           </button>
 
           {/* Quick Ingest Button */}
