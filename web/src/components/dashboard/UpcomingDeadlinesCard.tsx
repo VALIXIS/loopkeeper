@@ -5,8 +5,8 @@ import { ClockIcon, CalendarIcon, ArrowRightIcon } from '../common/Icons';
 import { PostponementBadge, VerificationBadge } from '../common/Badge';
 
 export const UpcomingDeadlinesCard: React.FC = () => {
-  const { dashboardOverview, navigateToTask } = useApp();
-  const { navigate } = useRouter();
+  const { dashboardOverview } = useApp();
+  const { navigate, navigateToCommitment } = useRouter();
 
   const deadlines = dashboardOverview?.upcoming_deadlines || [];
 
@@ -55,7 +55,7 @@ export const UpcomingDeadlinesCard: React.FC = () => {
               return (
                 <div
                   key={item.id}
-                  onClick={() => navigateToTask(item.id)}
+                  onClick={() => navigateToCommitment(item.id)}
                   className="group cursor-pointer p-2.5 rounded-xl bg-slate-950/70 hover:bg-slate-800/70 border border-white/[0.06] hover:border-slate-700 transition-all flex flex-col gap-1"
                 >
                   <div className="flex items-center justify-between gap-2">
