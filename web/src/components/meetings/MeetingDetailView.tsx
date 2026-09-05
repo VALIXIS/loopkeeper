@@ -140,13 +140,13 @@ export const MeetingDetailView: React.FC = () => {
             <span className="font-semibold text-slate-300">Participants:</span>
             <div className="flex items-center -space-x-1.5">
               {meeting.participants?.map(p => (
-                <img
+                <div
                   key={p.id}
-                  src={p.avatar_url}
-                  alt={p.name}
                   title={p.name}
-                  className="h-6 w-6 rounded-full ring-2 ring-slate-900 object-cover"
-                />
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-900/80 text-indigo-200 font-bold text-[10px] ring-2 ring-slate-900 shrink-0"
+                >
+                  {p.name.charAt(0)}
+                </div>
               ))}
             </div>
             <span className="text-slate-300 font-medium ml-1">

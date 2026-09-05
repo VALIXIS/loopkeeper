@@ -97,11 +97,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/[0.08] hover:border-slate-700 transition-all"
             >
-              <img
-                src={currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-                alt={currentUser.name}
-                className="h-7 w-7 rounded-full object-cover ring-1 ring-cyan-500/50"
-              />
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white font-bold text-xs ring-1 ring-cyan-500/50 shrink-0">
+                {currentUser.name.charAt(0)}
+              </div>
               <div className="text-left hidden lg:block">
                 <div className="text-xs font-semibold text-slate-200 flex items-center gap-1">
                   {currentUser.name}
@@ -137,11 +135,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
                           : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                       }`}
                     >
-                      <img
-                        src={emp.avatar_url}
-                        alt={emp.name}
-                        className="h-6 w-6 rounded-full object-cover ring-1 ring-white/10"
-                      />
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-700 text-slate-200 font-bold text-[10px] ring-1 ring-white/10 shrink-0">
+                        {emp.name.charAt(0)}
+                      </div>
                       <div className="flex-1 truncate">
                         <div className="font-medium flex items-center justify-between">
                           {emp.name}

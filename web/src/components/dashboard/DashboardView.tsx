@@ -3,7 +3,6 @@ import { MetricsGrid } from './MetricsGrid';
 import { QuickIngestCard } from './QuickIngestCard';
 import { OverloadedMembersCard } from './OverloadedMembersCard';
 import { UpcomingDeadlinesCard } from './UpcomingDeadlinesCard';
-import { RecentActivityFeed } from './RecentActivityFeed';
 import { useAuth } from '../../context/AuthContext';
 import { SparklesIcon, NetworkIcon, CheckCircleIcon } from '../common/Icons';
 import { useApp } from '../../context/AppContext';
@@ -60,30 +59,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
             </button>
           </div>
         </div>
-
-        {/* Executive Quick Stats Ribbon */}
-        <div className="mt-6 pt-5 border-t border-white/[0.08] grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.04]">
-            <span className="text-slate-400 font-medium block text-[11px]">Cross-Meeting Linking</span>
-            <span className="text-white font-bold text-sm block mt-0.5">Vector-Matched</span>
-            <span className="text-slate-400 font-mono text-[10px] block mt-0.5">Cosine Similarity Score</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.04]">
-            <span className="text-slate-400 font-medium block text-[11px]">Inference Speed</span>
-            <span className="text-indigo-300 font-bold text-sm block mt-0.5">Sub-500ms Engine</span>
-            <span className="text-indigo-400/80 font-mono text-[10px] block mt-0.5">Dual SLM + Fallback LLM</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.04]">
-            <span className="text-slate-400 font-medium block text-[11px]">Commitment Matching</span>
-            <span className="text-emerald-300 font-bold text-sm block mt-0.5">Cross-Standup Sync</span>
-            <span className="text-emerald-400/80 font-mono text-[10px] block mt-0.5">1536-dim Vector Cosine</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.04]">
-            <span className="text-slate-400 font-medium block text-[11px]">Enterprise Governance</span>
-            <span className="text-cyan-300 font-bold text-sm block mt-0.5">VALIXIS Read-Only</span>
-            <span className="text-cyan-400/80 font-mono text-[10px] block mt-0.5">RLS Security Enforced</span>
-          </div>
-        </div>
       </div>
 
       {/* Preset Ingest Bar */}
@@ -98,8 +73,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
         <UpcomingDeadlinesCard />
       </div>
 
-      {/* Live Activity & AI Processing Telemetry Feed */}
-      <RecentActivityFeed />
     </div>
   );
 };
