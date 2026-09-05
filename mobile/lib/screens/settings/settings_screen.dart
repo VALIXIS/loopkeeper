@@ -30,6 +30,134 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
+  void _showEditProfileModal(BuildContext context) {
+    final provider = Provider.of<AppStateProvider>(context, listen: false);
+    final user = provider.currentUser;
+
+    final nameCtrl = TextEditingController(text: user.name);
+    final ageCtrl = TextEditingController(text: '${user.age}');
+    final emailCtrl = TextEditingController(text: user.email);
+    final contactCtrl = TextEditingController(text: user.contactNumber);
+    final addressCtrl = TextEditingController(text: user.address);
+    final roleCtrl = TextEditingController(text: user.role);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return GlassContainer(
+          borderRadius: 24,
+          blur: 20,
+          backgroundColor: AppColors.bgSurface.withAlpha(245),
+          borderColor: AppColors.brandPrimary.withAlpha(90),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+            left: 20,
+            right: 20,
+            top: 20,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Edit User Profile Details',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: AppColors.textTertiary),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                _buildFieldLabel('Full Name'),
+                TextField(
+                  controller: nameCtrl,
+                  decoration: const InputDecoration(prefixIcon: Icon(Icons.person_rounded, size: 20)),
+                ),
+                const SizedBox(height: 12),
+                _buildFieldLabel('Age'),
+                TextField(
+                  controller: ageCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(prefixIcon: Icon(Icons.cake_rounded, size: 20)),
+                ),
+                const SizedBox(height: 12),
+                _buildFieldLabel('Email Address'),
+                TextField(
+                  controller: emailCtrl,
+                  decoration: const InputDecoration(prefixIcon: Icon(Icons.email_rounded, size: 20)),
+                ),
+                const SizedBox(height: 12),
+                _buildFieldLabel('Contact Phone Number'),
+                TextField(
+                  controller: contactCtrl,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(prefixIcon: Icon(Icons.phone_rounded, size: 20)),
+                ),
+                const SizedBox(height: 12),
+                _buildFieldLabel('Address Location'),
+                TextField(
+                  controller: addressCtrl,
+                  maxLines: 2,
+                  decoration: const InputDecoration(prefixIcon: Icon(Icons.location_on_rounded, size: 20)),
+                ),
+                const SizedBox(height: 12),
+                _buildFieldLabel('Designation / Role'),
+                TextField(
+                  controller: roleCtrl,
+                  decoration: const InputDecoration(prefixIcon: Icon(Icons.badge_rounded, size: 20)),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final newAge = int.tryParse(ageCtrl.text.trim()) ?? user.age;
+                      provider.updateUserProfile(
+                        name: nameCtrl.text.trim(),
+                        age: newAge,
+                        email: emailCtrl.text.trim(),
+                        contactNumber: contactCtrl.text.trim(),
+                        address: addressCtrl.text.trim(),
+                        role: roleCtrl.text.trim(),
+                      );
+                      Navigator.of(ctx).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Profile updated successfully!')),
+                      );
+                    },
+                    child: const Text('Save Profile Changes', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFieldLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Text(
+        label,
+        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AppStateProvider>(context);
@@ -38,7 +166,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgApp,
       appBar: AppBar(
-        title: const Text('App Settings'),
+        title: const Text('User Profile & Settings'),
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
@@ -48,94 +176,93 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // User Profile Section
+              // User Profile Primary Card
               GlassContainer(
-                borderRadius: 16,
+                borderRadius: 20,
                 blur: 16,
-                borderColor: AppColors.brandPrimary.withAlpha(70),
+                borderColor: AppColors.brandPrimary.withAlpha(90),
                 backgroundColor: AppColors.bgSurface.withAlpha(220),
-                padding: const EdgeInsets.all(18),
-                child: Row(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.brandPrimary, AppColors.brandAccent],
-                        ),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.brandPrimary.withAlpha(80),
-                            blurRadius: 10,
-                            spreadRadius: 1,
+                    Row(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [AppColors.brandPrimary, AppColors.brandAccent],
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.brandPrimary.withAlpha(90),
+                                blurRadius: 12,
+                                spreadRadius: 2,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.name,
+                          alignment: Alignment.center,
+                          child: Text(
+                            user.name.isNotEmpty ? user.name[0].toUpperCase() : 'H',
                             style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 16,
+                              color: Colors.white,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${user.role} • ${user.department}',
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
-                            ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                user.name,
+                                style: const TextStyle(
+                                  color: AppColors.textPrimary,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppColors.brandPrimary.withAlpha(35),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  user.role,
+                                  style: const TextStyle(
+                                    color: AppColors.brandAccent,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            user.email,
-                            style: const TextStyle(
-                              color: AppColors.textTertiary,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                        IconButton.filledTonal(
+                          onPressed: () => _showEditProfileModal(context),
+                          icon: const Icon(Icons.edit_rounded, size: 20),
+                          tooltip: 'Edit Profile Details',
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              const Text(
-                'Appearance & Theme Mode',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              GlassContainer(
-                borderRadius: 16,
-                blur: 12,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
+                    const Divider(height: 24, color: Color(0x1FFFFFFF)),
+                    // Detailed Profile Properties Grid
+                    _ProfileInfoRow(icon: Icons.cake_rounded, label: 'Age', value: '${user.age} years old'),
+                    const SizedBox(height: 10),
+                    _ProfileInfoRow(icon: Icons.email_rounded, label: 'Email', value: user.email),
+                    const SizedBox(height: 10),
+                    _ProfileInfoRow(icon: Icons.phone_rounded, label: 'Contact', value: user.contactNumber),
+                    const SizedBox(height: 10),
+                    _ProfileInfoRow(icon: Icons.location_on_rounded, label: 'Address', value: user.address),
+                    const Divider(height: 24, color: Color(0x1FFFFFFF)),
+                    // Integrated Theme Switcher Inside Profile Card
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -146,8 +273,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ? Icons.dark_mode_rounded
                                   : Icons.light_mode_rounded,
                               color: AppColors.brandPrimary,
+                              size: 22,
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 10),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -157,18 +285,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       : 'Enterprise Light Theme',
                                   style: const TextStyle(
                                     color: AppColors.textPrimary,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Text(
-                                  provider.themeMode == ThemeMode.dark
-                                      ? 'Deep midnight palette with neon glows'
-                                      : 'Clean slate palette with dark headers',
-                                  style: const TextStyle(
-                                    color: AppColors.textTertiary,
-                                    fontSize: 12,
-                                  ),
+                                const Text(
+                                  'Applies theme across all views',
+                                  style: TextStyle(color: AppColors.textTertiary, fontSize: 11),
                                 ),
                               ],
                             ),
@@ -187,10 +310,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               const Text(
-                'Backend API & Network Configuration',
+                'Backend & Network Settings',
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -227,33 +350,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 14),
                     SizedBox(
                       width: double.infinity,
-                      child: GlassContainer(
-                        borderRadius: 10,
-                        padding: EdgeInsets.zero,
-                        backgroundColor: AppColors.brandPrimary.withAlpha(30),
-                        borderColor: AppColors.brandPrimary.withAlpha(80),
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide.none,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                          onPressed: () async {
-                            await provider.setBaseUrl(_baseUrlController.text.trim());
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Base URL saved successfully!')),
-                              );
-                            }
-                          },
-                          child: const Text('Save Base URL', style: TextStyle(color: AppColors.brandAccent, fontWeight: FontWeight.bold)),
-                        ),
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          await provider.setBaseUrl(_baseUrlController.text.trim());
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Base URL saved!')),
+                            );
+                          }
+                        },
+                        child: const Text('Save Base URL', style: TextStyle(color: AppColors.brandAccent, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     const Divider(height: 24, color: Color(0x1FFFFFFF)),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Demo Fixture Mode [OFFLINE FIXTURES]', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
-                      subtitle: const Text('Explicitly isolate mock fixtures for offline testing. Disables real production backend calls.', style: TextStyle(color: AppColors.textTertiary, fontSize: 12)),
+                      title: const Text('Demo Fixture Mode [OFFLINE]', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+                      subtitle: const Text('Isolates local mock fixtures for offline testing.', style: TextStyle(color: AppColors.textTertiary, fontSize: 12)),
                       value: provider.isOffline,
                       activeTrackColor: AppColors.brandPrimary,
                       onChanged: (val) {
@@ -264,7 +377,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               const Text(
                 'Integrations & Diagnostics',
@@ -321,11 +434,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
 
-
               const SizedBox(height: 32),
               const Center(
                 child: Text(
-                  'LoopKeeper Mobile v1.0.0 (Build 1)\nBuilt with Flutter & Dart',
+                  'LoopKeeper Mobile v1.0.0 (Build 2)\nBuilt with Flutter & Dart',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: AppColors.textTertiary, fontSize: 12),
                 ),
@@ -335,6 +447,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ProfileInfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _ProfileInfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: AppColors.brandPrimary),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 70,
+          child: Text(
+            label,
+            style: const TextStyle(color: AppColors.textTertiary, fontSize: 12),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+        ),
+      ],
     );
   }
 }
