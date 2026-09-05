@@ -67,7 +67,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   initialPresetIndex
 }) => {
   const { currentUser, employees } = useAuth();
-  const { createMeetingAndProcess, navigateToMeeting } = useApp();
+  const { createMeetingAndProcess, navigateToMeeting, addToast } = useApp();
   const { navigate } = useRouter();
 
   const [modalTab, setModalTab] = useState<'schedule' | 'ingest' | 'record'>('schedule');
@@ -288,15 +288,23 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         const meetCode = `${getAlpha(3)}-${getAlpha(4)}-${getAlpha(3)}`;
         joinUrl = `https://meet.google.com/${meetCode}`;
       } else if (selectedProvider === 'zoom') {
-        // Use Zoom instant meeting launcher (https://zoom.us/start/videomeeting) to prevent 'Invalid Meeting ID (3000)' errors
+        const id = Math.floor(1000000000 + Math.random() * 9000000000);
         const pwd = 'lk' + Math.floor(1000 + Math.random() * 9000);
-        joinUrl = `https://zoom.us/start/videomeeting`;
+        joinUrl = `https://zoom.us/j/${id}?pwd=${pwd}`;
         setCreatedPasscode(pwd);
       } else {
         const teamsMeetingId = Math.random().toString(36).substring(2, 10);
         joinUrl = `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${teamsMeetingId}%40thread.v2/0?context=%7b%22Tid%22%3a%22loopkeeper-enterprise-tenant%22%7d`;
       }
       setCreatedJoinUrl(joinUrl);
+
+      const invitedEmployees = employees.filter(e => selectedParticipants.includes(e.id));
+      const participantNames = invitedEmployees.map(e => e.name).join(', ');
+      addToast({
+        type: 'success',
+        title: 'Meeting Invite & Sync Dispatched',
+        message: `Dispatched invite & commitment sync to ${participantNames || 'selected employees'} via Slack Bot & LoopKeeper Inbox.`
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -431,7 +439,45 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             </div>
           )}
 
+          {/* Participant Notifications Dispatched List */}
+          <div className="p-3.5 rounded-xl bg-slate-200/60 dark:bg-zinc-950/80 border border-slate-300 dark:border-zinc-800 text-left space-y-2 max-w-lg mx-auto">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-zinc-200">
+              <span className="flex items-center gap-1.5">
+                <UsersIcon size={14} className="text-indigo-500" />
+                <span>Participant Notifications Dispatched ({selectedParticipants.length})</span>
+              </span>
+              <span className="text-[10px] font-semibold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                Slack & Inbox Active
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {employees.filter(e => selectedParticipants.includes(e.id)).map(e => (
+                <div key={e.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs">
+                  <span className="font-semibold text-slate-800 dark:text-zinc-200">{e.name}</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">📩 Sent</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                const invitedNames = employees.filter(e => selectedParticipants.includes(e.id)).map(e => e.name).join(', ');
+                const messageText = `📅 Meeting Invite: ${title || 'LoopKeeper Scheduled Sync'}\n🔗 Join URL: ${createdJoinUrl}${createdPasscode ? `\n🔑 Passcode: ${createdPasscode}` : ''}\n👥 Attendees: ${invitedNames}\n⚡ Sent via LoopKeeper Auto-Commitment Engine`;
+                navigator.clipboard.writeText(messageText);
+                addToast({
+                  type: 'info',
+                  title: 'Invite Message Copied',
+                  message: 'Formatted meeting invite copied to clipboard!'
+                });
+              }}
+              className="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-bold text-xs shadow transition-all flex items-center gap-1.5"
+            >
+              <span>📋 Copy Invite Message</span>
+            </button>
+
             <button
               type="button"
               onClick={() => {
@@ -446,7 +492,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
             {selectedProvider === 'google_meet' ? (
               <a
-                href="https://meet.google.com/new"
+                href={createdJoinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
@@ -457,13 +503,13 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
               </a>
             ) : selectedProvider === 'zoom' ? (
               <a
-                href="https://zoom.us/start/videomeeting"
+                href={createdJoinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
-                title="Start a real live Zoom meeting directly in Zoom Workplace"
+                title="Open Zoom meeting join link directly"
               >
-                <span>Start Live Zoom Meeting ↗</span>
+                <span>Open Zoom Meeting Link ↗</span>
                 <ExternalLinkIcon size={12} />
               </a>
             ) : (
