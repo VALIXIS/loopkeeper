@@ -30,10 +30,10 @@ export const SettingsView: React.FC = () => {
   return (
     <div className="space-y-4 pb-6">
       {/* Compact Header Bar */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 px-4 py-3 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="relative overflow-hidden rounded-2xl glass-panel border border-zinc-800 px-4 py-3 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 flex items-center gap-1.5 shrink-0">
-            <SettingsIcon size={13} className="text-cyan-400" />
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-300 dark:border-zinc-700 flex items-center gap-1.5 shrink-0 shadow-sm">
+            <SettingsIcon size={13} className="text-cyan-500 dark:text-cyan-400" />
             System Configuration
           </span>
           <h1 className="text-sm font-bold text-zinc-100 tracking-tight">
@@ -41,10 +41,10 @@ export const SettingsView: React.FC = () => {
           </h1>
         </div>
         <div className="flex items-center gap-2 text-xs text-zinc-400">
-          <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30">
             VALIXIS Portal Protected
           </span>
-          <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-purple-500/10 text-purple-300 border border-purple-500/20">
+          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-500/10 text-purple-600 dark:text-purple-300 border border-purple-500/30">
             SLM + Gemini Flash
           </span>
         </div>
@@ -252,7 +252,7 @@ export const SettingsView: React.FC = () => {
                     alert('Google Meet sync initiated');
                   }
                 }}
-                className="w-full py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-[10px] font-bold transition-all"
+                className="w-full py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 text-[10px] font-bold transition-all"
               >
                 Sync Meet
               </button>
@@ -277,7 +277,7 @@ export const SettingsView: React.FC = () => {
                     alert('Zoom sync initiated');
                   }
                 }}
-                className="w-full py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 text-[10px] font-bold transition-all"
+                className="w-full py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 text-[10px] font-bold transition-all"
               >
                 Sync Zoom
               </button>
@@ -302,7 +302,7 @@ export const SettingsView: React.FC = () => {
                     alert('Microsoft Teams sync initiated');
                   }
                 }}
-                className="w-full py-1 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-[10px] font-bold transition-all"
+                className="w-full py-1 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 text-purple-700 dark:text-purple-300 border border-purple-500/30 text-[10px] font-bold transition-all"
               >
                 Sync Teams
               </button>
@@ -318,7 +318,7 @@ export const SettingsView: React.FC = () => {
               </div>
               <button
                 onClick={() => alert('Jira REST API v3 Proxy active & connected!')}
-                className="w-full py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold transition-all"
+                className="w-full py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[10px] font-bold transition-all"
               >
                 Jira Status
               </button>
