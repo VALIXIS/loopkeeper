@@ -35,7 +35,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
               Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">{currentUser.name}</span>
             </h1>
             <p className="text-sm text-zinc-300 leading-relaxed">
-              LoopKeeper bridges meeting conversations with persistent action accountability. Transcripts are converted into structured, vector-matched tasks, catching chronic postponements and workload bottlenecks across consecutive meetings.
+              LoopKeeper captures commitments from meeting transcripts and tracks them across consecutive meetings — detecting chronic postponements, evidence trails, and delivery outcomes after meetings end.
             </p>
           </div>
 
@@ -60,20 +60,24 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
         {/* Executive Quick Stats Ribbon */}
         <div className="mt-6 pt-5 border-t border-zinc-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
           <div>
-            <span className="text-zinc-500 block">AI Matching Precision</span>
-            <span className="text-zinc-200 font-mono font-bold text-sm">98.4% Cosine Match</span>
+            <span className="text-zinc-400 font-medium block">Cross-Meeting Linking</span>
+            <span className="text-zinc-100 font-bold text-sm block">Vector-Matched</span>
+            <span className="text-zinc-500 font-mono text-[10px] block mt-0.5">Cosine Vector Match</span>
           </div>
           <div>
-            <span className="text-zinc-500 block">Inference Provider</span>
-            <span className="text-indigo-400 font-mono font-bold text-sm">Dual SLM + LLM Fallback</span>
+            <span className="text-zinc-400 font-medium block">Inference Speed</span>
+            <span className="text-indigo-300 font-bold text-sm block">Sub-500ms Engine</span>
+            <span className="text-indigo-400/80 font-mono text-[10px] block mt-0.5">Dual SLM + LLM Fallback</span>
           </div>
           <div>
-            <span className="text-zinc-500 block">Deduplication</span>
-            <span className="text-emerald-400 font-mono font-bold text-sm">HNSW 1536-dim Vector</span>
+            <span className="text-zinc-400 font-medium block">Commitment Matching</span>
+            <span className="text-emerald-300 font-bold text-sm block">Cross-Standup Sync</span>
+            <span className="text-emerald-400/80 font-mono text-[10px] block mt-0.5">HNSW 1536-dim Vector</span>
           </div>
           <div>
-            <span className="text-zinc-500 block">Data Protection</span>
-            <span className="text-cyan-400 font-mono font-bold text-sm">VALIXIS Read-Only RLS</span>
+            <span className="text-zinc-400 font-medium block">Enterprise Governance</span>
+            <span className="text-cyan-300 font-bold text-sm block">VALIXIS Read-Only</span>
+            <span className="text-cyan-400/80 font-mono text-[10px] block mt-0.5">RLS Security Enforced</span>
           </div>
         </div>
       </div>

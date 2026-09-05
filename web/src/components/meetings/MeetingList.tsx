@@ -85,7 +85,7 @@ export const MeetingList: React.FC<MeetingListProps> = ({ onOpenCreateMeeting })
                   </div>
 
                   <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
-                    {meeting.action_item_count || 0} Action Items
+                    {meeting.action_item_count || 0} Commitments
                   </span>
                 </div>
 

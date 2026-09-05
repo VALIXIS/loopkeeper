@@ -6,7 +6,7 @@ export const MOCK_EMPLOYEES: Employee[] = [
     name: 'Jyothsna (Lead Architect)',
     email: 'jyothsna@loopkeeper.io',
     role: 'Product Lead & Lead Architect',
-    department: 'Core Engineering',
+    department: 'Engineering',
     avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
     is_manager: true
   },
@@ -53,6 +53,69 @@ export const MOCK_EMPLOYEES: Employee[] = [
     role: 'Senior Backend Engineer',
     department: 'Platform',
     avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
+    name: 'Jyothsna (Valixis)',
+    email: 'jyothsna@valixis.com',
+    role: 'Product Lead & Lead Architect',
+    department: 'Engineering',
+    avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+    is_manager: true
+  },
+  {
+    id: '9e1060b0-3f08-4fe3-bbb9-0f7a68b13bee',
+    name: 'Subhash',
+    email: 'official.valixis@gmail.com',
+    role: 'Engineering Manager',
+    department: 'Core Operations',
+    avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    is_manager: true
+  },
+  {
+    id: 'e6cb8913-904a-4a7d-b507-ba1470665dc5',
+    name: 'Adithya',
+    email: 'adithya@valixis.com',
+    role: 'Senior Platform Engineer',
+    department: 'Core Engineering',
+    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: 'a2b32605-343c-4ef4-9365-e219e8b21e20',
+    name: 'Vaseem',
+    email: 'vaseem@valixis.com',
+    role: 'Senior Full Stack Engineer',
+    department: 'Frontend & Mobile',
+    avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '8a18fff4-6236-4d54-a29a-eeb3c65dd646',
+    name: 'Krishna',
+    email: 'krishna@valixis.com',
+    role: 'Backend & ML Engineer',
+    department: 'AI Systems',
+    avatar_url: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '5af2f8a8-a881-408a-8fdd-1fee384f1779',
+    name: 'Vignesh',
+    email: 'vignesh@valixis.com',
+    role: 'Systems Engineer',
+    department: 'Infrastructure',
+    avatar_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+    is_manager: false
+  },
+  {
+    id: '39244951-87a5-44e6-801a-28cb3b1a0ed5',
+    name: 'Hasitha',
+    email: 'hasitha@valixis.com',
+    role: 'Quality & Test Engineer',
+    department: 'QA & Compliance',
+    avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
     is_manager: false
   }
 ];

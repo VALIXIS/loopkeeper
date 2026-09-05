@@ -178,7 +178,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800 space-y-2">
             <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
               <SparklesIcon size={14} />
-              <span>Load Sample Meeting Transcripts</span>
+              <span>Load Sample Transcripts</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {SAMPLE_TRANSCRIPTS.map((preset, idx) => (

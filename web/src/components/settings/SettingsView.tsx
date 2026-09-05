@@ -196,7 +196,7 @@ export const SettingsView: React.FC = () => {
 
         <div className="pt-4 border-t border-zinc-800 flex items-center justify-between text-xs">
           <span className="text-zinc-500">
-            Changes persist in active session for continuous runtime stability.
+            Changes persist in active session for continuous stability.
           </span>
           <button
             onClick={() => resetDemoData()}

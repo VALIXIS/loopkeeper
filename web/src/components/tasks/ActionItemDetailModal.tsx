@@ -107,7 +107,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Action Item Intelligence & Timeline"
+      title="Commitment Intelligence & Timeline"
       subtitle={detail ? `Originating Meeting: ${detail.originating_meeting?.title || detail.meeting_title || 'Meeting'}` : ''}
       maxWidth="4xl"
     >
@@ -161,7 +161,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
           {isEditing ? (
             <form onSubmit={handleSave} className="space-y-4 p-5 rounded-2xl bg-zinc-950 border border-zinc-800">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Action Item Title *</label>
+                <label className="text-xs font-semibold text-zinc-300">Commitment Title *</label>
                 <input
                   type="text"
                   required

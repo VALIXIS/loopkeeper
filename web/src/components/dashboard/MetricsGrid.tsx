@@ -28,7 +28,7 @@ export const MetricsGrid: React.FC = () => {
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold tracking-wide text-zinc-400 uppercase">
-            Active Tasks
+            Active Commitments
           </span>
           <div className="p-2.5 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/20 group-hover:scale-110 transition-transform">
             <CheckSquareIcon size={18} />
@@ -57,7 +57,7 @@ export const MetricsGrid: React.FC = () => {
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold tracking-wide text-zinc-400 uppercase">
-            Overdue Tasks
+            Overdue Commitments
           </span>
           <div
             className={`p-2.5 rounded-xl border group-hover:scale-110 transition-transform ${
@@ -92,7 +92,7 @@ export const MetricsGrid: React.FC = () => {
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold tracking-wide text-zinc-400 uppercase">
-            Completed Tasks
+            Completed Commitments
           </span>
           <div className="p-2.5 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 group-hover:scale-110 transition-transform">
             <CheckCircleIcon size={18} />
