@@ -73,45 +73,45 @@ export const TaskHistoryTimeline: React.FC<TaskHistoryTimelineProps> = ({ histor
         return (
           <div key={event.id} className="relative group">
             {/* Dot Node */}
-            <div className="absolute -left-7 top-1 h-6 w-6 rounded-full bg-zinc-950 border-2 border-zinc-700 flex items-center justify-center group-hover:border-cyan-400 group-hover:scale-110 transition-all shadow-md">
+            <div className="absolute -left-7 top-1 h-6 w-6 rounded-full bg-slate-100 dark:bg-zinc-950 border-2 border-slate-300 dark:border-zinc-700 flex items-center justify-center group-hover:border-cyan-400 group-hover:scale-110 transition-all shadow-md">
               {meta.icon}
             </div>
 
             {/* Event Card */}
-            <div className="p-4 rounded-2xl glass-panel border border-zinc-800 space-y-2.5 hover:border-cyan-500/40 transition-all shadow-md">
+            <div className="p-4 rounded-2xl glass-panel border border-slate-200 dark:border-zinc-800 space-y-2.5 hover:border-cyan-500/40 transition-all shadow-md">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${meta.badgeBg}`}>
                     {meta.title}
                   </span>
                   {event.meeting_title && (
-                    <span className="text-xs text-indigo-300 font-medium bg-indigo-950/40 px-2 py-0.5 rounded-md border border-indigo-500/20">
+                    <span className="text-xs text-indigo-700 dark:text-indigo-300 font-medium bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-500/20">
                       in {event.meeting_title}
                     </span>
                   )}
                 </div>
 
-                <span className="text-[10px] font-mono text-zinc-400">{formattedDate}</span>
+                <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">{formattedDate}</span>
               </div>
 
               {/* Evidence Snippet */}
               {event.evidence_text && (
-                <div className="p-3 rounded-xl bg-zinc-950/90 border border-zinc-800/80 text-xs text-zinc-300 font-mono italic leading-relaxed flex items-start gap-2">
-                  <span className="text-cyan-400 not-italic font-bold">❝</span>
+                <div className="p-3 rounded-xl bg-slate-100/90 dark:bg-zinc-950/90 border border-slate-200 dark:border-zinc-800/80 text-xs text-slate-700 dark:text-zinc-300 font-mono italic leading-relaxed flex items-start gap-2">
+                  <span className="text-cyan-600 dark:text-cyan-400 not-italic font-bold">❝</span>
                   <span className="flex-1">{event.evidence_text}</span>
-                  <span className="text-cyan-400 not-italic font-bold">❞</span>
+                  <span className="text-cyan-600 dark:text-cyan-400 not-italic font-bold">❞</span>
                 </div>
               )}
 
               {/* Delta Comparison */}
               {event.previous_value && event.new_value && (
                 <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono pt-1">
-                  <span className="text-zinc-500">State Transition:</span>
-                  <span className="text-rose-400/90 line-through bg-rose-950/30 px-2 py-0.5 rounded border border-rose-500/20">
+                  <span className="text-slate-500 dark:text-zinc-500">State Transition:</span>
+                  <span className="text-rose-600 dark:text-rose-400/90 line-through bg-rose-500/10 dark:bg-rose-950/30 px-2 py-0.5 rounded border border-rose-500/20">
                     {typeof event.previous_value === 'object' ? JSON.stringify(event.previous_value) : String(event.previous_value)}
                   </span>
-                  <span className="text-cyan-400 font-bold">➔</span>
-                  <span className="text-emerald-400 bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">
+                  <span className="text-cyan-600 dark:text-cyan-400 font-bold">➔</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">
                     {typeof event.new_value === 'object' ? JSON.stringify(event.new_value) : String(event.new_value)}
                   </span>
                 </div>

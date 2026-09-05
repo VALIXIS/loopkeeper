@@ -186,21 +186,21 @@ export const CommitmentDetailView: React.FC = () => {
   }
 
   return (
-    <div className="space-y-5 pb-12 text-zinc-100 max-w-6xl mx-auto">
+    <div className="space-y-5 pb-12 text-slate-900 dark:text-zinc-100 max-w-6xl mx-auto">
       {/* Navigation Breadcrumb */}
-      <div className="flex items-center justify-between gap-3 text-xs text-zinc-400">
+      <div className="flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-zinc-400">
         <button
           onClick={() => navigate('/commitments')}
-          className="hover:text-cyan-400 transition-colors flex items-center gap-1 font-semibold text-[11px]"
+          className="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1 font-semibold text-[11px]"
         >
           <span>← Back to Commitments</span>
         </button>
-        <span className="font-mono text-[10px] text-zinc-500">ID: {detail.id}</span>
+        <span className="font-mono text-[10px] text-slate-500 dark:text-zinc-500">ID: {detail.id}</span>
       </div>
 
       {/* Top Header Card */}
       <div className="p-5 sm:p-6 rounded-2xl glass-panel-elevated border border-indigo-500/30 space-y-4 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-zinc-800">
           <div className="flex flex-wrap items-center gap-1.5">
             <StatusBadge status={detail.status} />
             <VerificationBadge confidence={detail.confidence} />
@@ -208,19 +208,19 @@ export const CommitmentDetailView: React.FC = () => {
             <PostponementBadge count={detail.postponement_count} />
 
             {simulatedPow && (
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
-                <CheckCircleIcon size={12} className="text-emerald-400" />
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                <CheckCircleIcon size={12} className="text-emerald-600 dark:text-emerald-400" />
                 Proof of Work Verified (PR #{simulatedPow.pr_number})
               </span>
             )}
 
             {(detail as any).jira_key || detail.matched_valixis_task_id ? (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30 flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30 flex items-center gap-1">
                 <ExternalLinkIcon size={11} />
                 Jira: {(detail as any).jira_key || `TASK-${detail.matched_valixis_task_id?.slice(0, 6).toUpperCase()}`}
               </span>
             ) : (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-zinc-400 bg-zinc-800/60 border border-zinc-700/60 flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-slate-600 dark:text-zinc-400 bg-slate-200/80 dark:bg-zinc-800/60 border border-slate-300 dark:border-zinc-700/60 flex items-center gap-1">
                 <ExternalLinkIcon size={11} />
                 Jira: Unlinked
               </span>
@@ -232,7 +232,7 @@ export const CommitmentDetailView: React.FC = () => {
               <button
                 onClick={() => handleQuickStatus('done')}
                 disabled={saving}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold border border-emerald-500/40 transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-500/40 transition-all shadow-sm"
               >
                 <CheckCircleIcon size={13} />
                 <span>Mark as Done</span>
@@ -241,7 +241,7 @@ export const CommitmentDetailView: React.FC = () => {
               <button
                 onClick={() => handleQuickStatus('pending')}
                 disabled={saving}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-300 text-xs font-bold transition-all"
               >
                 <ClockIcon size={13} />
                 <span>Reopen Commitment</span>
@@ -250,7 +250,7 @@ export const CommitmentDetailView: React.FC = () => {
 
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="px-3.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-all"
+              className="px-3.5 py-1.5 rounded-xl bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 text-xs font-semibold border border-slate-300 dark:border-zinc-700 transition-all"
             >
               {isEditing ? 'Cancel Edit' : 'Edit Details'}
             </button>
@@ -258,35 +258,35 @@ export const CommitmentDetailView: React.FC = () => {
         </div>
 
         {isEditing ? (
-          <form onSubmit={handleSave} className="space-y-3.5 p-4 rounded-xl bg-zinc-950 border border-zinc-800">
+          <form onSubmit={handleSave} className="space-y-3.5 p-4 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800">
             <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-zinc-300">Commitment Title *</label>
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-zinc-300">Commitment Title *</label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-100 focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-xs text-slate-900 dark:text-zinc-100 focus:outline-none focus:border-cyan-500"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-zinc-300">Description & Context</label>
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-zinc-300">Description & Context</label>
               <textarea
                 rows={2}
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-cyan-500"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-zinc-300">Assignee</label>
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-zinc-300">Assignee</label>
                 <select
                   value={ownerId}
                   onChange={e => setOwnerId(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-cyan-500"
                 >
                   <option value="">Unassigned</option>
                   {employees.map(emp => (
@@ -298,21 +298,21 @@ export const CommitmentDetailView: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-zinc-300">Target Deadline</label>
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-zinc-300">Target Deadline</label>
                 <input
                   type="datetime-local"
                   value={deadline}
                   onChange={e => setDeadline(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-zinc-300">Status</label>
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-zinc-300">Status</label>
                 <select
                   value={status}
                   onChange={e => setStatus(e.target.value as TaskStatus)}
-                  className="w-full px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-cyan-500"
                 >
                   <option value="pending">In Progress (Pending)</option>
                   <option value="done">Completed (Done)</option>
@@ -322,11 +322,11 @@ export const CommitmentDetailView: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-800">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-zinc-800">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-3.5 py-1.5 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-medium hover:bg-zinc-700"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-medium hover:bg-slate-300 dark:hover:bg-zinc-700"
               >
                 Cancel
               </button>
@@ -341,35 +341,35 @@ export const CommitmentDetailView: React.FC = () => {
           </form>
         ) : (
           <div className="space-y-3.5">
-            <h1 className="text-xl font-bold text-zinc-100">{detail.title}</h1>
-            <p className="text-xs text-zinc-300 leading-relaxed max-w-4xl">
+            <h1 className="text-xl font-bold text-slate-900 dark:text-zinc-100">{detail.title}</h1>
+            <p className="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed max-w-4xl">
               {detail.description || 'Action item extracted from conversational meeting discussion.'}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-              <div className="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+              <div className="p-3 rounded-xl bg-slate-100/90 dark:bg-zinc-950/80 border border-slate-200 dark:border-zinc-800 flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
                   <UsersIcon size={18} />
                 </div>
                 <div>
-                  <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-wider block">
+                  <span className="text-[9px] text-slate-500 dark:text-zinc-500 uppercase font-bold tracking-wider block">
                     Owner & Assignee
                   </span>
-                  <span className="text-xs font-semibold text-zinc-200">
+                  <span className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
                     {detail.owner_name || 'Unassigned'}
                   </span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+              <div className="p-3 rounded-xl bg-slate-100/90 dark:bg-zinc-950/80 border border-slate-200 dark:border-zinc-800 flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
                   <ClockIcon size={18} />
                 </div>
                 <div>
-                  <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-wider block">
+                  <span className="text-[9px] text-slate-500 dark:text-zinc-500 uppercase font-bold tracking-wider block">
                     Target Deadline
                   </span>
-                  <span className="text-xs font-mono font-semibold text-zinc-200">
+                  <span className="text-xs font-mono font-semibold text-slate-800 dark:text-zinc-200">
                     {detail.deadline
                       ? new Date(detail.deadline).toLocaleDateString('en-US', {
                           month: 'short',
@@ -381,38 +381,38 @@ export const CommitmentDetailView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800">
+              <div className="p-3 rounded-xl bg-slate-100/90 dark:bg-zinc-950/80 border border-slate-200 dark:border-zinc-800">
                 <ConfidenceMeter score={detail.confidence} size="sm" />
               </div>
             </div>
 
             {/* Verbatim Transcript Quote Anchor */}
             {detail.source_text && (
-              <div className="p-3.5 rounded-2xl bg-zinc-950/90 border border-cyan-500/30 space-y-1.5 shadow-inner">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+              <div className="p-3.5 rounded-2xl bg-slate-100/90 dark:bg-zinc-950/90 border border-cyan-500/30 space-y-1.5 shadow-inner">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">
                   <SparklesIcon size={13} />
                   Verbatim Transcript Evidence Anchor
                 </span>
-                <div className="text-xs text-zinc-200 font-mono italic leading-relaxed flex items-start gap-2">
-                  <span className="text-cyan-400 not-italic font-bold text-sm">❝</span>
+                <div className="text-xs text-slate-800 dark:text-zinc-200 font-mono italic leading-relaxed flex items-start gap-2">
+                  <span className="text-cyan-600 dark:text-cyan-400 not-italic font-bold text-sm">❝</span>
                   <span className="flex-1 text-[11px]">{detail.source_text}</span>
-                  <span className="text-cyan-400 not-italic font-bold text-sm">❞</span>
+                  <span className="text-cyan-600 dark:text-cyan-400 not-italic font-bold text-sm">❞</span>
                 </div>
               </div>
             )}
 
             {/* GitHub Proof of Work Demonstration Card */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-zinc-900 via-zinc-950 to-indigo-950/50 border border-emerald-500/40 space-y-3 shadow-lg">
+            <div className="p-4 rounded-2xl glass-panel border border-emerald-500/40 space-y-3 shadow-lg">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shrink-0">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0">
                     <NetworkIcon size={18} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-100 flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
                       GitHub Proof-of-Work (Auto-Completion Engine)
                     </h4>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-slate-600 dark:text-zinc-400">
                       Webhook PR listener & 384-dim Vector AI semantic resolution
                     </p>
                   </div>
@@ -432,39 +432,39 @@ export const CommitmentDetailView: React.FC = () => {
                     <span>Simulate GitHub PR Webhook</span>
                   </button>
                 ) : (
-                  <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shrink-0 shadow-sm">
-                    <CheckCircleIcon size={14} className="text-emerald-400" />
+                  <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shrink-0 shadow-sm">
+                    <CheckCircleIcon size={14} className="text-emerald-600 dark:text-emerald-400" />
                     Auto-Resolved via GitHub PR #{simulatedPow.pr_number}
                   </span>
                 )}
               </div>
 
               {simulatedPow && (
-                <div className="p-3.5 rounded-xl bg-zinc-950/90 border border-zinc-800 space-y-2 text-xs font-mono text-zinc-300">
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] border-b border-zinc-800/80 pb-2">
+                <div className="p-3.5 rounded-xl bg-slate-100/90 dark:bg-zinc-950/90 border border-slate-200 dark:border-zinc-800 space-y-2 text-xs font-mono text-slate-700 dark:text-zinc-300">
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] border-b border-slate-200 dark:border-zinc-800/80 pb-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-zinc-500">PR:</span>
+                      <span className="text-slate-500 dark:text-zinc-500">PR:</span>
                       <a
                         href={simulatedPow.pr_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-cyan-400 font-bold hover:underline flex items-center gap-1"
+                        className="text-cyan-600 dark:text-cyan-400 font-bold hover:underline flex items-center gap-1"
                       >
                         {simulatedPow.repository}#{simulatedPow.pr_number}
                         <ExternalLinkIcon size={11} />
                       </a>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-zinc-500">Vector AI Score:</span>
-                      <span className="text-emerald-300 font-bold">
+                      <span className="text-slate-500 dark:text-zinc-500">Vector AI Score:</span>
+                      <span className="text-emerald-600 dark:text-emerald-300 font-bold">
                         {(simulatedPow.similarity_score * 100).toFixed(1)}% Cosine Similarity
                       </span>
                     </div>
                   </div>
-                  <div className="text-[11px] text-zinc-300 italic">
+                  <div className="text-[11px] text-slate-700 dark:text-zinc-300 italic">
                     "{simulatedPow.pr_title}"
                   </div>
-                  <div className="text-[10px] text-zinc-500 flex justify-between">
+                  <div className="text-[10px] text-slate-500 dark:text-zinc-500 flex justify-between">
                     <span>Author: {simulatedPow.author}</span>
                     <span>Resolution: {simulatedPow.resolution_method}</span>
                   </div>
@@ -474,17 +474,17 @@ export const CommitmentDetailView: React.FC = () => {
 
             {/* Originating Meeting Card */}
             {detail.originating_meeting && (
-              <div className="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <FileTextIcon size={16} className="text-indigo-400" />
+              <div className="p-3 rounded-xl bg-slate-100/90 dark:bg-zinc-950/80 border border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                  <FileTextIcon size={16} className="text-indigo-600 dark:text-indigo-400" />
                   <span className="text-[11px]">Originating Meeting:</span>
-                  <span className="font-bold text-zinc-200 text-xs">
+                  <span className="font-bold text-slate-800 dark:text-zinc-200 text-xs">
                     {detail.originating_meeting.title}
                   </span>
                 </div>
                 <button
                   onClick={() => navigateToMeeting(detail.originating_meeting!.id)}
-                  className="text-cyan-400 hover:text-cyan-300 text-xs font-semibold flex items-center gap-1 group"
+                  className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 text-xs font-semibold flex items-center gap-1 group"
                 >
                   <span>Open Full Transcript & Video</span>
                   <ArrowRightIcon size={13} className="group-hover:translate-x-1 transition-transform" />
@@ -496,20 +496,20 @@ export const CommitmentDetailView: React.FC = () => {
       </div>
 
       {/* Task Comments, Execution Notes & Risk Warnings */}
-      <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-zinc-800 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+      <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-slate-200 dark:border-zinc-800 space-y-4 shadow-xl">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-zinc-800">
           <div className="flex items-center gap-2">
-            <MessageSquareIcon size={18} className="text-cyan-400" />
-            <h3 className="text-sm font-bold text-zinc-100 uppercase tracking-wider">
+            <MessageSquareIcon size={18} className="text-cyan-600 dark:text-cyan-400" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">
               Task Notes, Instructions & Delay Warnings
             </h3>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30">
               {comments.length}
             </span>
           </div>
 
           {detail.postponement_count && detail.postponement_count > 0 ? (
-            <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-xl flex items-center gap-1">
+            <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-xl flex items-center gap-1">
               <AlertTriangleIcon size={12} />
               Postponed {detail.postponement_count}x — Warning Escalated
             </span>
@@ -519,7 +519,7 @@ export const CommitmentDetailView: React.FC = () => {
         {/* Comments List */}
         <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
           {comments.length === 0 ? (
-            <div className="py-6 text-center text-xs text-zinc-500 italic bg-zinc-950/40 rounded-xl border border-zinc-800/50">
+            <div className="py-6 text-center text-xs text-slate-500 dark:text-zinc-500 italic bg-slate-100/60 dark:bg-zinc-950/40 rounded-xl border border-slate-200 dark:border-zinc-800/50">
               No notes or delay warnings posted yet. Add instructions or delay warnings below.
             </div>
           ) : (
@@ -528,42 +528,42 @@ export const CommitmentDetailView: React.FC = () => {
                 key={c.id}
                 className={`p-3 rounded-xl border text-xs space-y-1 transition-all ${
                   c.type === 'warning'
-                    ? 'bg-rose-500/10 border-rose-500/40 text-rose-200'
+                    ? 'bg-rose-500/10 border-rose-500/40 text-rose-800 dark:text-rose-200'
                     : c.type === 'instruction'
-                    ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-200'
-                    : 'bg-zinc-950/80 border-zinc-800 text-zinc-200'
+                    ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-800 dark:text-cyan-200'
+                    : 'bg-slate-100 dark:bg-zinc-950/80 border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-zinc-200'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-zinc-100 text-xs">{c.author_name}</span>
+                    <span className="font-bold text-slate-900 dark:text-zinc-100 text-xs">{c.author_name}</span>
                     <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider font-mono ${
                       c.type === 'warning'
-                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                        ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40'
                         : c.type === 'instruction'
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                        : 'bg-zinc-800 text-zinc-300'
+                        ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/40'
+                        : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
                     }`}>
                       {c.type === 'warning' ? '⚠️ Risk Warning' : c.type === 'instruction' ? '🛠️ Execution Note' : '💬 Comment'}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500">
+                  <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-500">
                     {new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
-                <p className="text-xs leading-relaxed text-zinc-300">{c.text}</p>
+                <p className="text-xs leading-relaxed text-slate-700 dark:text-zinc-300">{c.text}</p>
               </div>
             ))
           )}
         </div>
 
         {/* Comment Form */}
-        <form onSubmit={handleAddComment} className="pt-3 border-t border-zinc-800 space-y-2">
+        <form onSubmit={handleAddComment} className="pt-3 border-t border-slate-200 dark:border-zinc-800 space-y-2">
           <div className="flex flex-col sm:flex-row gap-2">
             <select
               value={commentType}
               onChange={e => setCommentType(e.target.value as any)}
-              className="px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
+              className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:border-cyan-500"
             >
               <option value="comment">💬 Comment</option>
               <option value="instruction">🛠️ Execution Instruction</option>
@@ -574,7 +574,7 @@ export const CommitmentDetailView: React.FC = () => {
               placeholder="Add instructions, delay warnings, or notes on how to do this task..."
               value={newCommentText}
               onChange={e => setNewCommentText(e.target.value)}
-              className="flex-1 px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-cyan-500"
+              className="flex-1 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-xs text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:border-cyan-500"
             />
             <button
               type="submit"
@@ -588,13 +588,13 @@ export const CommitmentDetailView: React.FC = () => {
       </div>
 
       {/* Cross-Meeting State Evolution Timeline */}
-      <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-zinc-800 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-          <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-            <HistoryIcon size={16} className="text-amber-400" />
+      <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-slate-200 dark:border-zinc-800 space-y-4 shadow-xl">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-zinc-800">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
+            <HistoryIcon size={16} className="text-amber-500 dark:text-amber-400" />
             Cross-Meeting State Evolution & Drift Audit
           </h3>
-          <span className="text-xs font-mono text-zinc-500">
+          <span className="text-xs font-mono text-slate-500 dark:text-zinc-500">
             {detail.history?.length || 0} Audit Events
           </span>
         </div>
