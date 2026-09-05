@@ -102,6 +102,8 @@ class ActionItemModel {
     ).length;
   }
 
+  bool get isRepeatedlyPostponed => postponementCount >= 2;
+
   factory ActionItemModel.fromJson(Map<String, dynamic> json) {
     List<ActionItemHistory> parsedHistory = [];
     if (json['history'] != null && json['history'] is List) {
