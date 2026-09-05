@@ -44,4 +44,9 @@ class Settings(BaseSettings):
     GOOGLE_DRIVE_SCOPES: List[str] = ["https://www.googleapis.com/auth/drive.readonly"]
     GOOGLE_DRIVE_FOLDER_ID: Optional[str] = os.getenv("GOOGLE_DRIVE_FOLDER_ID", None)
 
+    # GitHub Proof-of-Work Settings
+    GITHUB_WEBHOOK_SECRET: Optional[str] = os.getenv("GITHUB_WEBHOOK_SECRET", None)
+    GITHUB_AUTO_RESOLVE_SIMILARITY_THRESHOLD: float = float(os.getenv("GITHUB_AUTO_RESOLVE_SIMILARITY_THRESHOLD", "0.80"))
+
 settings = Settings()
+

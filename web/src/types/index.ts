@@ -115,11 +115,31 @@ export interface ActionItemHistory {
   created_at: string;
 }
 
+export interface ProofOfWork {
+  id: string;
+  action_item_id: string;
+  provider: string;
+  external_event_type: string;
+  external_event_id: string;
+  repository: string;
+  pr_number: number;
+  pr_title: string;
+  pr_url: string;
+  author_login: string;
+  author_email?: string | null;
+  resolution_method: 'explicit_key' | 'vector_similarity';
+  similarity_score?: number | null;
+  evidence_text: string;
+  created_at: string;
+}
+
 export interface ActionItemDetail extends ActionItem {
   history: ActionItemHistory[];
+  proof_of_work?: ProofOfWork[];
   originating_meeting?: Meeting;
   consecutive_meetings?: Meeting[];
 }
+
 
 export interface MeetingDetail extends Meeting {
   transcript?: Transcript | null;

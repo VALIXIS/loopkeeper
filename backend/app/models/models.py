@@ -102,6 +102,32 @@ class LoopKeeperActionItem(Base):
     meeting = relationship("LoopKeeperMeeting", back_populates="action_items")
     history = relationship("LoopKeeperActionItemHistory", back_populates="action_item", cascade="all, delete-orphan")
     jira_links = relationship("LoopKeeperJiraLink", back_populates="action_item", cascade="all, delete-orphan")
+    proof_of_work = relationship("LoopKeeperProofOfWork", back_populates="action_item", cascade="all, delete-orphan")
+
+class LoopKeeperProofOfWork(Base):
+    __tablename__ = "loopkeeper_proof_of_work"
+    __table_args__ = (
+        UniqueConstraint("provider", "repository", "pr_number", "external_event_type", name="loopkeeper_pow_unique_event"),
+    )
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    action_item_id = Column(UUID(as_uuid=True), ForeignKey("loopkeeper_action_items.id", ondelete="CASCADE"), nullable=False)
+    provider = Column(String, nullable=False, default="github")
+    external_event_type = Column(String, nullable=False, default="pr_opened")
+    external_event_id = Column(String, nullable=False)
+    repository = Column(String, nullable=False)
+    pr_number = Column(Integer, nullable=False)
+    pr_title = Column(String, nullable=False)
+    pr_url = Column(String, nullable=False)
+    author_login = Column(String, nullable=False)
+    author_email = Column(String, nullable=True)
+    resolution_method = Column(String, nullable=False)  # explicit_key, vector_similarity
+    similarity_score = Column(Numeric(5, 4), nullable=True)
+    evidence_text = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+
+    action_item = relationship("LoopKeeperActionItem", back_populates="proof_of_work")
+
 
 class LoopKeeperActionItemHistory(Base):
     __tablename__ = "loopkeeper_action_item_history"

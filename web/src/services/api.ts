@@ -27,7 +27,9 @@ class LocalStateStore {
   transcripts: Record<string, Transcript> = {};
   actionItems: ActionItem[] = [];
   history: Record<string, any[]> = {};
+  proofOfWork: Record<string, ProofOfWork[]> = {};
   aiRuns: AIRunTelemetry[] = [];
+
   employees: Employee[] = [];
   isBackendAvailable: boolean = false;
   forceMockMode: boolean = false;
@@ -524,12 +526,34 @@ export const api = {
     return items;
   },
 
+  async getProofOfWork(actionItemId: string): Promise<ProofOfWork[]> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/proof-of-work/${actionItemId}`);
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (err) {
+        console.warn('Backend getProofOfWork failed', err);
+      }
+    }
+    return localStore.proofOfWork?.[actionItemId] || [];
+  },
+
   async getActionItemDetail(id: string): Promise<ActionItemDetail> {
     if (localStore.isBackendAvailable && !localStore.forceMockMode) {
       try {
         const res = await fetch(`${API_BASE_URL}/action-items/${id}`);
         if (res.ok) {
           const detail: ActionItemDetail = await res.json();
+          try {
+            const powRes = await fetch(`${API_BASE_URL}/proof-of-work/${id}`);
+            if (powRes.ok) {
+              detail.proof_of_work = await powRes.json();
+            }
+          } catch {
+            // Ignore optional POW fetch failure
+          }
           return detail;
         }
       } catch (err) {
@@ -543,17 +567,20 @@ export const api = {
     }
 
     const history = localStore.history[id] || [];
+    const powList = localStore.proofOfWork?.[id] || [];
     const originMeeting = localStore.meetings.find(m => m.id === item.meeting_id);
 
     return {
       ...item,
       history,
+      proof_of_work: powList,
       originating_meeting: originMeeting,
       consecutive_meetings: localStore.meetings.filter(m =>
         history.some(h => h.meeting_id === m.id)
       )
     };
   },
+
 
   async updateActionItem(id: string, updates: ActionItemUpdate): Promise<ActionItem> {
     if (localStore.isBackendAvailable && !localStore.forceMockMode) {
