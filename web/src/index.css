@@ -931,3 +931,58 @@ html.light textarea::placeholder {
   color: #94a3b8 !important;
 }
 
+/* Execution Drift Radar & Accountability Banners in Light Mode */
+html.light .rounded-3xl.bg-gradient-to-r.from-rose-950\/40 {
+  background: linear-gradient(135deg, #fff1f2 0%, #ffffff 50%, #f8fafc 100%) !important;
+  border-color: #fca5a5 !important;
+  box-shadow: 0 10px 30px -10px rgba(225, 29, 72, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.04) !important;
+}
+
+html.light .rounded-3xl.bg-gradient-to-r.from-rose-950\/40 h1 {
+  color: #0f172a !important;
+}
+
+html.light .rounded-3xl.bg-gradient-to-r.from-rose-950\/40 p {
+  color: #334155 !important;
+}
+
+html.light .rounded-3xl.bg-gradient-to-r.from-rose-950\/40 .text-rose-300 {
+  color: #991b1b !important;
+}
+
+html.light .rounded-3xl.bg-gradient-to-r.from-rose-950\/40 .bg-rose-500\/20 {
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+}
+
+/* Light Mode Badges & High-Contrast Colors */
+html.light .text-rose-300 { color: #991b1b !important; }
+html.light .text-indigo-300 { color: #3730a3 !important; }
+html.light .text-cyan-300 { color: #0369a1 !important; }
+html.light .text-amber-300 { color: #92400e !important; }
+
+/* Side-by-Side Execution Drift Cards in Light Mode */
+html.light .p-4.rounded-2xl.bg-zinc-950\/90.border-zinc-800 {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light .p-4.rounded-2xl.bg-zinc-950\/90.border-rose-500\/30 {
+  background-color: #fff1f2 !important;
+  border-color: #fca5a5 !important;
+}
+
+html.light .p-4.rounded-2xl.bg-rose-950\/20.border-rose-500\/30 {
+  background-color: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+}
+
+html.light .p-4.rounded-2xl.bg-rose-950\/20.border-rose-500\/30 .text-rose-300 {
+  color: #991b1b !important;
+}
+
+html.light .p-4.rounded-2xl.bg-rose-950\/20.border-rose-500\/30 p {
+  color: #334155 !important;
+}
+
+
