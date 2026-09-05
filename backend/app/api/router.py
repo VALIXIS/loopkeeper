@@ -15,7 +15,8 @@ from app.api.routes import (
     jira,
     recordings,
     transcripts,
-    xero
+    xero,
+    proof_of_work
 )
 
 api_router = APIRouter()
@@ -23,6 +24,8 @@ api_router = APIRouter()
 # Public Routes
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
+api_router.include_router(proof_of_work.router)
+
 
 # Protected Routes (Require valid Bearer token in production mode)
 protected_deps = [Depends(get_current_user)]

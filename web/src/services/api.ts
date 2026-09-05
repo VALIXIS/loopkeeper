@@ -29,7 +29,9 @@ class LocalStateStore {
   transcripts: Record<string, Transcript> = {};
   actionItems: ActionItem[] = [];
   history: Record<string, any[]> = {};
+  proofOfWork: Record<string, ProofOfWork[]> = {};
   aiRuns: AIRunTelemetry[] = [];
+
   employees: Employee[] = [];
   comments: Record<string, TaskComment[]> = {};
   isBackendAvailable: boolean = false;
@@ -579,12 +581,34 @@ export const api = {
     return items;
   },
 
+  async getProofOfWork(actionItemId: string): Promise<ProofOfWork[]> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/proof-of-work/${actionItemId}`);
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (err) {
+        console.warn('Backend getProofOfWork failed', err);
+      }
+    }
+    return localStore.proofOfWork?.[actionItemId] || [];
+  },
+
   async getActionItemDetail(id: string): Promise<ActionItemDetail> {
     if (localStore.isBackendAvailable && !localStore.forceMockMode) {
       try {
         const res = await fetch(`${API_BASE_URL}/action-items/${id}`);
         if (res.ok) {
           const detail: ActionItemDetail = await res.json();
+          try {
+            const powRes = await fetch(`${API_BASE_URL}/proof-of-work/${id}`);
+            if (powRes.ok) {
+              detail.proof_of_work = await powRes.json();
+            }
+          } catch {
+            // Ignore optional POW fetch failure
+          }
           return detail;
         }
       } catch (err) {
@@ -598,18 +622,32 @@ export const api = {
     }
 
     const history = localStore.history[id] || [];
+    const powList = localStore.proofOfWork?.[id] || [];
     const originMeeting = localStore.meetings.find(m => m.id === item.meeting_id);
     const comments = localStore.comments[id] || [];
 
-    return {
       ...item,
       history,
       comments,
+      proof_of_work: powList,
       originating_meeting: originMeeting,
       consecutive_meetings: localStore.meetings.filter(m =>
         history.some(h => h.meeting_id === m.id)
       )
     };
+  },
+
+  async deleteMeeting(id: string): Promise<void> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        await fetch(`${API_BASE_URL}/meetings/${id}`, { method: 'DELETE' });
+      } catch (err) {
+        console.warn('Backend deleteMeeting failed, updating local store', err);
+      }
+    }
+    localStore.meetings = localStore.meetings.filter(m => m.id !== id);
+    delete localStore.transcripts[id];
+    localStore.save();
   },
 
   async addComment(taskId: string, authorName: string, text: string, type: 'comment' | 'warning' | 'instruction' = 'comment'): Promise<TaskComment> {

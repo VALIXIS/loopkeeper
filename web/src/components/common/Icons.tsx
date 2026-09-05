@@ -357,3 +357,4 @@ export const SlidersIcon: React.FC<IconProps> = ({ size = 20, className = '', ..
     <line x1="17" y1="16" x2="23" y2="16" />
   </svg>
 );
+

@@ -157,7 +157,39 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
             </div>
           </div>
 
+          {/* GitHub Proof-of-Work Banner */}
+          {detail.proof_of_work && detail.proof_of_work.length > 0 && (
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-zinc-900 to-zinc-950 border border-emerald-500/30 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs tracking-wide">
+                  <span className="text-base">⚡</span>
+                  <span>Auto-resolved via GitHub PR #{detail.proof_of_work[0].pr_number}</span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
+                  {detail.proof_of_work[0].resolution_method === 'explicit_key'
+                    ? 'Explicit LK Key Match'
+                    : `Semantic Match — ${Math.round((detail.proof_of_work[0].similarity_score || 0) * 100)}%`}
+                </span>
+              </div>
+              <div className="text-xs text-zinc-300 font-medium">
+                <a
+                  href={detail.proof_of_work[0].pr_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline text-cyan-400 font-mono flex items-center gap-1 inline-flex"
+                >
+                  <span>{detail.proof_of_work[0].repository}</span> • <span>PR #{detail.proof_of_work[0].pr_number}: {detail.proof_of_work[0].pr_title}</span> ↗
+                </a>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+                <span>Author: {detail.proof_of_work[0].author_login}</span>
+                <span>{new Date(detail.proof_of_work[0].created_at).toLocaleString()}</span>
+              </div>
+            </div>
+          )}
+
           {/* Form or View Section */}
+
           {isEditing ? (
             <form onSubmit={handleSave} className="space-y-4 p-5 rounded-2xl bg-zinc-950 border border-zinc-800">
               <div className="space-y-1.5">
