@@ -4,6 +4,9 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/date_formatter.dart';
 import '../../models/meeting_model.dart';
 import '../../providers/app_state_provider.dart';
+import '../../widgets/motion/ambient_background.dart';
+import '../../widgets/motion/glass_container.dart';
+import '../../widgets/motion/staggered_entrance.dart';
 
 class InsightsScreen extends StatefulWidget {
   const InsightsScreen({super.key});
@@ -24,64 +27,68 @@ class _InsightsScreenState extends State<InsightsScreen> {
     final filteredItems = items.where((i) => i.confidence >= _minConfidenceFilter).toList();
 
     return Scaffold(
+      backgroundColor: AppColors.bgApp,
       appBar: AppBar(
-        title: const Text('Accountability Insights'),
+        title: const Text('Accountability Insights & DAG'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Graph Concept Description Header
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.bgSurface,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.borderSubtle),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: const [
-                      Icon(Icons.timeline_rounded, color: AppColors.brandPrimary, size: 22),
-                      SizedBox(width: 8),
-                      Text(
-                        'Accountability Graph DAG',
-                        style: TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+      body: AmbientBackground(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 10.0, bottom: 40.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Graph Concept Description Header
+              GlassContainer(
+                borderRadius: 16,
+                blur: 16,
+                borderColor: AppColors.brandPrimary.withAlpha(80),
+                backgroundColor: AppColors.bgSurface.withAlpha(220),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: const [
+                        Icon(Icons.timeline_rounded, color: AppColors.brandAccent, size: 24),
+                        SizedBox(width: 10),
+                        Text(
+                          'Accountability Graph DAG',
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Meeting  →  Commitment  →  Owner  →  Deadline  →  Outcome',
-                    style: TextStyle(
-                      color: AppColors.brandAccent,
-                      fontSize: 12,
-                      fontFamily: 'monospace',
-                      fontWeight: FontWeight.w600,
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Tracks how tasks mutate in wording, get matched via vector similarity, and transition across meetings over time.',
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Meeting  ➔  Commitment  ➔  Owner  ➔  Deadline  ➔  Outcome',
+                      style: TextStyle(
+                        color: AppColors.brandAccent,
+                        fontSize: 12,
+                        fontFamily: 'monospace',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Tracks how tasks mutate in wording, get matched via vector similarity, and transition across meetings over time.',
+                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Confidence Filter Slider
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(14.0),
+              // Confidence Filter Slider
+              GlassContainer(
+                borderRadius: 16,
+                blur: 12,
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -117,53 +124,53 @@ class _InsightsScreenState extends State<InsightsScreen> {
                   ],
                 ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            const Text(
-              'Vertical Commitment Flow Timeline',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              const Text(
+                'Vertical Commitment Flow Network',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            if (filteredItems.isEmpty)
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.bgSurface,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.borderSubtle),
-                ),
-                child: const Center(
-                  child: Text(
-                    'No graph nodes match the selected confidence threshold.',
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-                  ),
-                ),
-              )
-            else
-              ...filteredItems.map(
-                (item) {
-                  final originMeeting = meetings.firstWhere(
-                    (m) => m.id == item.meetingId,
-                    orElse: () => meetings.isNotEmpty ? meetings.first : MeetingModel(
-                      id: item.meetingId,
-                      title: 'Sprint Planning',
-                      meetingDate: DateTime.now(),
-                      createdAt: DateTime.now(),
-                      updatedAt: DateTime.now(),
+              if (filteredItems.isEmpty)
+                GlassContainer(
+                  padding: const EdgeInsets.all(20),
+                  child: const Center(
+                    child: Text(
+                      'No graph nodes match the selected confidence threshold.',
+                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
                     ),
-                  );
+                  ),
+                )
+              else
+                ...filteredItems.asMap().entries.map(
+                  (entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    final originMeeting = meetings.firstWhere(
+                      (m) => m.id == item.meetingId,
+                      orElse: () => meetings.isNotEmpty ? meetings.first : MeetingModel(
+                        id: item.meetingId,
+                        title: 'Sprint Planning',
+                        meetingDate: DateTime.now(),
+                        createdAt: DateTime.now(),
+                        updatedAt: DateTime.now(),
+                      ),
+                    );
 
-                  return _GraphNodeCard(item: item, meeting: originMeeting);
-                },
-              ),
-          ],
+                    return FadeInEntrance(
+                      index: index,
+                      child: _GraphNodeCard(item: item, meeting: originMeeting),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -181,10 +188,14 @@ class _GraphNodeCard extends StatelessWidget {
     final postponements = item.postponementCount;
     final isHighRisk = postponements >= 2 || item.isOverdue;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 14),
-      child: Padding(
-        padding: const EdgeInsets.all(14.0),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14.0),
+      child: GlassContainer(
+        borderRadius: 16,
+        blur: 12,
+        borderColor: isHighRisk ? AppColors.statusOverdue.withAlpha(100) : AppColors.borderSubtle,
+        backgroundColor: AppColors.bgSurface.withAlpha(200),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -194,8 +205,8 @@ class _GraphNodeCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: AppColors.brandPrimary.withAlpha(25),
-                    borderRadius: BorderRadius.circular(6),
+                    color: AppColors.brandPrimary.withAlpha(30),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.groups_rounded, size: 14, color: AppColors.brandPrimary),
                 ),
@@ -225,7 +236,7 @@ class _GraphNodeCard extends StatelessWidget {
             Row(
               children: [
                 const SizedBox(width: 12),
-                Container(width: 2, height: 16, color: AppColors.brandPrimary.withAlpha(80)),
+                Container(width: 2, height: 16, color: AppColors.brandPrimary.withAlpha(120)),
                 const SizedBox(width: 8),
                 Text(
                   'Extracted Task (Confidence: ${DateFormatter.formatConfidence(item.confidence)})',
@@ -240,8 +251,8 @@ class _GraphNodeCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isHighRisk ? AppColors.statusOverdueBg : AppColors.bgApp,
-                borderRadius: BorderRadius.circular(8),
+                color: isHighRisk ? AppColors.statusOverdueBg : AppColors.bgApp.withAlpha(200),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isHighRisk ? AppColors.statusOverdueBorder : AppColors.borderSubtle,
                 ),
@@ -264,10 +275,11 @@ class _GraphNodeCard extends StatelessWidget {
                       ),
                       if (postponements > 0)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color: AppColors.statusOverdueBg,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: AppColors.statusOverdueBorder),
                           ),
                           child: Text(
                             '${postponements}x Postponed',
@@ -287,7 +299,7 @@ class _GraphNodeCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.person_outline_rounded, size: 12, color: AppColors.textSecondary),
+                          const Icon(Icons.person_rounded, size: 12, color: AppColors.textSecondary),
                           const SizedBox(width: 4),
                           Text(
                             item.ownerName,

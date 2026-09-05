@@ -55,17 +55,12 @@ def run_loopkeeper_demo():
     m2 = meeting_service.create_meeting(title="Mid-Week Sync", meeting_date=datetime.utcnow() - timedelta(days=3))
     m2_id = m2["id"]
 
-    t2_text = "Priya says the checkout backend is not finished yet. Move it to Monday."
+    t2_text = "Priya will complete the payment API. Move it to Monday."
     meeting_service.attach_transcript(m2_id, t2_text, source_file_name="m2.vtt")
     print(f"Transcript Ingested: \"{t2_text}\"")
 
     processed_m2 = meeting_service.process_meeting_transcript(m2_id)
     
-    # Update deadline using State Engine
-    action_item_service.update_action_item(primary_task_id, {
-        "deadline": datetime.utcnow() + timedelta(days=3),
-        "status": "pending"
-    })
     print("\n--- Task Matching & Continuity Reasoning ---")
     print(f"  [OK] Matched transcript context with existing commitment (Task ID: {primary_task_id})")
     print("  [OK] Event Logged: 'postponed' (Deadline moved to Monday)")
@@ -77,14 +72,12 @@ def run_loopkeeper_demo():
     m3 = meeting_service.create_meeting(title="Monday Standup", meeting_date=datetime.utcnow())
     m3_id = m3["id"]
 
-    t3_text = "Priya is still working on the payment integration."
+    t3_text = "Priya will complete the payment API. Move deadline to Wednesday."
     meeting_service.attach_transcript(m3_id, t3_text, source_file_name="m3.vtt")
     print(f"Transcript Ingested: \"{t3_text}\"")
 
-    # Second postponement
-    action_item_service.update_action_item(primary_task_id, {
-        "deadline": datetime.utcnow() + timedelta(days=5)
-    })
+    processed_m3 = meeting_service.process_meeting_transcript(m3_id)
+
 
     # -------------------------------------------------------------
     # DEMO SUMMARY & ACCOUNTABILITY AUDIT TRAIL

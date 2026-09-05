@@ -7,7 +7,8 @@ import {
   BrainIcon,
   RefreshCwIcon,
   CheckCircleIcon,
-  NetworkIcon
+  NetworkIcon,
+  SparklesIcon
 } from '../common/Icons';
 
 export const SettingsView: React.FC = () => {
@@ -28,11 +29,15 @@ export const SettingsView: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Header */}
-      <div className="rounded-3xl bg-gradient-to-r from-zinc-900 to-zinc-950 border border-zinc-800 p-6 sm:p-8 shadow-2xl space-y-3">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 p-6 sm:p-8 shadow-2xl space-y-3">
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 flex items-center gap-1.5">
-            <SettingsIcon size={14} />
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 flex items-center gap-1.5 shadow-sm">
+            <SettingsIcon size={14} className="text-cyan-400" />
             System Configuration & Integrations
+          </span>
+          <span className="text-xs font-mono text-zinc-500 hidden sm:inline">
+            FastAPI + pgvector + VALIXIS Boundaries
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-zinc-100 tracking-tight">
@@ -45,10 +50,10 @@ export const SettingsView: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* VALIXIS Integration Card */}
-        <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-5 shadow-xl">
+        <div className="p-6 rounded-3xl glass-panel border border-zinc-800 space-y-5 shadow-xl">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-sm">
                 <ShieldAlertIcon size={20} />
               </div>
               <div>
@@ -62,15 +67,15 @@ export const SettingsView: React.FC = () => {
           </div>
 
           <div className="space-y-3 text-xs">
-            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
               <span className="text-zinc-400">Enforced Access Boundary</span>
               <span className="font-mono text-emerald-400 font-bold">Strict Read-Only</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
               <span className="text-zinc-400">Employees Directory</span>
               <span className="font-mono text-zinc-200 font-bold">{employees.length} Profiles Loaded</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
               <span className="text-zinc-400">VALIXIS Task Linking</span>
               <span className="font-mono text-cyan-400 font-bold">Supported (Foreign Key)</span>
             </div>
@@ -78,10 +83,10 @@ export const SettingsView: React.FC = () => {
         </div>
 
         {/* Backend API Connection Status */}
-        <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-5 shadow-xl">
+        <div className="p-6 rounded-3xl glass-panel border border-zinc-800 space-y-5 shadow-xl">
           <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
+              <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm">
                 <NetworkIcon size={20} />
               </div>
               <div>
@@ -92,14 +97,15 @@ export const SettingsView: React.FC = () => {
             <button
               onClick={() => refreshData()}
               disabled={loading}
-              className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors"
+              className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors"
+              title="Refresh API status"
             >
               <RefreshCwIcon size={14} className={loading ? 'animate-spin' : ''} />
             </button>
           </div>
 
           <div className="space-y-3 text-xs">
-            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
               <span className="text-zinc-400">API Connection</span>
               <span
                 className={`font-bold flex items-center gap-1.5 ${
@@ -110,39 +116,42 @@ export const SettingsView: React.FC = () => {
               >
                 <CheckCircleIcon size={14} />
                 {forceMockMode
-                  ? 'In-Memory Client Engine (Demo Mode)'
+                  ? 'Local Client Engine (Offline)'
                   : backendStatus.isLive
                   ? 'FastAPI Backend Live (/api/v1)'
                   : 'In-Memory Resilient Engine'}
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
-              <span className="text-zinc-400">Simulate Offline / Demo Mode</span>
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
+              <span className="text-zinc-400">Offline Fallback Mode</span>
               <button
                 onClick={() => setForceMockMode(!forceMockMode)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   forceMockMode
-                    ? 'bg-indigo-600 text-white shadow-md'
+                    ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-md shadow-indigo-600/30'
                     : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                {forceMockMode ? 'Demo Mode: ACTIVE' : 'Demo Mode: OFF'}
+                {forceMockMode ? 'Offline Mode: ACTIVE' : 'Offline Mode: OFF'}
               </button>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between">
               <span className="text-zinc-400">AI Readiness Status</span>
-              <span className="font-mono text-cyan-400 font-bold">{backendStatus.ai_pipeline}</span>
+              <span className="font-mono text-cyan-400 font-bold flex items-center gap-1">
+                <SparklesIcon size={12} />
+                {backendStatus.ai_pipeline}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* AI Inference Pipeline Parameters */}
-      <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-5 shadow-xl">
+      <div className="p-6 rounded-3xl glass-panel border border-zinc-800 space-y-5 shadow-xl">
         <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-800">
-          <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
+          <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-sm">
             <BrainIcon size={20} />
           </div>
           <div>
@@ -158,7 +167,7 @@ export const SettingsView: React.FC = () => {
               type="text"
               value={modelName}
               onChange={e => setModelName(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-zinc-200 font-mono text-xs focus:outline-none focus:border-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
             />
           </div>
 
@@ -186,7 +195,7 @@ export const SettingsView: React.FC = () => {
             <select
               value={fallbackProvider}
               onChange={e => setFallbackProvider(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-zinc-200 text-xs focus:outline-none focus:border-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
             >
               <option value="gemini-1.5-flash">Google Gemini 1.5 Flash</option>
               <option value="gpt-4o-mini">OpenAI GPT-4o Mini</option>
@@ -194,15 +203,15 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-zinc-800 flex items-center justify-between text-xs">
+        <div className="pt-4 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <span className="text-zinc-500">
             Changes persist in active session for continuous stability.
           </span>
           <button
             onClick={() => resetDemoData()}
-            className="px-4 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 font-bold border border-rose-600/30 transition-colors"
+            className="px-4 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 font-bold border border-rose-600/30 transition-all shadow-sm hover:shadow-rose-500/20"
           >
-            Reset All Demo Data
+            Reset All Sample Data
           </button>
         </div>
       </div>

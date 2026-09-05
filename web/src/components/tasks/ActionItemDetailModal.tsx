@@ -114,12 +114,12 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
       {loading || !detail ? (
         <div className="py-16 text-center space-y-3">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
-          <div className="text-xs text-zinc-400">Loading task timeline and vector match data...</div>
+          <div className="text-xs text-zinc-400 font-mono">Loading task timeline and vector match data...</div>
         </div>
       ) : (
         <div className="space-y-6">
           {/* Top Status & Controls Header */}
-          <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl glass-panel border border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={detail.status} />
               <VerificationBadge confidence={detail.confidence} />
@@ -132,7 +132,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                 <button
                   onClick={() => handleQuickStatus('done')}
                   disabled={saving}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold border border-emerald-500/40 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold border border-emerald-500/40 transition-colors shadow-sm shadow-emerald-500/20"
                 >
                   <CheckCircleIcon size={14} />
                   <span>Mark as Done</span>
@@ -141,7 +141,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                 <button
                   onClick={() => handleQuickStatus('pending')}
                   disabled={saving}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold transition-colors"
                 >
                   <ClockIcon size={14} />
                   <span>Reopen Task</span>
@@ -150,7 +150,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
 
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-colors"
+                className="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold border border-zinc-700 transition-colors"
               >
                 {isEditing ? 'Cancel Edit' : 'Edit Details'}
               </button>
@@ -167,7 +167,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                   required
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-sm text-zinc-100 focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -177,7 +177,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                   rows={3}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -187,7 +187,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                   <select
                     value={ownerId}
                     onChange={e => setOwnerId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
                   >
                     <option value="">Unassigned</option>
                     {employees.map(emp => (
@@ -204,7 +204,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                     type="datetime-local"
                     value={deadline}
                     onChange={e => setDeadline(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
                   />
                 </div>
 
@@ -213,7 +213,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                   <select
                     value={status}
                     onChange={e => setStatus(e.target.value as TaskStatus)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500"
                   >
                     <option value="pending">In Progress (Pending)</option>
                     <option value="done">Completed (Done)</option>
@@ -234,7 +234,7 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold shadow-md disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : 'Update Commitment'}
                 </button>
@@ -250,12 +250,12 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+                <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
                     <UsersIcon size={18} />
                   </div>
                   <div>
-                    <span className="text-[10px] text-zinc-500 uppercase block font-bold">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-bold tracking-wider">
                       Assignee
                     </span>
                     <span className="text-xs font-semibold text-zinc-200">
@@ -264,12 +264,12 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+                <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
                     <ClockIcon size={18} />
                   </div>
                   <div>
-                    <span className="text-[10px] text-zinc-500 uppercase block font-bold">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-bold tracking-wider">
                       Target Deadline
                     </span>
                     <span className="text-xs font-mono font-semibold text-zinc-200">
@@ -284,25 +284,27 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800">
+                <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800">
                   <ConfidenceMeter score={detail.confidence} />
                 </div>
               </div>
 
               {detail.source_text && (
-                <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1">
+                <div className="p-4 rounded-2xl bg-zinc-950/90 border border-cyan-500/30 space-y-1.5 shadow-inner">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
                     <SparklesIcon size={12} />
-                    Verbatim Transcript Evidence
+                    Verbatim Transcript Evidence Anchor
                   </span>
-                  <p className="text-xs text-zinc-300 font-mono italic leading-relaxed">
-                    "{detail.source_text}"
-                  </p>
+                  <div className="text-xs text-zinc-200 font-mono italic leading-relaxed flex items-start gap-2">
+                    <span className="text-cyan-400 not-italic font-bold">❝</span>
+                    <span className="flex-1">{detail.source_text}</span>
+                    <span className="text-cyan-400 not-italic font-bold">❞</span>
+                  </div>
                 </div>
               )}
 
               {detail.originating_meeting && (
-                <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-zinc-800 flex items-center justify-between text-xs">
+                <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 text-zinc-400">
                     <FileTextIcon size={16} className="text-indigo-400" />
                     <span>Originating Meeting:</span>
@@ -315,10 +317,10 @@ export const ActionItemDetailModal: React.FC<ActionItemDetailModalProps> = ({
                       onClose();
                       navigateToMeeting(detail.originating_meeting!.id);
                     }}
-                    className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1"
+                    className="text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 group"
                   >
                     <span>View Meeting</span>
-                    <ArrowRightIcon size={12} />
+                    <ArrowRightIcon size={12} className="group-hover:translate-x-0.5 transition-transform" />
                   </button>
                 </div>
               )}
