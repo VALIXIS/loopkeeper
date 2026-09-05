@@ -354,14 +354,14 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
       maxWidth="4xl"
     >
       {/* Mode Tabs */}
-      <div className="flex items-center gap-2 mb-4 border-b border-zinc-800 pb-3 flex-wrap">
+      <div className="flex items-center gap-2 mb-4 border-b border-slate-200 dark:border-zinc-800 pb-3 flex-wrap">
         <button
           type="button"
           onClick={() => { setModalTab('schedule'); setCreatedJoinUrl(null); }}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             modalTab === 'schedule'
               ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-md'
-              : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              : 'bg-slate-200 dark:bg-zinc-900 text-slate-700 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200'
           }`}
         >
           Schedule Meeting (Google Meet / Zoom / Teams)
@@ -372,10 +372,10 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
             modalTab === 'record'
               ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-md'
-              : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              : 'bg-slate-200 dark:bg-zinc-900 text-slate-700 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200'
           }`}
         >
-          <RadioIcon size={14} className={modalTab === 'record' ? 'animate-pulse' : 'text-rose-400'} />
+          <RadioIcon size={14} className={modalTab === 'record' ? 'animate-pulse' : 'text-rose-500 dark:text-rose-400'} />
           <span>Live Screen & Audio Recorder</span>
         </button>
         <button
@@ -384,7 +384,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             modalTab === 'ingest'
               ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-md'
-              : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              : 'bg-slate-200 dark:bg-zinc-900 text-slate-700 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200'
           }`}
         >
           Ingest Transcript & SLM Extraction
@@ -392,30 +392,30 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
       </div>
 
       {createdJoinUrl ? (
-        <div className="p-6 rounded-2xl bg-slate-900 border border-cyan-500/40 text-center space-y-4 animate-fade-in">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-400 font-bold text-xl">
+        <div className="p-6 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-cyan-500/40 text-center space-y-4 animate-fade-in">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-bold text-xl">
             ✓
           </div>
-          <h3 className="text-lg font-bold text-white">Meeting Link Generated</h3>
-          <p className="text-xs text-zinc-400 max-w-md mx-auto">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Meeting Link Generated</h3>
+          <p className="text-xs text-slate-600 dark:text-zinc-400 max-w-md mx-auto">
             Your {selectedProvider === 'google_meet' ? 'Google Meet' : selectedProvider === 'zoom' ? 'Zoom' : 'Microsoft Teams'} space is ready.
           </p>
 
           {/* Recommended In-App Studio Box */}
-          <div className="p-3.5 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-left space-y-2 max-w-lg mx-auto">
-            <div className="flex items-center justify-between text-xs font-bold text-indigo-300">
+          <div className="p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-500/40 text-left space-y-2 max-w-lg mx-auto">
+            <div className="flex items-center justify-between text-xs font-bold text-indigo-700 dark:text-indigo-300">
               <span className="flex items-center gap-1.5">
-                <RadioIcon size={14} className="text-rose-400 animate-pulse" />
+                <RadioIcon size={14} className="text-rose-500 dark:text-rose-400 animate-pulse" />
                 <span>Recommended: In-App LoopKeeper Meeting Studio</span>
               </span>
-              <span className="text-[10px] font-mono bg-indigo-500/20 px-2 py-0.5 rounded text-indigo-200">Built-in AI</span>
+              <span className="text-[10px] font-mono bg-indigo-500/20 px-2 py-0.5 rounded text-indigo-700 dark:text-indigo-200">Built-in AI</span>
             </div>
-            <p className="text-[11px] text-slate-300">
+            <p className="text-[11px] text-slate-700 dark:text-slate-300">
               Launch the built-in meeting room with live microphone recording, real-time waveform visualization, and instant AI commitment extraction.
             </p>
           </div>
 
-          <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 font-mono text-xs text-cyan-300 select-all overflow-x-auto max-w-lg mx-auto">
+          <div className="p-3 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 font-mono text-xs text-cyan-700 dark:text-cyan-300 select-all overflow-x-auto max-w-lg mx-auto">
             {createdJoinUrl}
           </div>
 
@@ -428,7 +428,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
               }}
               className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-xs shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2"
             >
-              <RadioIcon size={14} className="text-rose-300 animate-pulse" />
+              <RadioIcon size={14} className="text-rose-200 animate-pulse" />
               <span>Launch In-App Studio ↗</span>
             </button>
 
@@ -448,7 +448,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                 href={createdJoinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-white/[0.08] transition-all flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs border border-slate-300 dark:border-white/[0.08] transition-all flex items-center gap-1.5"
               >
                 <span>Open Platform Link</span>
                 <ExternalLinkIcon size={12} />
@@ -458,7 +458,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold"
+              className="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 text-xs font-semibold"
             >
               Done
             </button>
@@ -468,11 +468,11 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
         <div className="py-4 space-y-6">
           <div className="text-center space-y-1">
-            <h3 className="text-lg font-bold text-zinc-100 flex items-center justify-center gap-2">
-              <SparklesIcon size={20} className="text-cyan-400 animate-spin" />
+            <h3 className="text-lg font-bold text-slate-900 dark:text-zinc-100 flex items-center justify-center gap-2">
+              <SparklesIcon size={20} className="text-cyan-600 dark:text-cyan-400 animate-spin" />
               Processing "{title}"
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-slate-600 dark:text-zinc-400">
               Inference engine analyzing speaker commitments and matching against existing task state...
             </p>
           </div>
@@ -490,7 +490,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           <div className="p-4 rounded-2xl glass-panel border border-rose-500/30 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex-1">
-                <label className="text-xs font-bold text-zinc-300 block mb-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-zinc-300 block mb-1">
                   Meeting Title *
                 </label>
                 <input
@@ -498,7 +498,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                   value={title}
                   onChange={e => setTitle(e.target.value)}
                   placeholder="e.g. Live Google Meet Sync & Commitments"
-                  className="w-full px-3.5 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-rose-500 transition-colors"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 text-xs text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:border-rose-500 transition-colors"
                 />
               </div>
 
@@ -510,11 +510,11 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                       onClick={() => setModalRecordScreenAudio(!modalRecordScreenAudio)}
                       className={`px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                         modalRecordScreenAudio
-                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                          : 'bg-zinc-900 text-zinc-400 border-zinc-800'
+                          ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/50'
+                          : 'bg-slate-200 dark:bg-zinc-900 text-slate-700 dark:text-zinc-400 border-slate-300 dark:border-zinc-800'
                       }`}
                     >
-                      <SparklesIcon size={13} className={modalRecordScreenAudio ? 'text-cyan-400' : ''} />
+                      <SparklesIcon size={13} className={modalRecordScreenAudio ? 'text-cyan-600 dark:text-cyan-400' : ''} />
                       <span>{modalRecordScreenAudio ? 'Screen Sound On' : '+ Screen Sound'}</span>
                     </button>
 
@@ -542,22 +542,22 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           </div>
 
           {/* Live Turn Input & Stream */}
-          <div className="p-4 rounded-2xl glass-panel border border-zinc-800 space-y-3">
+          <div className="p-4 rounded-2xl glass-panel border border-slate-200 dark:border-zinc-800 space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-zinc-300 flex items-center gap-1.5">
-                <FileTextIcon size={14} className="text-cyan-400" />
+              <span className="font-bold text-slate-800 dark:text-zinc-300 flex items-center gap-1.5">
+                <FileTextIcon size={14} className="text-cyan-600 dark:text-cyan-400" />
                 Live Speech Stream ({modalTranscriptLines.length} turns)
               </span>
-              <span className="font-mono text-[10px] text-zinc-500">
+              <span className="font-mono text-[10px] text-slate-500 dark:text-zinc-500">
                 {isModalRecording ? 'REC ACTIVE' : 'READY'}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 p-2 rounded-xl bg-zinc-950 border border-zinc-800">
+            <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800">
               <select
                 value={modalSpeaker}
                 onChange={e => setModalSpeaker(e.target.value)}
-                className="bg-zinc-900 text-xs font-bold text-cyan-300 px-2 py-1 rounded-lg border border-zinc-700 focus:outline-none shrink-0"
+                className="bg-slate-200 dark:bg-zinc-900 text-xs font-bold text-cyan-700 dark:text-cyan-300 px-2 py-1 rounded-lg border border-slate-300 dark:border-zinc-700 focus:outline-none shrink-0"
               >
                 {employees.map(e => (
                   <option key={e.id} value={e.name}>{e.name}</option>
@@ -581,7 +581,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                   }
                 }}
                 placeholder="Speak or type turn into live meeting stream..."
-                className="w-full bg-transparent text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none px-1"
+                className="w-full bg-transparent text-xs text-slate-900 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none px-1"
               />
 
               <button
@@ -605,17 +605,17 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
             <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
               {modalTranscriptLines.length === 0 ? (
-                <div className="p-4 text-center text-xs font-mono text-zinc-500">
+                <div className="p-4 text-center text-xs font-mono text-slate-500 dark:text-zinc-500">
                   0 initial preset lines. Start recording or type live spoken turns above.
                 </div>
               ) : (
                 modalTranscriptLines.map((turn, idx) => (
-                  <div key={idx} className="p-2.5 rounded-xl bg-zinc-950/80 border border-zinc-800 space-y-0.5">
+                  <div key={idx} className="p-2.5 rounded-xl bg-slate-100/90 dark:bg-zinc-950/80 border border-slate-200 dark:border-zinc-800 space-y-0.5">
                     <div className="flex items-center justify-between text-[10px]">
-                      <span className="font-bold text-cyan-400">{turn.speaker}</span>
-                      <span className="font-mono text-zinc-500">{turn.time}</span>
+                      <span className="font-bold text-cyan-600 dark:text-cyan-400">{turn.speaker}</span>
+                      <span className="font-mono text-slate-500 dark:text-zinc-500">{turn.time}</span>
                     </div>
-                    <p className="text-xs text-zinc-300 font-mono">"{turn.text}"</p>
+                    <p className="text-xs text-slate-800 dark:text-zinc-300 font-mono">"{turn.text}"</p>
                   </div>
                 ))
               )}
@@ -626,7 +626,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-semibold"
             >
               Cancel
             </button>
@@ -644,14 +644,14 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-5">
           {modalTab === 'schedule' ? (
             <div className="p-4 rounded-2xl glass-panel border border-cyan-500/30 space-y-3">
-              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block">
                 Select Meeting Platform *
               </label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { id: 'google_meet', name: 'Google Meet', color: 'border-emerald-500/50 bg-emerald-950/20 text-emerald-300' },
-                  { id: 'zoom', name: 'Zoom Video', color: 'border-cyan-500/50 bg-cyan-950/20 text-cyan-300' },
-                  { id: 'ms_teams', name: 'Microsoft Teams', color: 'border-indigo-500/50 bg-indigo-950/20 text-indigo-300' }
+                  { id: 'google_meet', name: 'Google Meet', color: 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' },
+                  { id: 'zoom', name: 'Zoom Video', color: 'border-cyan-500/50 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300' },
+                  { id: 'ms_teams', name: 'Microsoft Teams', color: 'border-indigo-500/50 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300' }
                 ].map(prov => (
                   <button
                     key={prov.id}
@@ -660,7 +660,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                     className={`p-3 rounded-xl border text-xs font-bold transition-all text-center ${
                       selectedProvider === prov.id
                         ? `${prov.color} ring-2 ring-cyan-400`
-                        : 'border-zinc-800 bg-zinc-950/60 text-zinc-400 hover:border-zinc-700'
+                        : 'border-slate-300 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-950/60 text-slate-600 dark:text-zinc-400 hover:border-slate-400'
                     }`}
                   >
                     {prov.name}
@@ -670,12 +670,12 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             </div>
           ) : (
             <div className="p-4 rounded-2xl glass-panel border border-indigo-500/30 space-y-2.5">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 flex items-center justify-between">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <SparklesIcon size={14} className="text-cyan-400" />
+                  <SparklesIcon size={14} className="text-cyan-600 dark:text-cyan-400" />
                   <span>Multi-Meeting Continuity Sequence Presets</span>
                 </span>
-                <span className="text-[10px] font-mono text-zinc-500">1-Click Load</span>
+                <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-500">1-Click Load</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {SAMPLE_TRANSCRIPTS.map((preset, idx) => (
@@ -683,9 +683,9 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                     key={idx}
                     type="button"
                     onClick={() => loadPreset(idx)}
-                    className="px-3.5 py-2 rounded-xl bg-zinc-950/80 hover:bg-zinc-900 text-zinc-300 hover:text-cyan-300 text-xs font-semibold border border-zinc-800 hover:border-cyan-500/40 transition-all text-left truncate flex items-center gap-2 group"
+                    className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-zinc-950/80 hover:bg-slate-200 dark:hover:bg-zinc-900 text-slate-800 dark:text-zinc-300 hover:text-cyan-600 dark:hover:text-cyan-300 text-xs font-semibold border border-slate-200 dark:border-zinc-800 hover:border-cyan-500/40 transition-all text-left truncate flex items-center gap-2 group"
                   >
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/20 text-indigo-300 group-hover:bg-cyan-500/20 group-hover:text-cyan-300 transition-colors">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 group-hover:bg-cyan-500/20 group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
                       M{idx + 1}
                     </span>
                     <span className="truncate">{preset.title.split(':')[0]}</span>
@@ -698,8 +698,8 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                <FileTextIcon size={14} className="text-cyan-400" />
+              <label className="text-xs font-semibold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
+                <FileTextIcon size={14} className="text-cyan-600 dark:text-cyan-400" />
                 Meeting Title *
               </label>
               <input
@@ -708,27 +708,27 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="e.g. Sprint 15 Architecture & Delivery Review"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                <CalendarIcon size={14} className="text-cyan-400" />
+              <label className="text-xs font-semibold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
+                <CalendarIcon size={14} className="text-cyan-600 dark:text-cyan-400" />
                 Meeting Timestamp
               </label>
               <input
                 type="datetime-local"
                 value={meetingDate}
                 onChange={e => setMeetingDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 text-sm text-slate-900 dark:text-zinc-100 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-              <UsersIcon size={14} className="text-cyan-400" />
+            <label className="text-xs font-semibold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
+              <UsersIcon size={14} className="text-cyan-600 dark:text-cyan-400" />
               Meeting Participants ({selectedParticipants.length} selected)
             </label>
             <div className="flex flex-wrap gap-2">
@@ -741,11 +741,11 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                     onClick={() => toggleParticipant(emp.id)}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
                       isSelected
-                        ? 'bg-gradient-to-r from-indigo-600/30 to-cyan-600/30 border-cyan-500/60 text-cyan-200 shadow-sm shadow-cyan-500/20'
-                        : 'bg-zinc-950/80 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                        ? 'bg-indigo-500/15 dark:bg-indigo-600/30 border-cyan-500/60 text-cyan-700 dark:text-cyan-200 shadow-sm'
+                        : 'bg-slate-100 dark:bg-zinc-950/80 border-slate-300 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-slate-400'
                     }`}
                   >
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 text-indigo-300 font-bold text-[9px] shrink-0">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 font-bold text-[9px] shrink-0">
                       {emp.name.charAt(0)}
                     </div>
                     <span>{emp.name}</span>
@@ -758,10 +758,10 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
           {modalTab === 'ingest' && (
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-zinc-300">
+                <label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                   Meeting Transcript Text *
                 </label>
-                <span className="text-[11px] text-zinc-500 font-mono">
+                <span className="text-[11px] text-slate-500 dark:text-zinc-500 font-mono">
                   Accepts speaker tags like [00:01:15] Adithya: ...
                 </span>
               </div>
@@ -771,16 +771,16 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                 value={transcriptContent}
                 onChange={e => setTranscriptContent(e.target.value)}
                 placeholder={`[00:01:00] Jyothsna: Let's review commitments for tomorrow.\n[00:01:20] Adithya: I will deploy the pgvector migration by Friday 5 PM.\n[00:02:00] Vignesh: I will resolve the auth token refresh bug by tomorrow.`}
-                className="w-full px-3.5 py-2.5 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 leading-relaxed transition-all"
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 leading-relaxed transition-all"
               />
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-zinc-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold transition-colors"
+              className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 text-xs font-semibold transition-colors"
             >
               Cancel
             </button>
