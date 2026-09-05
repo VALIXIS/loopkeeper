@@ -54,7 +54,7 @@ export const AccountabilityInsights: React.FC = () => {
 
         <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-lg">
           <div className="flex items-center justify-between text-xs text-zinc-400">
-            <span>AI Mean Extraction Precision</span>
+            <span>AI Mean Extraction Confidence</span>
             <SparklesIcon size={16} className="text-cyan-400" />
           </div>
           <span className="text-3xl font-bold font-mono text-cyan-400 mt-3 block">
@@ -82,7 +82,7 @@ export const AccountabilityInsights: React.FC = () => {
           <span className="text-3xl font-bold font-mono text-indigo-300 mt-3 block">
             1536-dim
           </span>
-          <p className="text-xs text-zinc-500 mt-1">pgvector HNSW Cosine Indexing</p>
+          <p className="text-xs text-zinc-500 mt-1">1536-dim Vector Cosine Indexing</p>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export const AccountabilityInsights: React.FC = () => {
                 1. High Backend Architecture Velocity
               </span>
               <p className="text-xs text-zinc-300 leading-relaxed">
-                Database schema migrations and pgvector indexing deliverables were completed ahead of schedule with 0 postponements.
+                Database schema migrations and vector similarity indexing deliverables were completed ahead of schedule with 0 postponements.
               </p>
             </div>
 
@@ -116,10 +116,10 @@ export const AccountabilityInsights: React.FC = () => {
 
             <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
               <span className="text-xs font-bold text-cyan-400">
-                3. Sub-250ms SLM Inference Performance
+                3. Fast SLM Inference Performance
               </span>
               <p className="text-xs text-zinc-300 leading-relaxed">
-                Specialized SLM handled 85% of transcript turns with confidence &gt; 0.90, only falling back to LLM for highly ambiguous cross-talk.
+                Specialized SLM handles primary transcript turns with high confidence, falling back to LLM when confidence falls below threshold.
               </p>
             </div>
           </div>
@@ -155,8 +155,8 @@ export const AccountabilityInsights: React.FC = () => {
 
             <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-zinc-200">PostgreSQL pgvector Schema</span>
-                <p className="text-[11px] text-zinc-400 mt-0.5">All 7 loopkeeper_* tables deployed with HNSW indexing and RLS</p>
+                <span className="text-xs font-bold text-zinc-200">Vector Matching & Schema Layer</span>
+                <p className="text-[11px] text-zinc-400 mt-0.5">1536-dimensional dense vector embeddings with cosine similarity matching & RLS</p>
               </div>
               <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
                 Ready

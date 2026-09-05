@@ -85,7 +85,7 @@ export const UpcomingDeadlinesCard: React.FC = () => {
       </div>
 
       <div className="mt-4 pt-3 border-t border-zinc-800 text-[11px] text-zinc-400">
-        Target commitment deadlines tracked across consecutive standups with pgvector deduplication.
+        Target commitment deadlines tracked across consecutive standups with vector similarity deduplication.
       </div>
     </div>
   );

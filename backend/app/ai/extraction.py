@@ -154,7 +154,7 @@ class FallbackLLMProvider(AIProvider):
                     owner = cand
             
             deadline = "Not specified"
-            deadline_match = re.search(r'(?:by|due|deadline:?|move to|pushing to|before)\s+([A-Za-z0-9\s/-]+?)(?:\s+(?:for|assigned\s+to|owner:?|said|will|has|is|completed|agreed)|[\.,]|$)', clause, re.IGNORECASE)
+            deadline_match = re.search(r'(?:by|due|deadline:?|move\s+(?:it\s+)?to|pushing\s+to|push\s+to|before)\s+([A-Za-z0-9\s/-]+?)(?:\s+(?:for|assigned\s+to|owner:?|said|will|has|is|completed|agreed)|[\.,]|$)', clause, re.IGNORECASE)
             if deadline_match:
                 deadline = deadline_match.group(1).strip()
                 deadline = re.sub(r'^(?:to\s+)+', '', deadline, flags=re.IGNORECASE).strip()

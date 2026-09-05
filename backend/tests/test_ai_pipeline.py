@@ -214,3 +214,115 @@ def test_heuristic_embedding_provider_labeling():
     vec = provider.generate_embedding("database pool timeout")
     assert len(vec) == 1536
     assert SemanticDenseEmbeddingProvider is HeuristicDenseEmbeddingProvider
+
+# 15. Pipeline deadline tracking: Later deadline triggers postponement
+def test_pipeline_deadline_later_triggers_postponement():
+    repo = ActionItemRepository()
+    engine = StateEngine(action_item_repo=repo)
+    orchestrator = AIPipelineOrchestrator(action_item_repo=repo, state_engine=engine)
+    m_id = uuid4()
+    
+    m1_date = datetime.utcnow()
+    initial_deadline = m1_date + timedelta(days=2)
+    item = repo.create_action_item(
+        meeting_id=m_id,
+        title="Refactor API endpoints",
+        deadline=initial_deadline
+    )
+    
+    t_text = "Refactor API endpoints assigned to Alice. Move to Friday."
+    processed = orchestrator.process_transcript(m_id, t_text)
+    
+    assert len(processed) > 0
+    updated_item = repo.get_action_item(item["id"])
+    assert updated_item["deadline"] > initial_deadline
+    
+    history = repo.get_history(item["id"])
+    event_types = [h["event_type"] for h in history]
+    assert "postponed" in event_types
+
+# 16. Pipeline deadline tracking: Same deadline logs updated (no postponement)
+def test_pipeline_same_deadline_no_postponement():
+    repo = ActionItemRepository()
+    engine = StateEngine(action_item_repo=repo)
+    orchestrator = AIPipelineOrchestrator(action_item_repo=repo, state_engine=engine)
+    m_id = uuid4()
+    
+    m1_date = datetime(2026, 9, 7, 10, 0)
+    initial_deadline = datetime(2026, 9, 11, 17, 0)
+    item = repo.create_action_item(
+        meeting_id=m_id,
+        title="Write integration tests",
+        deadline=initial_deadline
+    )
+    
+    orchestrator.meeting_repo.create_meeting(title="Sync", meeting_date=m1_date)
+    m_record = orchestrator.meeting_repo.list_meetings()[-1]
+    
+    t_text = "Write integration tests assigned to Bob by Friday."
+    orchestrator.process_transcript(m_record["id"], t_text)
+    
+    history = repo.get_history(item["id"])
+    event_types = [h["event_type"] for h in history]
+    assert "postponed" not in event_types
+
+# 17. Pipeline deadline tracking: Earlier deadline logs deadline_changed (not postponed)
+def test_pipeline_earlier_deadline_changed_event():
+    repo = ActionItemRepository()
+    engine = StateEngine(action_item_repo=repo)
+    orchestrator = AIPipelineOrchestrator(action_item_repo=repo, state_engine=engine)
+    m_id = uuid4()
+    
+    m1_date = datetime(2026, 9, 7, 10, 0)
+    initial_deadline = datetime(2026, 9, 14, 17, 0)
+    item = repo.create_action_item(
+        meeting_id=m_id,
+        title="Deploy container cluster",
+        deadline=initial_deadline
+    )
+    
+    m2 = orchestrator.meeting_repo.create_meeting(title="Emergency Sync", meeting_date=m1_date)
+    t_text = "Deploy container cluster assigned to Charlie. Move to Wednesday."
+    orchestrator.process_transcript(m2["id"], t_text)
+    
+    updated_item = repo.get_action_item(item["id"])
+    assert updated_item["deadline"] < initial_deadline
+    
+    history = repo.get_history(item["id"])
+    event_types = [h["event_type"] for h in history]
+    assert "deadline_changed" in event_types
+    assert "postponed" not in event_types
+
+# 18. Pipeline deadline tracking: Unparseable deadline keeps existing deadline
+def test_pipeline_unparseable_deadline_safe():
+    repo = ActionItemRepository()
+    engine = StateEngine(action_item_repo=repo)
+    orchestrator = AIPipelineOrchestrator(action_item_repo=repo, state_engine=engine)
+    m_id = uuid4()
+    
+    initial_deadline = datetime.utcnow() + timedelta(days=3)
+    item = repo.create_action_item(
+        meeting_id=m_id,
+        title="Optimize SQL queries",
+        deadline=initial_deadline
+    )
+    
+    t_text = "Optimize SQL queries assigned to Dave."
+    orchestrator.process_transcript(m_id, t_text)
+    
+    updated_item = repo.get_action_item(item["id"])
+    assert updated_item["deadline"] == initial_deadline
+
+# 19. Pipeline deadline tracking: normalize_deadline utility unit tests
+def test_normalize_deadline_utility():
+    from app.ai.pipeline import normalize_deadline
+    ref = datetime(2026, 9, 7, 10, 0, 0)
+    
+    assert normalize_deadline("2026-09-15T12:00:00") == datetime(2026, 9, 15, 12, 0, 0)
+    assert normalize_deadline("Not specified") is None
+    assert normalize_deadline("unknown") is None
+    assert normalize_deadline("") is None
+    assert normalize_deadline(None) is None
+    assert normalize_deadline("tomorrow", reference_date=ref) == datetime(2026, 9, 8, 17, 0, 0)
+    assert normalize_deadline("Friday", reference_date=ref) == datetime(2026, 9, 11, 17, 0, 0)
+

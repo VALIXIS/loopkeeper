@@ -72,7 +72,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
           <div>
             <span className="text-zinc-400 font-medium block">Commitment Matching</span>
             <span className="text-emerald-300 font-bold text-sm block">Cross-Standup Sync</span>
-            <span className="text-emerald-400/80 font-mono text-[10px] block mt-0.5">HNSW 1536-dim Vector</span>
+            <span className="text-emerald-400/80 font-mono text-[10px] block mt-0.5">1536-dim Vector Cosine</span>
           </div>
           <div>
             <span className="text-zinc-400 font-medium block">Enterprise Governance</span>

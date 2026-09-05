@@ -17,6 +17,9 @@
 - **Mobile:** Flutter, Dart
 - **ML:** Python (Modular architecture for SLM experimentation)
 
+## Quick Start (Backend)
+- **Windows Batch Launcher:** Double-click [start-backend.bat](start-backend.bat) (or run `.\start-backend.bat` from terminal) to start the FastAPI Uvicorn backend server at `http://localhost:8000`.
+
 ## Development Workflow
 - Work on eature/* branches.
 - Create Pull Requests to merge into develop.

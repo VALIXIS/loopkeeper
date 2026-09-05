@@ -486,7 +486,7 @@ export const MeetingDetailView: React.FC = () => {
                     Pipeline Deduplication Logic
                   </h4>
                   <p className="text-xs text-zinc-400 leading-relaxed">
-                    Extracted items underwent 1536-dimensional OpenAI / Gemini vector embeddings and were tested with HNSW cosine distance indexing. High similarity scores automatically linked recurring tasks back to previous meetings without creating duplicate clutter.
+                    Extracted items underwent 1536-dimensional vector embeddings and were calculated with cosine distance similarity. High similarity scores automatically linked recurring tasks back to previous meetings without creating duplicate clutter.
                   </p>
                 </div>
               </div>

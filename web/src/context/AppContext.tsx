@@ -181,7 +181,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (onStepUpdate) onStepUpdate(3, 'Evaluating extraction confidence & fallback...');
       await new Promise(r => setTimeout(r, 450));
 
-      if (onStepUpdate) onStepUpdate(4, 'Generating 1536-dim vector embeddings & pgvector matching...');
+      if (onStepUpdate) onStepUpdate(4, 'Generating 1536-dim vector embeddings & vector similarity matching...');
       await new Promise(r => setTimeout(r, 550));
 
       const extractedItems = await api.processMeeting(meeting.id);

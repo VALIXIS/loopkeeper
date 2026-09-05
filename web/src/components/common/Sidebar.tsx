@@ -149,7 +149,7 @@ export const Sidebar: React.FC = () => {
         </div>
         <div className="flex items-center justify-between">
           <span>Vector Index</span>
-          <span className="font-mono text-emerald-400 text-[10px]">HNSW 1536</span>
+          <span className="font-mono text-emerald-400 text-[10px]">Cosine 1536</span>
         </div>
         <div className="flex items-center justify-between">
           <span>VALIXIS Mode</span>

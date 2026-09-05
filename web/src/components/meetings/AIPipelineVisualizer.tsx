@@ -47,7 +47,7 @@ export const AIPipelineVisualizer: React.FC<AIPipelineVisualizerProps> = ({
               )}
             </h4>
             <p className="text-xs text-zinc-400">
-              Dual-Inference SLM ➔ 1536-dim Embedding ➔ pgvector Deduplication
+              Dual-Inference SLM ➔ 1536-dim Embedding ➔ Vector Cosine Deduplication
             </p>
           </div>
         </div>

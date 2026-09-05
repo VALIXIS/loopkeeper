@@ -44,8 +44,8 @@ const DEFAULT_PIPELINE_STEPS: PipelineStep[] = [
   },
   {
     id: 's5',
-    title: 'pgvector Semantic Similarity Matching',
-    description: 'Running HNSW cosine similarity against existing tasks to identify continuations.',
+    title: 'Vector Semantic Similarity Matching',
+    description: 'Running 1536-dim cosine similarity against existing tasks to identify continuations.',
     status: 'idle',
     badge: 'STAGE 5'
   },
