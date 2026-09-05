@@ -1,68 +1,19 @@
 [
   {
-    "id": "val-001",
-    "scenario": "A. Explicit commitment",
-    "transcript": "Siddharth will configure the Supabase RLS policies by Thursday.",
+    "id": "736cd419-0178-4620-a91b-68c6a9b2fb6a",
+    "transcript": "Hasitha to refactor database queries for performance by Friday.",
+    "text": "Hasitha to refactor database queries for performance by Friday.",
     "expected_action_items": [
       {
-        "action": "Configure the Supabase RLS policies",
-        "owner": "Siddharth",
-        "deadline": "Thursday",
-        "status": "pending",
-        "evidence": "Siddharth will configure the Supabase RLS policies by Thursday.",
-        "confidence": 0.95
-      }
-    ]
-  },
-  {
-    "id": "val-002",
-    "scenario": "B. Missing owner",
-    "transcript": "We should update the API documentation with the new webhook parameters before release.",
-    "expected_action_items": [
-      {
-        "action": "Update the API documentation with new webhook parameters",
+        "action": "Refactor database queries for performance",
         "owner": "Unassigned",
-        "deadline": "before release",
-        "status": "pending",
-        "evidence": "We should update the API documentation with the new webhook parameters before release.",
-        "confidence": 0.88
+        "deadline": "None",
+        "status": "pending"
       }
-    ]
-  },
-  {
-    "id": "val-003",
-    "scenario": "C. Missing deadline",
-    "transcript": "Ananya is responsible for setting up the Prometheus metrics pipeline.",
-    "expected_action_items": [
-      {
-        "action": "Set up the Prometheus metrics pipeline",
-        "owner": "Ananya",
-        "deadline": "Not specified",
-        "status": "pending",
-        "evidence": "Ananya is responsible for setting up the Prometheus metrics pipeline.",
-        "confidence": 0.91
-      }
-    ]
-  },
-  {
-    "id": "val-004",
-    "scenario": "E. Completed tasks",
-    "transcript": "Karan finished the database migration script yesterday.",
-    "expected_action_items": [
-      {
-        "action": "Database migration script",
-        "owner": "Karan",
-        "deadline": "yesterday",
-        "status": "done",
-        "evidence": "Karan finished the database migration script yesterday.",
-        "confidence": 0.96
-      }
-    ]
-  },
-  {
-    "id": "val-005",
-    "scenario": "G. Tentative non-commitment",
-    "transcript": "Maybe we can brainstorm some marketing ideas in the future.",
-    "expected_action_items": []
+    ],
+    "label": 1,
+    "status": "pending",
+    "is_anonymized": true,
+    "created_at": "2026-09-05T06:28:32.872515"
   }
 ]

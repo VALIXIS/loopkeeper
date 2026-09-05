@@ -52,6 +52,22 @@ class LoopKeeperMeeting(Base):
     transcript = relationship("LoopKeeperTranscript", back_populates="meeting", uselist=False, cascade="all, delete-orphan")
     action_items = relationship("LoopKeeperActionItem", back_populates="meeting", cascade="all, delete-orphan")
     participants = relationship("LoopKeeperMeetingParticipant", back_populates="meeting", cascade="all, delete-orphan")
+    recordings = relationship("LoopKeeperRecording", back_populates="meeting", cascade="all, delete-orphan")
+
+class LoopKeeperRecording(Base):
+    __tablename__ = "loopkeeper_recordings"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    meeting_id = Column(UUID(as_uuid=True), ForeignKey("loopkeeper_meetings.id", ondelete="CASCADE"), nullable=False)
+    file_path = Column(String, nullable=False)
+    file_name = Column(String, nullable=True)
+    file_size_bytes = Column(Integer, nullable=True)
+    duration_seconds = Column(Integer, nullable=True)
+    format = Column(String, nullable=False, default="mp3")
+    status = Column(String, nullable=False, default="uploaded")  # uploaded, transcribing, completed, failed
+    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+
+    meeting = relationship("LoopKeeperMeeting", back_populates="recordings")
 
 class LoopKeeperTranscript(Base):
     __tablename__ = "loopkeeper_transcripts"
@@ -77,7 +93,6 @@ class LoopKeeperActionItem(Base):
     status = Column(String, nullable=False, default="pending")
     confidence = Column(Numeric(4, 3), nullable=False, default=1.000)
     source_text = Column(Text, nullable=True)
-    # embedding column stored as vector
     first_seen_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     last_seen_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     completed_at = Column(DateTime(timezone=True), nullable=True)
@@ -86,6 +101,7 @@ class LoopKeeperActionItem(Base):
 
     meeting = relationship("LoopKeeperMeeting", back_populates="action_items")
     history = relationship("LoopKeeperActionItemHistory", back_populates="action_item", cascade="all, delete-orphan")
+    jira_links = relationship("LoopKeeperJiraLink", back_populates="action_item", cascade="all, delete-orphan")
 
 class LoopKeeperActionItemHistory(Base):
     __tablename__ = "loopkeeper_action_item_history"
@@ -139,3 +155,43 @@ class LoopKeeperMeetingParticipant(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
 
     meeting = relationship("LoopKeeperMeeting", back_populates="participants")
+
+class LoopKeeperIntegration(Base):
+    __tablename__ = "loopkeeper_integrations"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    provider = Column(String, nullable=False)  # google_drive, jira, teams, zoom, slack
+    is_connected = Column(Boolean, nullable=False, default=False)
+    account_email = Column(String, nullable=True)
+    config = Column(JSONB, nullable=True)
+    last_synced_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+
+class LoopKeeperJiraLink(Base):
+    __tablename__ = "loopkeeper_jira_links"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    action_item_id = Column(UUID(as_uuid=True), ForeignKey("loopkeeper_action_items.id", ondelete="CASCADE"), nullable=False)
+    jira_issue_key = Column(String, nullable=False)
+    jira_issue_id = Column(String, nullable=True)
+    jira_issue_url = Column(String, nullable=True)
+    jira_status = Column(String, nullable=False, default="To Do")
+    jira_assignee = Column(String, nullable=True)
+    synced_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+
+    action_item = relationship("LoopKeeperActionItem", back_populates="jira_links")
+
+class LoopKeeperExecutionDrift(Base):
+    __tablename__ = "loopkeeper_execution_drift"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    action_item_id = Column(UUID(as_uuid=True), ForeignKey("loopkeeper_action_items.id", ondelete="CASCADE"), nullable=False)
+    meeting_statement = Column(Text, nullable=False)
+    external_system = Column(String, nullable=False)  # jira, github, valixis
+    external_evidence = Column(Text, nullable=False)
+    drift_status = Column(String, nullable=False)  # aligned, execution_evidence_present, execution_drift, insufficient_evidence
+    discrepancy_reason = Column(Text, nullable=True)
+    confidence = Column(Numeric(4, 3), nullable=False, default=1.000)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)

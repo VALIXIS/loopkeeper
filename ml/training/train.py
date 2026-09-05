@@ -32,7 +32,7 @@ class SLMTrainer:
 
         logger.info(f'Loaded {len(train_data)} train samples, {len(val_data)} validation samples.')
 
-        all_transcripts = [s['transcript'] for s in train_data] + [s['transcript'] for s in val_data]
+        all_transcripts = [s.get('transcript') or s.get('text', '') for s in train_data] + [s.get('transcript') or s.get('text', '') for s in val_data]
         self.model.build_vocab(all_transcripts)
 
         for epoch in range(1, epochs + 1):
@@ -40,11 +40,11 @@ class SLMTrainer:
             random.shuffle(train_data)
             
             for sample in train_data:
-                transcript = sample['transcript']
-                expected_items = sample['expected_action_items']
+                transcript = sample.get('transcript') or sample.get('text', '')
+                expected_items = sample.get('expected_action_items', [])
                 
-                is_commitment = 1.0 if len(expected_items) > 0 else 0.0
-                target_status = expected_items[0]['status'] if expected_items else 'pending'
+                is_commitment = 1.0 if (expected_items or sample.get('label') == 1) else 0.0
+                target_status = expected_items[0]['status'] if expected_items else sample.get('status', 'pending')
                 target_status_idx = MultiTaskSLMClassifier.INV_STATUS.get(target_status, 0)
 
                 vec = self.model.text_to_vector(transcript)
@@ -70,7 +70,7 @@ class SLMTrainer:
 
                 total_loss += commit_loss
 
-            avg_loss = total_loss / len(train_data)
+            avg_loss = total_loss / max(1, len(train_data))
             logger.info(f'Epoch {epoch}/{epochs} - Training Loss: {avg_loss:.4f}')
 
         os.makedirs(self.output_dir, exist_ok=True)
