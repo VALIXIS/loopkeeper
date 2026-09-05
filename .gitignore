@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 __pycache__/
 *.py[cod]
 *.class
@@ -11,7 +11,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -21,6 +21,7 @@ wheels/
 .installed.cfg
 *.egg
 .env
+.env*.local
 .venv
 venv/
 ENV/

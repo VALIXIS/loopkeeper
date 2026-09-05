@@ -1,0 +1,76 @@
+[
+  {
+    "id": "test-001",
+    "scenario": "A. Explicit commitment",
+    "transcript": "Rohan will implement the Stripe webhook handler by 5 PM today.",
+    "expected_action_items": [
+      {
+        "action": "Implement the Stripe webhook handler",
+        "owner": "Rohan",
+        "deadline": "5 PM today",
+        "status": "pending",
+        "evidence": "Rohan will implement the Stripe webhook handler by 5 PM today.",
+        "confidence": 0.96
+      }
+    ]
+  },
+  {
+    "id": "test-002",
+    "scenario": "B. Missing owner",
+    "transcript": "The frontend CSS layout bug needs to be fixed by tomorrow.",
+    "expected_action_items": [
+      {
+        "action": "Fix the frontend CSS layout bug",
+        "owner": "Unassigned",
+        "deadline": "tomorrow",
+        "status": "pending",
+        "evidence": "The frontend CSS layout bug needs to be fixed by tomorrow.",
+        "confidence": 0.90
+      }
+    ]
+  },
+  {
+    "id": "test-003",
+    "scenario": "G. Tentative non-commitment",
+    "transcript": "We could think about migrating to GraphQL eventually.",
+    "expected_action_items": []
+  },
+  {
+    "id": "test-004",
+    "scenario": "H. Multiple action items",
+    "transcript": "Divya will design the settings screen by Tuesday and Sameer will hook up the API by Wednesday.",
+    "expected_action_items": [
+      {
+        "action": "Design the settings screen",
+        "owner": "Divya",
+        "deadline": "Tuesday",
+        "status": "pending",
+        "evidence": "Divya will design the settings screen by Tuesday",
+        "confidence": 0.93
+      },
+      {
+        "action": "Hook up the API",
+        "owner": "Sameer",
+        "deadline": "Wednesday",
+        "status": "pending",
+        "evidence": "Sameer will hook up the API by Wednesday",
+        "confidence": 0.93
+      }
+    ]
+  },
+  {
+    "id": "test-005",
+    "scenario": "J. Postponed deadlines",
+    "transcript": "Kavita mentioned the search indexing job is delayed. Move the deadline to next Tuesday.",
+    "expected_action_items": [
+      {
+        "action": "Search indexing job",
+        "owner": "Kavita",
+        "deadline": "next Tuesday",
+        "status": "pending",
+        "evidence": "Kavita mentioned the search indexing job is delayed. Move the deadline to next Tuesday.",
+        "confidence": 0.91
+      }
+    ]
+  }
+]
