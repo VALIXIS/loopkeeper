@@ -18,14 +18,22 @@ CREATE TABLE IF NOT EXISTS public.loopkeeper_recordings (
 -- 2. Create Table: loopkeeper_integrations
 CREATE TABLE IF NOT EXISTS public.loopkeeper_integrations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    provider TEXT NOT NULL CHECK (provider IN ('google_drive', 'jira', 'teams', 'zoom', 'slack')),
+    user_id UUID NULL,
+    provider TEXT NOT NULL CHECK (provider IN ('google_meet', 'google_drive', 'jira', 'ms_teams', 'zoom', 'slack')),
+    status TEXT NOT NULL DEFAULT 'not_connected',
     is_connected BOOLEAN NOT NULL DEFAULT false,
     account_email TEXT NULL,
+    account_name TEXT NULL,
+    encrypted_access_token TEXT NULL,
+    encrypted_refresh_token TEXT NULL,
+    token_type TEXT NULL DEFAULT 'Bearer',
+    expires_at TIMESTAMPTZ NULL,
+    scopes JSONB NULL,
     config JSONB NULL,
     last_synced_at TIMESTAMPTZ NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CONSTRAINT loopkeeper_integrations_provider_unique UNIQUE (provider)
+    CONSTRAINT loopkeeper_integrations_provider_user_unique UNIQUE (provider, user_id)
 );
 
 -- 3. Create Table: loopkeeper_jira_links
