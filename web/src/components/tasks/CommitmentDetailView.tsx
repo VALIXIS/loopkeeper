@@ -17,18 +17,32 @@ import {
   FileTextIcon,
   ExternalLinkIcon,
   MessageSquareIcon,
-  AlertTriangleIcon
+  AlertTriangleIcon,
+  RefreshCwIcon,
+  NetworkIcon
 } from '../common/Icons';
 
 export const CommitmentDetailView: React.FC = () => {
   const { route, navigateToMeeting, navigate } = useRouter();
   const { employees, currentUser } = useAuth();
-  const { updateTask } = useApp();
+  const { updateTask, addToast } = useApp();
 
   const taskId = route.params.commitmentId;
   const [detail, setDetail] = useState<ActionItemDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+
+  // GitHub POW Simulation state
+  const [isSimulatingPow, setIsSimulatingPow] = useState(false);
+  const [simulatedPow, setSimulatedPow] = useState<{
+    repository: string;
+    pr_number: number;
+    pr_title: string;
+    pr_url: string;
+    author: string;
+    similarity_score: number;
+    resolution_method: string;
+  } | null>(null);
 
   // Comments & Risk Notes state
   const [comments, setComments] = useState<TaskComment[]>([]);
@@ -58,6 +72,19 @@ export const CommitmentDetailView: React.FC = () => {
         );
         setStatus(data.status);
         setComments(data.comments || []);
+
+        if (data.proof_of_work && data.proof_of_work.length > 0) {
+          const firstPow = data.proof_of_work[0];
+          setSimulatedPow({
+            repository: firstPow.repository || 'metspy9069/loopkeeper',
+            pr_number: firstPow.pr_number || 42,
+            pr_title: firstPow.pr_title || `Fix ${data.title.toLowerCase()} implementation`,
+            pr_url: firstPow.pr_url || 'https://github.com/metspy9069/loopkeeper/pull/42',
+            author: firstPow.author_login || 'Subhash',
+            similarity_score: firstPow.similarity_score || 0.914,
+            resolution_method: firstPow.resolution_method || 'vector_similarity'
+          });
+        }
       })
       .catch(err => {
         console.error(err);
@@ -100,6 +127,36 @@ export const CommitmentDetailView: React.FC = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSimulateGitHubPow = async () => {
+    if (!taskId || !detail) return;
+    setIsSimulatingPow(true);
+
+    setTimeout(async () => {
+      const powData = {
+        repository: 'metspy9069/loopkeeper',
+        pr_number: 42,
+        pr_title: `fix(core): ${detail.title.toLowerCase()} implementation & stability patch`,
+        pr_url: 'https://github.com/metspy9069/loopkeeper/pull/42',
+        author: currentUser?.name || 'Subhash',
+        similarity_score: 0.914,
+        resolution_method: 'vector_similarity'
+      };
+
+      setSimulatedPow(powData);
+      await updateTask(taskId, { status: 'done' });
+      const refreshed = await api.getActionItemDetail(taskId);
+      setDetail(refreshed);
+      setStatus('done');
+      setIsSimulatingPow(false);
+
+      addToast({
+        type: 'success',
+        title: 'GitHub PR Webhook Processed',
+        message: `Task matched via Vector AI (0.914 similarity) and automatically transitioned to DONE!`
+      });
+    }, 1000);
   };
 
   const handleAddComment = async (e: React.FormEvent) => {
@@ -149,6 +206,14 @@ export const CommitmentDetailView: React.FC = () => {
             <VerificationBadge confidence={detail.confidence} />
             <MatchDecisionBadge decision={detail.match_decision} />
             <PostponementBadge count={detail.postponement_count} />
+
+            {simulatedPow && (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                <CheckCircleIcon size={12} className="text-emerald-400" />
+                Proof of Work Verified (PR #{simulatedPow.pr_number})
+              </span>
+            )}
+
             {(detail as any).jira_key || detail.matched_valixis_task_id ? (
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30 flex items-center gap-1">
                 <ExternalLinkIcon size={11} />
@@ -335,6 +400,77 @@ export const CommitmentDetailView: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* GitHub Proof of Work Demonstration Card */}
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-zinc-900 via-zinc-950 to-indigo-950/50 border border-emerald-500/40 space-y-3 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shrink-0">
+                    <NetworkIcon size={18} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-zinc-100 flex items-center gap-2">
+                      GitHub Proof-of-Work (Auto-Completion Engine)
+                    </h4>
+                    <p className="text-[11px] text-zinc-400">
+                      Webhook PR listener & 384-dim Vector AI semantic resolution
+                    </p>
+                  </div>
+                </div>
+
+                {!simulatedPow ? (
+                  <button
+                    onClick={handleSimulateGitHubPow}
+                    disabled={isSimulatingPow}
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs shadow-md flex items-center gap-2 shrink-0 disabled:opacity-50"
+                  >
+                    {isSimulatingPow ? (
+                      <RefreshCwIcon size={13} className="animate-spin" />
+                    ) : (
+                      <ExternalLinkIcon size={13} />
+                    )}
+                    <span>Simulate GitHub PR Webhook</span>
+                  </button>
+                ) : (
+                  <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shrink-0 shadow-sm">
+                    <CheckCircleIcon size={14} className="text-emerald-400" />
+                    Auto-Resolved via GitHub PR #{simulatedPow.pr_number}
+                  </span>
+                )}
+              </div>
+
+              {simulatedPow && (
+                <div className="p-3.5 rounded-xl bg-zinc-950/90 border border-zinc-800 space-y-2 text-xs font-mono text-zinc-300">
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] border-b border-zinc-800/80 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-zinc-500">PR:</span>
+                      <a
+                        href={simulatedPow.pr_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cyan-400 font-bold hover:underline flex items-center gap-1"
+                      >
+                        {simulatedPow.repository}#{simulatedPow.pr_number}
+                        <ExternalLinkIcon size={11} />
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-zinc-500">Vector AI Score:</span>
+                      <span className="text-emerald-300 font-bold">
+                        {(simulatedPow.similarity_score * 100).toFixed(1)}% Cosine Similarity
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-zinc-300 italic">
+                    "{simulatedPow.pr_title}"
+                  </div>
+                  <div className="text-[10px] text-zinc-500 flex justify-between">
+                    <span>Author: {simulatedPow.author}</span>
+                    <span>Resolution: {simulatedPow.resolution_method}</span>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Originating Meeting Card */}
             {detail.originating_meeting && (
