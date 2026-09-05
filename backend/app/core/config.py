@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "LoopKeeper API"
     API_V1_STR: str = "/api/v1"
     
+    # Authentication settings
+    AUTH_MODE: str = os.getenv("AUTH_MODE", "production")
+    
     # Supabase / Database settings
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://qbvlzhjnqrwsoyvpomyt.supabase.co")
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")

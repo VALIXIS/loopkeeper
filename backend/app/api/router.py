@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from app.core.security import get_current_user
 from app.api.routes import (
     health,
     auth,
@@ -18,17 +19,22 @@ from app.api.routes import (
 
 api_router = APIRouter()
 
+# Public Routes
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
-api_router.include_router(users.router)
-api_router.include_router(meetings.router)
-api_router.include_router(action_items.router)
-api_router.include_router(commitments.router)
-api_router.include_router(accountability.router)
-api_router.include_router(dashboard.router)
-api_router.include_router(google_drive.router)
-api_router.include_router(employees.router)
-api_router.include_router(integrations.router)
-api_router.include_router(jira.router)
-api_router.include_router(recordings.router)
-api_router.include_router(transcripts.router)
+
+# Protected Routes (Require valid Bearer token in production mode)
+protected_deps = [Depends(get_current_user)]
+
+api_router.include_router(users.router, dependencies=protected_deps)
+api_router.include_router(meetings.router, dependencies=protected_deps)
+api_router.include_router(action_items.router, dependencies=protected_deps)
+api_router.include_router(commitments.router, dependencies=protected_deps)
+api_router.include_router(accountability.router, dependencies=protected_deps)
+api_router.include_router(dashboard.router, dependencies=protected_deps)
+api_router.include_router(google_drive.router, dependencies=protected_deps)
+api_router.include_router(employees.router, dependencies=protected_deps)
+api_router.include_router(integrations.router, dependencies=protected_deps)
+api_router.include_router(jira.router, dependencies=protected_deps)
+api_router.include_router(recordings.router, dependencies=protected_deps)
+api_router.include_router(transcripts.router, dependencies=protected_deps)

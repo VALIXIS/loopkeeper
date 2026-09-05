@@ -3,7 +3,7 @@ from typing import List, Optional, Any
 from datetime import datetime
 from uuid import UUID
 from sqlalchemy.orm import Session
-from app.models.models import LoopKeeperActionItem, LoopKeeperActionItemHistory
+from app.models.models import LoopKeeperActionItem, LoopKeeperActionItemHistory, LoopKeeperJiraLink, LoopKeeperExecutionDrift
 from app.core.database import SessionLocal
 
 class ActionItemRepository:
@@ -11,6 +11,8 @@ class ActionItemRepository:
         self.db = db_session
         self._in_memory_items: dict = {}
         self._in_memory_history: List[dict] = []
+        self._in_memory_jira_links: List[dict] = []
+        self._in_memory_execution_drift: List[dict] = []
 
     def _get_db(self):
         if self.db is not None:
@@ -340,3 +342,219 @@ class ActionItemRepository:
                     db.close()
 
         return [h for h in self._in_memory_history if h["action_item_id"] == action_item_id]
+
+    def save_jira_link(
+        self,
+        action_item_id: UUID,
+        jira_issue_key: str,
+        jira_issue_id: Optional[str] = None,
+        jira_issue_url: Optional[str] = None,
+        jira_status: str = "To Do",
+        jira_assignee: Optional[str] = None
+    ) -> dict:
+        link_id = uuid.uuid4()
+        now = datetime.utcnow()
+
+        db, is_local = self._get_db()
+        if db:
+            try:
+                # Check for existing link with same action_item_id and jira_issue_key
+                existing = db.query(LoopKeeperJiraLink).filter(
+                    LoopKeeperJiraLink.action_item_id == action_item_id,
+                    LoopKeeperJiraLink.jira_issue_key == jira_issue_key
+                ).first()
+                if existing:
+                    existing.jira_status = jira_status
+                    if jira_issue_id:
+                        existing.jira_issue_id = jira_issue_id
+                    if jira_issue_url:
+                        existing.jira_issue_url = jira_issue_url
+                    if jira_assignee:
+                        existing.jira_assignee = jira_assignee
+                    existing.synced_at = now
+                    db.commit()
+                    db.refresh(existing)
+                    return {
+                        "id": existing.id,
+                        "action_item_id": existing.action_item_id,
+                        "jira_issue_key": existing.jira_issue_key,
+                        "jira_issue_id": existing.jira_issue_id,
+                        "jira_issue_url": existing.jira_issue_url,
+                        "jira_status": existing.jira_status,
+                        "jira_assignee": existing.jira_assignee,
+                        "synced_at": existing.synced_at,
+                        "created_at": existing.created_at
+                    }
+
+                link_obj = LoopKeeperJiraLink(
+                    id=link_id,
+                    action_item_id=action_item_id,
+                    jira_issue_key=jira_issue_key,
+                    jira_issue_id=jira_issue_id,
+                    jira_issue_url=jira_issue_url,
+                    jira_status=jira_status,
+                    jira_assignee=jira_assignee,
+                    synced_at=now,
+                    created_at=now
+                )
+                db.add(link_obj)
+                db.commit()
+                db.refresh(link_obj)
+                return {
+                    "id": link_obj.id,
+                    "action_item_id": link_obj.action_item_id,
+                    "jira_issue_key": link_obj.jira_issue_key,
+                    "jira_issue_id": link_obj.jira_issue_id,
+                    "jira_issue_url": link_obj.jira_issue_url,
+                    "jira_status": link_obj.jira_status,
+                    "jira_assignee": link_obj.jira_assignee,
+                    "synced_at": link_obj.synced_at,
+                    "created_at": link_obj.created_at
+                }
+            except Exception:
+                db.rollback()
+                raise
+            finally:
+                if is_local:
+                    db.close()
+
+        # In-memory fallback
+        for link in self._in_memory_jira_links:
+            if link["action_item_id"] == action_item_id and link["jira_issue_key"] == jira_issue_key:
+                link["jira_status"] = jira_status
+                if jira_assignee:
+                    link["jira_assignee"] = jira_assignee
+                link["synced_at"] = now
+                return link
+
+        record = {
+            "id": link_id,
+            "action_item_id": action_item_id,
+            "jira_issue_key": jira_issue_key,
+            "jira_issue_id": jira_issue_id,
+            "jira_issue_url": jira_issue_url,
+            "jira_status": jira_status,
+            "jira_assignee": jira_assignee,
+            "synced_at": now,
+            "created_at": now
+        }
+        self._in_memory_jira_links.append(record)
+        return record
+
+    def get_jira_links_for_action_item(self, action_item_id: UUID) -> List[dict]:
+        db, is_local = self._get_db()
+        if db:
+            try:
+                links = db.query(LoopKeeperJiraLink).filter(
+                    LoopKeeperJiraLink.action_item_id == action_item_id
+                ).order_by(LoopKeeperJiraLink.created_at.asc()).all()
+                return [
+                    {
+                        "id": l.id,
+                        "action_item_id": l.action_item_id,
+                        "jira_issue_key": l.jira_issue_key,
+                        "jira_issue_id": l.jira_issue_id,
+                        "jira_issue_url": l.jira_issue_url,
+                        "jira_status": l.jira_status,
+                        "jira_assignee": l.jira_assignee,
+                        "synced_at": l.synced_at,
+                        "created_at": l.created_at
+                    }
+                    for l in links
+                ]
+            finally:
+                if is_local:
+                    db.close()
+
+        return [l for l in self._in_memory_jira_links if l["action_item_id"] == action_item_id]
+
+    def get_jira_link_by_issue_key(self, jira_issue_key: str) -> Optional[dict]:
+        db, is_local = self._get_db()
+        if db:
+            try:
+                link = db.query(LoopKeeperJiraLink).filter(
+                    LoopKeeperJiraLink.jira_issue_key == jira_issue_key
+                ).first()
+                if link:
+                    return {
+                        "id": link.id,
+                        "action_item_id": link.action_item_id,
+                        "jira_issue_key": link.jira_issue_key,
+                        "jira_issue_id": link.jira_issue_id,
+                        "jira_issue_url": link.jira_issue_url,
+                        "jira_status": link.jira_status,
+                        "jira_assignee": link.jira_assignee,
+                        "synced_at": link.synced_at,
+                        "created_at": link.created_at
+                    }
+            finally:
+                if is_local:
+                    db.close()
+
+        for l in self._in_memory_jira_links:
+            if l["jira_issue_key"] == jira_issue_key:
+                return l
+        return None
+
+    def save_execution_drift_record(
+        self,
+        action_item_id: UUID,
+        meeting_statement: str,
+        external_system: str,
+        external_evidence: str,
+        drift_status: str,
+        discrepancy_reason: Optional[str] = None,
+        confidence: float = 1.0
+    ) -> dict:
+        record_id = uuid.uuid4()
+        now = datetime.utcnow()
+
+        db, is_local = self._get_db()
+        if db:
+            try:
+                drift_obj = LoopKeeperExecutionDrift(
+                    id=record_id,
+                    action_item_id=action_item_id,
+                    meeting_statement=meeting_statement,
+                    external_system=external_system,
+                    external_evidence=external_evidence,
+                    drift_status=drift_status,
+                    discrepancy_reason=discrepancy_reason,
+                    confidence=confidence,
+                    created_at=now
+                )
+                db.add(drift_obj)
+                db.commit()
+                db.refresh(drift_obj)
+                return {
+                    "id": drift_obj.id,
+                    "action_item_id": drift_obj.action_item_id,
+                    "meeting_statement": drift_obj.meeting_statement,
+                    "external_system": drift_obj.external_system,
+                    "external_evidence": drift_obj.external_evidence,
+                    "drift_status": drift_obj.drift_status,
+                    "discrepancy_reason": drift_obj.discrepancy_reason,
+                    "confidence": float(drift_obj.confidence),
+                    "created_at": drift_obj.created_at
+                }
+            except Exception:
+                db.rollback()
+                raise
+            finally:
+                if is_local:
+                    db.close()
+
+        record = {
+            "id": record_id,
+            "action_item_id": action_item_id,
+            "meeting_statement": meeting_statement,
+            "external_system": external_system,
+            "external_evidence": external_evidence,
+            "drift_status": drift_status,
+            "discrepancy_reason": discrepancy_reason,
+            "confidence": confidence,
+            "created_at": now
+        }
+        self._in_memory_execution_drift.append(record)
+        return record
+

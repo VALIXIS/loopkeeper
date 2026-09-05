@@ -85,26 +85,22 @@ class JiraIntegrationService:
             except Exception as e:
                 logger.warning(f"Jira API call failed: {e}. Generating local execution link.")
 
-        link_record = {
-            "id": uuid.uuid4(),
-            "action_item_id": action_item_id,
-            "jira_issue_key": issue_key,
-            "jira_issue_id": f"100{abs(hash(issue_key)) % 90}",
-            "jira_issue_url": f"https://{self.jira_domain or 'jira.atlassian.net'}/browse/{issue_key}",
-            "jira_status": raw_status,
-            "normalized_status": self.normalize_jira_status(raw_status),
-            "jira_assignee": item.get("owner_name", "Unassigned"),
-            "synced_at": now,
-            "created_at": now
-        }
-
-        if action_item_id not in self._jira_links:
-            self._jira_links[action_item_id] = []
-        self._jira_links[action_item_id].append(link_record)
+        link_record = self.action_item_repo.save_jira_link(
+            action_item_id=action_item_id,
+            jira_issue_key=issue_key,
+            jira_issue_id=f"100{abs(hash(issue_key)) % 90}",
+            jira_issue_url=f"https://{self.jira_domain or 'jira.atlassian.net'}/browse/{issue_key}",
+            jira_status=raw_status,
+            jira_assignee=item.get("owner_name", "Unassigned")
+        )
+        link_record["normalized_status"] = self.normalize_jira_status(link_record.get("jira_status", raw_status))
         return link_record
 
     def get_jira_links_for_commitment(self, action_item_id: UUID) -> List[dict]:
-        return self._jira_links.get(action_item_id, [])
+        links = self.action_item_repo.get_jira_links_for_action_item(action_item_id)
+        for link in links:
+            link["normalized_status"] = self.normalize_jira_status(link.get("jira_status"))
+        return links
 
     def fetch_live_jira_issue(self, issue_key: str) -> Optional[Dict[str, Any]]:
         """Fetch live Jira issue details from Atlassian API if credentials exist."""
@@ -135,10 +131,18 @@ class JiraIntegrationService:
         if not links:
             return []
         
+        synced_links = []
         for link in links:
             live = self.fetch_live_jira_issue(link["jira_issue_key"])
-            if live:
-                link["jira_status"] = live["jira_status"]
-                link["normalized_status"] = live["normalized_status"]
-            link["synced_at"] = datetime.utcnow()
-        return links
+            status = live["jira_status"] if live else link["jira_status"]
+            updated = self.action_item_repo.save_jira_link(
+                action_item_id=action_item_id,
+                jira_issue_key=link["jira_issue_key"],
+                jira_issue_id=link.get("jira_issue_id"),
+                jira_issue_url=link.get("jira_issue_url"),
+                jira_status=status,
+                jira_assignee=link.get("jira_assignee")
+            )
+            updated["normalized_status"] = self.normalize_jira_status(updated.get("jira_status"))
+            synced_links.append(updated)
+        return synced_links

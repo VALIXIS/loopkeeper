@@ -38,10 +38,49 @@ def test_auth_login_api_endpoint():
     assert data["user"]["email"] == "hasitha@valixis.com"
 
 def test_users_api_endpoint():
-    res = client.get("/api/v1/users")
+    res = client.get("/api/v1/users", headers={"Authorization": "Bearer valid-jwt-12345678"})
     assert res.status_code == 200
     users = res.json()
     assert len(users) > 0
+
+def test_auth_enforcement_unauthenticated_blocked():
+    from app.core.config import settings
+    original_mode = settings.AUTH_MODE
+    try:
+        settings.AUTH_MODE = "production"
+        res = client.get("/api/v1/users")
+        assert res.status_code == 401
+        assert "Authentication required" in res.json()["detail"]
+    finally:
+        settings.AUTH_MODE = original_mode
+
+def test_auth_enforcement_invalid_token_blocked():
+    from app.core.config import settings
+    original_mode = settings.AUTH_MODE
+    try:
+        settings.AUTH_MODE = "production"
+        res = client.get("/api/v1/users", headers={"Authorization": "Bearer invalid-token"})
+        assert res.status_code == 401
+        assert "Invalid or expired" in res.json()["detail"]
+    finally:
+        settings.AUTH_MODE = original_mode
+
+def test_jira_link_database_persistence_across_service_recreation():
+    action_repo = ActionItemRepository()
+    meeting_repo = MeetingRepository()
+    m = meeting_repo.create_meeting(title="Jira Persistence Test Meeting")
+    item = action_repo.create_action_item(meeting_id=m["id"], title="Persist Jira Link Test", status="pending")
+
+    # Instance 1: Create Jira link
+    s1 = JiraIntegrationService(action_item_repo=action_repo)
+    created_link = s1.create_jira_issue_for_commitment(action_item_id=item["id"])
+    assert created_link["jira_issue_key"] is not None
+
+    # Instance 2: Recreate service instance and retrieve link from repository/database
+    s2 = JiraIntegrationService(action_item_repo=action_repo)
+    links = s2.get_jira_links_for_commitment(action_item_id=item["id"])
+    assert len(links) == 1
+    assert links[0]["jira_issue_key"] == created_link["jira_issue_key"]
 
 def test_meeting_platform_providers_honest_status():
     gm = GoogleMeetProvider()
