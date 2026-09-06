@@ -12,7 +12,9 @@ import {
   RefreshCwIcon,
   EyeIcon,
   LayersIcon,
-  SearchIcon
+  SearchIcon,
+  MaximizeIcon,
+  MinimizeIcon
 } from '../common/Icons';
 
 export interface GraphNode3D {
@@ -37,6 +39,15 @@ interface Particle3D {
   color: string;
 }
 
+interface AmbientParticle {
+  x: number;
+  y: number;
+  z: number;
+  size: number;
+  opacity: number;
+  speedY: number;
+}
+
 export const AccountabilityGraph: React.FC = () => {
   const { actionItems, meetings, navigateToTask } = useApp();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(actionItems[0]?.id || null);
@@ -48,6 +59,7 @@ export const AccountabilityGraph: React.FC = () => {
   const [isAutoRotate, setIsAutoRotate] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1.0);
   const [hoveredNode, setHoveredNode] = useState<{ node: GraphNode3D; x: number; y: number } | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -66,12 +78,27 @@ export const AccountabilityGraph: React.FC = () => {
   const lastMousePosRef = useRef({ x: 0, y: 0 });
   const nodesRef = useRef<GraphNode3D[]>([]);
   const particlesRef = useRef<Particle3D[]>([]);
+  const ambientParticlesRef = useRef<AmbientParticle[]>([]);
   const animFrameIdRef = useRef<number | null>(null);
   const ariaAnnouncementId = useId();
 
   const selectedItem = actionItems.find(a => a.id === selectedTaskId) || actionItems[0];
   const originMeeting = meetings.find(m => m.id === selectedItem?.meeting_id);
   const ownersList = Array.from(new Set(actionItems.map(a => a.owner_name).filter(Boolean)));
+
+  // Listen for ESC & F key to exit/toggle fullscreen mode
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      } else if ((e.key === 'f' || e.key === 'F') && !(e.target as HTMLElement)?.matches('input, select, textarea')) {
+        e.preventDefault();
+        setIsFullscreen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isFullscreen]);
 
   // Filter items
   const filteredItems = actionItems.filter(item => {
@@ -85,10 +112,32 @@ export const AccountabilityGraph: React.FC = () => {
     return true;
   });
 
-  // Initialize 3D Graph Nodes & Connections
+  // Initialize Ambient Floating Background Particles
+  useEffect(() => {
+    const ambient: AmbientParticle[] = [];
+    for (let i = 0; i < 45; i++) {
+      ambient.push({
+        x: (Math.random() - 0.5) * 1200,
+        y: (Math.random() - 0.5) * 800,
+        z: (Math.random() - 0.5) * 1200,
+        size: Math.random() * 2 + 1,
+        opacity: Math.random() * 0.5 + 0.2,
+        speedY: (Math.random() - 0.5) * 0.3
+      });
+    }
+    ambientParticlesRef.current = ambient;
+  }, []);
+
+  // Initialize 3D Graph Nodes & Connections with Spacious Orbital Layout
   useEffect(() => {
     const nodes: GraphNode3D[] = [];
     const particles: Particle3D[] = [];
+
+    // Orbit Radii (Spacious separation to eliminate cluttering)
+    const rMeeting = isFullscreen ? 260 : 190;
+    const rCom = isFullscreen ? 460 : 330;
+    const rOwner = isFullscreen ? 660 : 470;
+    const rJira = isFullscreen ? 840 : 590;
 
     // Central Core Node
     const coreId = 'node-core-ai';
@@ -102,7 +151,7 @@ export const AccountabilityGraph: React.FC = () => {
         y: 0,
         z: 0,
         color: '#6366f1',
-        radius: 20,
+        radius: 24,
         connections: []
       });
     }
@@ -114,18 +163,17 @@ export const AccountabilityGraph: React.FC = () => {
     if (filterType === 'all' || filterType === 'meeting') {
       activeMeetings.forEach((m, idx) => {
         const angle = (idx / meetingCount) * Math.PI * 2;
-        const r = 130;
         const mNodeId = `node-meeting-${m.id}`;
         nodes.push({
           id: mNodeId,
-          label: m.title.length > 22 ? m.title.slice(0, 22) + '...' : m.title,
+          label: m.title.length > 24 ? m.title.slice(0, 24) + '...' : m.title,
           subLabel: `Ingested ${new Date(m.meeting_date).toLocaleDateString()}`,
           type: 'meeting',
-          x: Math.cos(angle) * r,
-          y: Math.sin(idx * 1.5) * 35 - 15,
-          z: Math.sin(angle) * r,
+          x: Math.cos(angle) * rMeeting,
+          y: Math.sin(idx * 1.5) * 45 - 20,
+          z: Math.sin(angle) * rMeeting,
           color: '#818cf8',
-          radius: 15,
+          radius: 17,
           connections: nodes.some(n => n.id === coreId) ? [coreId] : [],
           payload: m
         });
@@ -138,21 +186,20 @@ export const AccountabilityGraph: React.FC = () => {
     // Add Commitment & Owner & Execution Nodes in outer orbital rings
     filteredItems.slice(0, 12).forEach((item, idx) => {
       const angle = (idx / Math.max(1, filteredItems.slice(0, 12).length)) * Math.PI * 2 + 0.4;
-      const rCom = 230;
       const cNodeId = `node-com-${item.id}`;
       const mNodeId = `node-meeting-${item.meeting_id}`;
 
       if (filterType === 'all' || filterType === 'commitment') {
         nodes.push({
           id: cNodeId,
-          label: item.title.length > 24 ? item.title.slice(0, 24) + '...' : item.title,
+          label: item.title.length > 26 ? item.title.slice(0, 26) + '...' : item.title,
           subLabel: `${Math.round(item.confidence * 100)}% Conf • ${item.status.toUpperCase()}`,
           type: 'commitment',
           x: Math.cos(angle) * rCom,
-          y: Math.sin(angle * 2.5) * 60 + (idx % 2 === 0 ? 35 : -35),
+          y: Math.sin(angle * 2.5) * 75 + (idx % 2 === 0 ? 45 : -45),
           z: Math.sin(angle) * rCom,
           color: item.status === 'done' ? '#10b981' : item.status === 'overdue' ? '#f43f5e' : '#06b6d4',
-          radius: 13,
+          radius: 15,
           connections: nodes.some(n => n.id === mNodeId) ? [mNodeId] : (nodes.some(n => n.id === coreId) ? [coreId] : []),
           payload: item
         });
@@ -163,18 +210,17 @@ export const AccountabilityGraph: React.FC = () => {
         const oNodeId = `node-owner-${item.owner_name?.toLowerCase().replace(/\s+/g, '-')}`;
         let ownerNode = nodes.find(n => n.id === oNodeId);
         if (!ownerNode) {
-          const ownerAngle = angle + 0.45;
-          const rOwner = 330;
+          const ownerAngle = angle + 0.42;
           ownerNode = {
             id: oNodeId,
             label: item.owner_name || 'Assignee',
             subLabel: 'Responsible Lead',
             type: 'owner',
             x: Math.cos(ownerAngle) * rOwner,
-            y: Math.sin(ownerAngle * 1.8) * 45,
+            y: Math.sin(ownerAngle * 1.8) * 55,
             z: Math.sin(ownerAngle) * rOwner,
             color: '#c084fc',
-            radius: 14,
+            radius: 16,
             connections: []
           };
           nodes.push(ownerNode);
@@ -187,18 +233,17 @@ export const AccountabilityGraph: React.FC = () => {
       // Jira / GitHub Issue Node if synced
       if ((filterType === 'all' || filterType === 'jira' || filterType === 'github') && (item.jira_issue_key || item.id)) {
         const jNodeId = `node-jira-${item.id}`;
-        const rJira = 390;
-        const jiraAngle = angle + 0.75;
+        const jiraAngle = angle + 0.72;
         nodes.push({
           id: jNodeId,
           label: item.jira_issue_key || `LOOP-${101 + idx}`,
           subLabel: item.status === 'done' ? 'GitHub PR Verified' : 'Jira Ticket Synced',
           type: item.status === 'done' ? 'github' : 'jira',
           x: Math.cos(jiraAngle) * rJira,
-          y: Math.sin(jiraAngle * 2) * 65 + 20,
+          y: Math.sin(jiraAngle * 2) * 80 + 25,
           z: Math.sin(jiraAngle) * rJira,
           color: item.status === 'done' ? '#34d399' : '#f59e0b',
-          radius: 11,
+          radius: 13,
           connections: nodes.some(n => n.id === cNodeId) ? [cNodeId] : [],
           payload: item
         });
@@ -210,7 +255,7 @@ export const AccountabilityGraph: React.FC = () => {
           fromNodeId: nodes.some(n => n.id === mNodeId) ? mNodeId : coreId,
           toNodeId: cNodeId,
           progress: Math.random(),
-          speed: 0.004 + Math.random() * 0.007,
+          speed: 0.003 + Math.random() * 0.006,
           color: item.status === 'done' ? '#10b981' : '#06b6d4'
         });
       }
@@ -221,7 +266,7 @@ export const AccountabilityGraph: React.FC = () => {
     if (nodes.length > 0 && !focusedNodeId) {
       setFocusedNodeId(nodes[0].id);
     }
-  }, [actionItems, meetings, filterOwner, filterType, searchQuery]);
+  }, [actionItems, meetings, filterOwner, filterType, searchQuery, isFullscreen]);
 
   // High-DPI Canvas Rendering & Physics Engine Loop
   useEffect(() => {
@@ -237,10 +282,12 @@ export const AccountabilityGraph: React.FC = () => {
       if (!canvas || !canvas.parentElement) return;
       const rect = canvas.parentElement.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
+      const targetHeight = isFullscreen ? rect.height : 620;
+
       canvas.width = rect.width * dpr;
-      canvas.height = 540 * dpr;
+      canvas.height = targetHeight * dpr;
       canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `540px`;
+      canvas.style.height = `${targetHeight}px`;
       ctx.scale(dpr, dpr);
     };
 
@@ -251,12 +298,12 @@ export const AccountabilityGraph: React.FC = () => {
       if (!ctx || !canvas || !canvas.parentElement) return;
       const rect = canvas.parentElement.getBoundingClientRect();
       const cssWidth = rect.width;
-      const cssHeight = 540;
+      const cssHeight = isFullscreen ? rect.height : 620;
 
       // Smooth Physics & Rotation Lerp
       const rot = rotationRef.current;
       if (isAutoRotate && !isDraggingRef.current) {
-        rot.targetY += 0.003;
+        rot.targetY += 0.0025;
       }
 
       if (!isDraggingRef.current && (Math.abs(rot.velX) > 0.0001 || Math.abs(rot.velY) > 0.0001)) {
@@ -271,21 +318,74 @@ export const AccountabilityGraph: React.FC = () => {
 
       ctx.clearRect(0, 0, cssWidth, cssHeight);
 
-      // Cyber ambient background grid gradient
+      // Cyber ambient radial background & grid glow
       const cx = cssWidth / 2;
       const cy = cssHeight / 2;
 
-      const grad = ctx.createRadialGradient(cx, cy, 60, cx, cy, Math.max(cssWidth, cssHeight) / 1.1);
-      grad.addColorStop(0, 'rgba(99, 102, 241, 0.09)');
-      grad.addColorStop(0.5, 'rgba(6, 182, 212, 0.04)');
-      grad.addColorStop(1, 'rgba(7, 9, 14, 0)');
+      const grad = ctx.createRadialGradient(cx, cy, 80, cx, cy, Math.max(cssWidth, cssHeight) / 0.9);
+      grad.addColorStop(0, 'rgba(99, 102, 241, 0.14)');
+      grad.addColorStop(0.4, 'rgba(6, 182, 212, 0.06)');
+      grad.addColorStop(1, 'rgba(5, 7, 15, 0.95)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, cssWidth, cssHeight);
 
       // 3D Rotation matrices
       const cosX = Math.cos(rot.currentX), sinX = Math.sin(rot.currentX);
       const cosY = Math.cos(rot.currentY), sinY = Math.sin(rot.currentY);
-      const fov = 440 * zoomLevel;
+      const cameraZ = isFullscreen ? 680 : 540;
+      const fov = (isFullscreen ? 520 : 460) * zoomLevel;
+
+      // Draw 3D Orbital Grid Floor Rings
+      const orbitalRings = isFullscreen ? [260, 460, 660, 840] : [190, 330, 470, 590];
+      orbitalRings.forEach((r, idx) => {
+        ctx.beginPath();
+        const segments = 64;
+        for (let i = 0; i <= segments; i++) {
+          const a = (i / segments) * Math.PI * 2;
+          const rx = Math.cos(a) * r;
+          const rz = Math.sin(a) * r;
+          const ry = 0;
+
+          let x1 = rx * cosY - rz * sinY;
+          let z1 = rx * sinY + rz * cosY;
+          let y1 = ry * cosX - z1 * sinX;
+          let z2 = ry * sinX + z1 * cosX;
+
+          const scale = fov / Math.max(120, z2 + cameraZ);
+          const sx = cx + x1 * scale;
+          const sy = cy + y1 * scale;
+
+          if (i === 0) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
+        }
+        const colors = ['rgba(99, 102, 241, 0.12)', 'rgba(6, 182, 212, 0.10)', 'rgba(192, 132, 252, 0.08)', 'rgba(245, 158, 11, 0.06)'];
+        ctx.strokeStyle = colors[idx % colors.length];
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+
+      // Draw Floating Ambient Cyber Starfield Particles
+      ambientParticlesRef.current.forEach(p => {
+        p.y += p.speedY;
+        if (p.y > 400) p.y = -400;
+        if (p.y < -400) p.y = 400;
+
+        let x1 = p.x * cosY - p.z * sinY;
+        let z1 = p.x * sinY + p.z * cosY;
+        let y1 = p.y * cosX - z1 * sinX;
+        let z2 = p.y * sinX + z1 * cosX;
+
+        const scale = fov / Math.max(120, z2 + cameraZ);
+        const sx = cx + x1 * scale;
+        const sy = cy + y1 * scale;
+
+        ctx.beginPath();
+        ctx.arc(sx, sy, p.size * scale, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(165, 180, 252, ${p.opacity * scale})`;
+        ctx.fill();
+      });
 
       // Projected Nodes list with depth sorting
       const projectedNodes = nodesRef.current.map(n => {
@@ -294,7 +394,6 @@ export const AccountabilityGraph: React.FC = () => {
         let y1 = n.y * cosX - z1 * sinX;
         let z2 = n.y * sinX + z1 * cosX;
 
-        const cameraZ = 520;
         const depth = z2 + cameraZ;
         const scale = fov / Math.max(120, depth);
 
@@ -328,17 +427,17 @@ export const AccountabilityGraph: React.FC = () => {
             ctx.moveTo(p.screenX, p.screenY);
 
             const midX = (p.screenX + targetP.screenX) / 2;
-            const midY = (p.screenY + targetP.screenY) / 2 - 18 * p.scale;
+            const midY = (p.screenY + targetP.screenY) / 2 - 24 * p.scale;
             ctx.quadraticCurveTo(midX, midY, targetP.screenX, targetP.screenY);
 
             if (isHighlightedPath) {
               ctx.strokeStyle = '#06b6d4';
-              ctx.lineWidth = 2.8;
+              ctx.lineWidth = 3.2;
               ctx.shadowColor = '#06b6d4';
-              ctx.shadowBlur = 12;
+              ctx.shadowBlur = 16;
             } else {
-              ctx.strokeStyle = 'rgba(99, 102, 241, 0.28)';
-              ctx.lineWidth = Math.max(0.8, 1.2 * p.scale);
+              ctx.strokeStyle = 'rgba(99, 102, 241, 0.32)';
+              ctx.lineWidth = Math.max(0.9, 1.4 * p.scale);
               ctx.shadowBlur = 0;
             }
             ctx.stroke();
@@ -360,10 +459,10 @@ export const AccountabilityGraph: React.FC = () => {
           const py = fromP.screenY + (toP.screenY - fromP.screenY) * pt.progress;
 
           ctx.beginPath();
-          ctx.arc(px, py, Math.max(2, 3.5 * fromP.scale), 0, Math.PI * 2);
+          ctx.arc(px, py, Math.max(2.5, 4.0 * fromP.scale), 0, Math.PI * 2);
           ctx.fillStyle = pt.color;
           ctx.shadowColor = pt.color;
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = 12;
           ctx.fill();
           ctx.shadowBlur = 0;
         }
@@ -375,13 +474,13 @@ export const AccountabilityGraph: React.FC = () => {
         const isSelected = selectedTaskId && node.id.includes(selectedTaskId);
         const isFocused = focusedNodeId === node.id;
         const isHovered = hoveredNode?.node.id === node.id;
-        const rad = Math.max(5, node.radius * scale * (isSelected || isFocused || isHovered ? 1.3 : 1));
+        const rad = Math.max(6, node.radius * scale * (isSelected || isFocused || isHovered ? 1.35 : 1));
 
         // Node Glow Aura
         if (isSelected || isFocused || isHovered || node.type === 'core') {
           ctx.beginPath();
-          ctx.arc(screenX, screenY, rad * 2.0, 0, Math.PI * 2);
-          ctx.fillStyle = node.color + '40';
+          ctx.arc(screenX, screenY, rad * 2.2, 0, Math.PI * 2);
+          ctx.fillStyle = node.color + '45';
           ctx.fill();
         }
 
@@ -396,15 +495,15 @@ export const AccountabilityGraph: React.FC = () => {
           nodeGrad.addColorStop(1, '#1e1b4b');
           ctx.fillStyle = nodeGrad;
           ctx.shadowColor = '#6366f1';
-          ctx.shadowBlur = 20;
+          ctx.shadowBlur = 24;
           ctx.fill();
           ctx.strokeStyle = '#a5b4fc';
-          ctx.lineWidth = 2.5;
+          ctx.lineWidth = 3.0;
           ctx.stroke();
         } else if (node.type === 'meeting') {
           // Meeting Node: Rounded Glass Capsule
-          const w = rad * 2.2;
-          const h = rad * 1.4;
+          const w = rad * 2.3;
+          const h = rad * 1.5;
           if (ctx.roundRect) {
             ctx.roundRect(screenX - w / 2, screenY - h / 2, w, h, 8 * scale);
           } else {
@@ -415,10 +514,10 @@ export const AccountabilityGraph: React.FC = () => {
           nodeGrad.addColorStop(1, '#3730a3');
           ctx.fillStyle = nodeGrad;
           ctx.shadowColor = '#818cf8';
-          ctx.shadowBlur = isSelected ? 16 : 8;
+          ctx.shadowBlur = isSelected ? 18 : 10;
           ctx.fill();
           ctx.strokeStyle = '#c7d2fe';
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 1.8;
           ctx.stroke();
         } else if (node.type === 'owner') {
           // Owner Node: Octagon Badge
@@ -433,24 +532,24 @@ export const AccountabilityGraph: React.FC = () => {
           ctx.closePath();
           ctx.fillStyle = '#c084fc';
           ctx.shadowColor = '#c084fc';
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = 12;
           ctx.fill();
           ctx.strokeStyle = '#f0abfc';
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 1.8;
           ctx.stroke();
         } else if (node.type === 'jira' || node.type === 'github') {
           // Integration Node: Diamond
-          ctx.moveTo(screenX, screenY - rad * 1.2);
-          ctx.lineTo(screenX + rad * 1.2, screenY);
-          ctx.lineTo(screenX, screenY + rad * 1.2);
-          ctx.lineTo(screenX - rad * 1.2, screenY);
+          ctx.moveTo(screenX, screenY - rad * 1.3);
+          ctx.lineTo(screenX + rad * 1.3, screenY);
+          ctx.lineTo(screenX, screenY + rad * 1.3);
+          ctx.lineTo(screenX - rad * 1.3, screenY);
           ctx.closePath();
           ctx.fillStyle = node.color;
           ctx.shadowColor = node.color;
-          ctx.shadowBlur = 12;
+          ctx.shadowBlur = 14;
           ctx.fill();
           ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 1.8;
           ctx.stroke();
         } else {
           // Commitment Node: Sphere with Confidence Gauge Ring
@@ -461,31 +560,31 @@ export const AccountabilityGraph: React.FC = () => {
           nodeGrad.addColorStop(1, '#0f172a');
           ctx.fillStyle = nodeGrad;
           ctx.shadowColor = node.color;
-          ctx.shadowBlur = isSelected ? 18 : 8;
+          ctx.shadowBlur = isSelected ? 20 : 10;
           ctx.fill();
           ctx.strokeStyle = isSelected || isFocused ? '#ffffff' : node.color;
-          ctx.lineWidth = isSelected ? 2.5 : 1.2;
+          ctx.lineWidth = isSelected ? 3.0 : 1.5;
           ctx.stroke();
         }
 
         ctx.shadowBlur = 0;
 
         // Label Text Badge
-        if (scale > 0.45) {
-          const fontSize = Math.max(9, Math.min(13, Math.round(11 * scale)));
+        if (scale > 0.40) {
+          const fontSize = Math.max(10, Math.min(14, Math.round(12 * scale)));
           ctx.font = `bold ${fontSize}px JetBrains Mono, monospace`;
           const textWidth = ctx.measureText(node.label).width;
-          const paddingX = 8 * scale;
-          const paddingY = 3 * scale;
-          const badgeY = screenY + rad + 8 * scale;
+          const paddingX = 9 * scale;
+          const paddingY = 4 * scale;
+          const badgeY = screenY + rad + 10 * scale;
 
-          ctx.fillStyle = isSelected || isFocused ? 'rgba(79, 70, 229, 0.9)' : 'rgba(15, 23, 42, 0.85)';
-          ctx.strokeStyle = isSelected || isFocused ? '#c7d2fe' : 'rgba(255, 255, 255, 0.2)';
+          ctx.fillStyle = isSelected || isFocused ? 'rgba(79, 70, 229, 0.92)' : 'rgba(15, 23, 42, 0.88)';
+          ctx.strokeStyle = isSelected || isFocused ? '#c7d2fe' : 'rgba(255, 255, 255, 0.22)';
           ctx.lineWidth = 1;
 
           if (ctx.roundRect) {
             ctx.beginPath();
-            ctx.roundRect(screenX - textWidth / 2 - paddingX, badgeY, textWidth + paddingX * 2, fontSize + paddingY * 2, 6);
+            ctx.roundRect(screenX - textWidth / 2 - paddingX, badgeY, textWidth + paddingX * 2, fontSize + paddingY * 2, 7);
             ctx.fill();
             ctx.stroke();
           } else {
@@ -496,10 +595,10 @@ export const AccountabilityGraph: React.FC = () => {
           ctx.textAlign = 'center';
           ctx.fillText(node.label, screenX, badgeY + fontSize);
 
-          if (node.subLabel && scale > 0.75) {
-            ctx.font = `${Math.max(8, Math.round(9 * scale))}px sans-serif`;
+          if (node.subLabel && scale > 0.65) {
+            ctx.font = `${Math.max(9, Math.round(10 * scale))}px sans-serif`;
             ctx.fillStyle = '#cbd5e1';
-            ctx.fillText(node.subLabel, screenX, badgeY + fontSize + 14 * scale);
+            ctx.fillText(node.subLabel, screenX, badgeY + fontSize + 16 * scale);
           }
         }
       });
@@ -513,7 +612,7 @@ export const AccountabilityGraph: React.FC = () => {
       window.removeEventListener('resize', handleResize);
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
     };
-  }, [viewMode, selectedTaskId, focusedNodeId, isAutoRotate, zoomLevel, hoveredNode]);
+  }, [viewMode, selectedTaskId, focusedNodeId, isAutoRotate, zoomLevel, hoveredNode, isFullscreen]);
 
   // Mouse Interaction Handlers for Orbit Rotation & Selection
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -540,13 +639,14 @@ export const AccountabilityGraph: React.FC = () => {
     } else {
       // Hover node detection
       const cssWidth = rect.width;
-      const cssHeight = 540;
+      const cssHeight = isFullscreen ? rect.height : 620;
       const cx = cssWidth / 2;
       const cy = cssHeight / 2;
       const rot = rotationRef.current;
       const cosX = Math.cos(rot.currentX), sinX = Math.sin(rot.currentX);
       const cosY = Math.cos(rot.currentY), sinY = Math.sin(rot.currentY);
-      const fov = 440 * zoomLevel;
+      const cameraZ = isFullscreen ? 680 : 540;
+      const fov = (isFullscreen ? 520 : 460) * zoomLevel;
 
       let found: GraphNode3D | null = null;
       let foundX = 0, foundY = 0;
@@ -556,12 +656,12 @@ export const AccountabilityGraph: React.FC = () => {
         let z1 = n.x * sinY + n.z * cosY;
         let y1 = n.y * cosX - z1 * sinX;
         let z2 = n.y * sinX + z1 * cosX;
-        const scale = fov / Math.max(120, z2 + 520);
+        const scale = fov / Math.max(120, z2 + cameraZ);
         const screenX = cx + x1 * scale;
         const screenY = cy + y1 * scale;
 
         const dist = Math.hypot(mouseX - screenX, mouseY - screenY);
-        if (dist <= n.radius * scale * 1.6) {
+        if (dist <= n.radius * scale * 1.7) {
           found = n;
           foundX = screenX;
           foundY = screenY;
@@ -623,9 +723,9 @@ export const AccountabilityGraph: React.FC = () => {
     } else if (e.key === 's' || e.key === 'S') {
       setIsAutoRotate(prev => !prev);
     } else if (e.key === '+' || e.key === '=') {
-      setZoomLevel(prev => Math.min(prev + 0.25, 2.0));
+      setZoomLevel(prev => Math.min(prev + 0.25, 2.2));
     } else if (e.key === '-') {
-      setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+      setZoomLevel(prev => Math.max(prev - 0.25, 0.4));
     }
   };
 
@@ -677,6 +777,17 @@ export const AccountabilityGraph: React.FC = () => {
               <LayersIcon size={13} />
               <span>Linear Matrix</span>
             </button>
+
+            {viewMode === '3d' && (
+              <button
+                onClick={() => setIsFullscreen(prev => !prev)}
+                className="px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+                title="Toggle Immersive Fullscreen Mode [Hotkey: F]"
+              >
+                {isFullscreen ? <MinimizeIcon size={13} /> : <MaximizeIcon size={13} />}
+                <span className="hidden sm:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -745,10 +856,52 @@ export const AccountabilityGraph: React.FC = () => {
           tabIndex={0}
           onKeyDown={handleKeyDown}
           aria-label="Interactive 3D Knowledge Graph visualizer. Use arrow keys to cycle nodes, Enter to select, R to reset view, S to toggle auto-spin."
-          className="relative rounded-3xl bg-slate-950 border border-indigo-500/30 overflow-hidden shadow-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/80"
+          className={`relative overflow-hidden shadow-2xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/80 ${
+            isFullscreen
+              ? 'fixed inset-0 z-[999] w-screen h-screen bg-[#05070f] flex flex-col p-4 sm:p-6'
+              : 'rounded-3xl bg-slate-950 border border-indigo-500/30'
+          }`}
         >
-          {/* Preset Camera Views & Controls Overlay */}
+          {/* Fullscreen Overlay Header Bar */}
+          {isFullscreen && (
+            <div className="mb-4 z-20 flex items-center justify-between bg-slate-900/80 backdrop-blur-2xl px-5 py-3 rounded-2xl border border-indigo-500/30 shadow-xl">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center">
+                  <NetworkIcon size={20} className="text-cyan-400 animate-pulse" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-white tracking-wide">
+                    Executive Knowledge Graph Holodeck
+                  </h2>
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    Expanded Spatial Canvas • {nodesRef.current.length} Active Vector Nodes
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsFullscreen(false)}
+                  className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-xs font-bold flex items-center gap-2 transition-all shadow-md"
+                >
+                  <MinimizeIcon size={14} />
+                  <span>Exit Fullscreen (ESC)</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Controls Overlay */}
           <div className="absolute top-4 right-4 z-10 flex flex-wrap items-center gap-2 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-zinc-800 shadow-lg text-xs">
+            <button
+              onClick={() => setIsFullscreen(prev => !prev)}
+              className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-mono text-[11px] font-bold flex items-center gap-1.5 shadow-md hover:scale-105 transition-all"
+              title="Toggle Immersive Fullscreen Holodeck [Hotkey: F]"
+            >
+              {isFullscreen ? <MinimizeIcon size={13} /> : <MaximizeIcon size={13} />}
+              <span>{isFullscreen ? 'Normal View' : 'Full Canvas'}</span>
+            </button>
+
             <button
               onClick={() => setIsAutoRotate(!isAutoRotate)}
               className={`px-3 py-1.5 rounded-xl font-mono text-[11px] font-bold flex items-center gap-1.5 transition-all ${
@@ -787,14 +940,14 @@ export const AccountabilityGraph: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setZoomLevel(prev => Math.min(prev + 0.25, 2.0))}
+              onClick={() => setZoomLevel(prev => Math.min(prev + 0.25, 2.2))}
               className="px-2.5 py-1.5 rounded-xl bg-zinc-800 text-zinc-300 hover:bg-zinc-700 font-bold"
               title="Zoom In [Hotkey: +]"
             >
               +
             </button>
             <button
-              onClick={() => setZoomLevel(prev => Math.max(prev - 0.25, 0.5))}
+              onClick={() => setZoomLevel(prev => Math.max(prev - 0.25, 0.4))}
               className="px-2.5 py-1.5 rounded-xl bg-zinc-800 text-zinc-300 hover:bg-zinc-700 font-bold"
               title="Zoom Out [Hotkey: -]"
             >
@@ -803,7 +956,7 @@ export const AccountabilityGraph: React.FC = () => {
           </div>
 
           {/* Interactive Keyboard & Accessibility Instructions */}
-          <div className="absolute top-4 left-4 z-10 bg-slate-900/90 backdrop-blur-md p-3 rounded-2xl border border-zinc-800 shadow-lg text-[11px] font-mono text-zinc-300 space-y-1 max-w-xs">
+          <div className="absolute top-4 left-4 z-10 bg-slate-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-zinc-800 shadow-lg text-[11px] font-mono text-zinc-300 space-y-1.5 max-w-xs">
             <div className="flex items-center justify-between gap-2 font-bold text-cyan-400">
               <span className="flex items-center gap-1.5">
                 <SparklesIcon size={13} />
@@ -814,7 +967,7 @@ export const AccountabilityGraph: React.FC = () => {
             <p className="text-zinc-400 text-[10px] leading-relaxed">
               • <strong>Mouse</strong>: Click & drag to rotate 3D graph.<br />
               • <strong>Keyboard</strong>: Use <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">Tab</kbd> / <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">← →</kbd> to cycle nodes, <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">Enter</kbd> to inspect.<br />
-              • <strong>Shortcuts</strong>: <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">R</kbd> (Reset), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">S</kbd> (Spin).
+              • <strong>Shortcuts</strong>: <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">F</kbd> (Fullscreen), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">R</kbd> (Reset), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">S</kbd> (Spin).
             </p>
           </div>
 
@@ -822,18 +975,18 @@ export const AccountabilityGraph: React.FC = () => {
           {hoveredNode && (
             <div
               style={{
-                left: `${Math.min(hoveredNode.x + 15, (containerRef.current?.clientWidth || 800) - 220)}px`,
+                left: `${Math.min(hoveredNode.x + 15, (containerRef.current?.clientWidth || 800) - 240)}px`,
                 top: `${Math.max(15, hoveredNode.y - 45)}px`
               }}
-              className="absolute z-20 pointer-events-none bg-slate-900/95 border border-cyan-500/50 p-3 rounded-xl shadow-2xl backdrop-blur-xl text-xs space-y-1 max-w-[200px] animate-fade-in"
+              className="absolute z-30 pointer-events-none bg-slate-900/95 border border-cyan-500/50 p-3.5 rounded-2xl shadow-2xl backdrop-blur-xl text-xs space-y-1 max-w-[220px] animate-fade-in"
             >
               <div className="font-bold text-cyan-300 truncate">{hoveredNode.node.label}</div>
               <div className="text-[10px] text-zinc-400 font-mono flex items-center justify-between">
                 <span>Type: {hoveredNode.node.type.toUpperCase()}</span>
-                <span className="text-emerald-400">Click to Trace</span>
+                <span className="text-emerald-400 font-bold">Click to Trace</span>
               </div>
               {hoveredNode.node.subLabel && (
-                <div className="text-[10px] text-zinc-300 leading-tight pt-0.5 border-t border-zinc-800">
+                <div className="text-[10px] text-zinc-300 leading-tight pt-1 border-t border-zinc-800 font-sans">
                   {hoveredNode.node.subLabel}
                 </div>
               )}
@@ -847,7 +1000,9 @@ export const AccountabilityGraph: React.FC = () => {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
             onClick={handleCanvasClick}
-            className="w-full h-[540px] block cursor-grab active:cursor-grabbing"
+            className={`w-full block cursor-grab active:cursor-grabbing ${
+              isFullscreen ? 'flex-1 h-full' : 'h-[620px]'
+            }`}
           />
         </div>
       ) : (
