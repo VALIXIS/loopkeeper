@@ -125,6 +125,10 @@ html.light .text-slate-200 {
   color: #0f172a !important;
 }
 
+html.light .text-white:not(button):not(a):not(.btn):not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-purple-600):not(.bg-emerald-600):not(.bg-rose-600):not(.bg-cyan-600):not(.bg-gradient-to-r):not(.bg-gradient-to-tr):not(.bg-gradient-to-br):not(.dark-ui-preview):not([data-dark-preview="true"]) {
+  color: #0f172a !important;
+}
+
 html.light .text-zinc-300,
 html.light .text-zinc-400,
 html.light .text-slate-300,
@@ -155,16 +159,34 @@ html.light .bg-amber-950\/10 {
   color: #b45309 !important;
 }
 
-html.light .text-rose-300 {
+html.light .text-rose-300,
+html.light .text-rose-400 {
   color: #e11d48 !important;
 }
 
-html.light .text-indigo-300 {
-  color: #4f46e5 !important;
+html.light .text-indigo-300,
+html.light .text-indigo-400 {
+  color: #4338ca !important;
 }
 
-html.light .text-cyan-300 {
-  color: #0284c7 !important;
+html.light .text-cyan-300,
+html.light .text-cyan-400 {
+  color: #0369a1 !important;
+}
+
+html.light .text-emerald-300,
+html.light .text-emerald-400 {
+  color: #047857 !important;
+}
+
+html.light .text-amber-300,
+html.light .text-amber-400 {
+  color: #b45309 !important;
+}
+
+html.light .text-purple-300,
+html.light .text-purple-400 {
+  color: #6b21a8 !important;
 }
 
 /* Explicit high-contrast preservation for embedded dark UI mock previews (Slack simulator, terminals, code cards) */

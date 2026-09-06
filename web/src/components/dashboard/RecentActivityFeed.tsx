@@ -16,7 +16,7 @@ export const RecentActivityFeed: React.FC = () => {
             <ActivityIcon size={17} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-white">Live AI Telemetry & Processing Feed</h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Live AI Telemetry & Processing Feed</h3>
             <p className="text-[11px] text-slate-400">SLM inference runs, latency & fallback routing</p>
           </div>
         </div>

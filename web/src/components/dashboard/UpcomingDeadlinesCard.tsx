@@ -19,7 +19,7 @@ export const UpcomingDeadlinesCard: React.FC = () => {
               <CalendarIcon size={15} />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-white">Upcoming Deadlines</h3>
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white">Upcoming Deadlines</h3>
               <p className="text-[10px] text-slate-400">Target commitments by proximity</p>
             </div>
           </div>
