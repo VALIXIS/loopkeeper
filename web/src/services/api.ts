@@ -1162,7 +1162,7 @@ export const api = {
     const joinUrl = isZoom
       ? `https://zoom.us/j/${zoomId}?pwd=${pwd}`
       : isGoogle
-      ? `https://meet.google.com/${meetCode}`
+      ? 'https://meet.google.com/new'
       : `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${meetCode}%40thread.v2/0`;
 
     const assignedParticipants = localStore.employees.filter(e => participantIds.includes(e.id));

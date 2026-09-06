@@ -297,7 +297,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
       // Dispatch real-time event to trigger AI Chatbot live notification & pop-up
       const dispatchDetail = {
         title: title.trim() || 'LoopKeeper Scheduled Meeting',
-        joinUrl: joinUrl || 'https://meet.google.com/nkq-ykqi-uik',
+        joinUrl: joinUrl || 'https://meet.google.com/new',
         attendeeCount: invitedEmployees.length || 8,
         attendeeNames: participantNames || 'Subhash, Jyothsna, Vignesh, Hasitha, Krishna, Adithya, Vaseem, VALIXIS',
         timestamp: Date.now()

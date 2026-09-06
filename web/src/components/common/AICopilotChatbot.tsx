@@ -333,12 +333,12 @@ export const AICopilotChatbot: React.FC = () => {
           aiText = `👥 Team Capacity Overview:\nWorkspace currently tracks ${employees.length} team members: ${employeeLoads}.\n\nTotal open commitments: ${pendingCount} pending, ${overdueCount} overdue, ${doneCount} completed. Type "rebalance workload" if you'd like me to optimize assignments automatically!`;
         } else if (lower.includes('join') || lower.includes('meet link') || lower.includes('notification') || lower.includes('how to join') || lower.includes('meeting link')) {
           const nextMeeting = meetings[0];
-          const joinUrl = (nextMeeting as any)?.join_url || `https://meet.google.com/lk-${nextMeeting?.id?.slice(0, 6) || 'sync-2026'}`;
+          const joinUrl = (nextMeeting as any)?.join_url || 'https://meet.google.com/new';
           aiText = `📅 Meeting Notifications & In-App Join Flow:\n\nWhen a meeting is created or starts in LoopKeeper:\n1. 📧 Email Calendar Invitation: Automatically dispatched to selected employees with the Google Meet link.\n2. 🔔 Real-Time In-App Toast & Banner: Triggers an active pop-up alert on the employee's portal.\n3. 🤖 AI Assistant Join Link: You can ask me anytime "join meeting", and I will provide the instant Google Meet join URL!\n\n🎥 Upcoming Meeting: "${nextMeeting?.title || 'Sprint Architecture & Execution Sync'}"\n🔗 Google Meet Link: ${joinUrl}`;
           actionTaken = 'meeting_notification_info';
         } else if (lower.includes('meeting') || lower.includes('transcript') || lower.includes('summary')) {
           const nextMeeting = meetings[0];
-          const joinUrl = (nextMeeting as any)?.join_url || `https://meet.google.com/lk-${nextMeeting?.id?.slice(0, 6) || 'sync-2026'}`;
+          const joinUrl = (nextMeeting as any)?.join_url || 'https://meet.google.com/new';
           aiText = `📹 Meeting Intelligence Hub:\nYou currently have ${meetings.length} ingested meeting transcripts including ${recentMeetingTitles || 'recent team syncs'}.\n\nFrom these meetings, LoopKeeper extracted ${actionItems.length} total commitments.\n\n🎥 Active Meeting Link: ${joinUrl}\n\nAsk me to navigate to meetings, start a voice recording studio, or get the direct join link!`;
         } else if (lower.includes('why') || lower.includes('how') || lower.includes('what') || lower.includes('explain')) {
           aiText = `💡 AI Workspace Insights for query: "${query}"\n\nWorkspace Status: ${actionItems.length} commitments across ${employees.length} team members.\n\nLoopKeeper closes the gap between verbal meeting promises and completed engineering work using our hybrid SLM + Google Gemini Flash pipeline, real-time Jira API sync, and GitHub Vector AI proof-of-work matching. Let me know if you want me to run any action or navigate to a specific hub!`;
