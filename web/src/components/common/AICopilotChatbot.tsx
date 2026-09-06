@@ -214,9 +214,10 @@ export const AICopilotChatbot: React.FC = () => {
 
         // 3. STAGE 3: Extract Clean Task Title
         let taskTitle = workingText
-          .replace(/\b(create|add|assign|new|task|commitment|issue|and)\b/gi, ' ')
-          .replace(/\b(name of the task is|task name|title is|task is|to|for|with)\b/gi, ' ')
-          .replace(/\b(deadlne|deadline|due|by|before|until|is|and)\b/gi, ' ')
+          // Multi-word boilerplate phrases MUST be stripped FIRST before individual keywords!
+          .replace(/\b(name of the task is|name of task is|title of the task is|title of task is|task name is|task name|task title is|task title|the task is|task is|title is|name is|the title|the name|create and assign task to|create and assign task|assign task to|assign task|create task for|create task to|create task|add task for|add task to|add task|new task for|new task to|new task|deadlne is|deadline is|due date is|due is)\b/gi, ' ')
+          // Then strip standalone residual keywords
+          .replace(/\b(create|add|assign|new|task|commitment|issue|title|name|to|for|with|is|and|by|before|until|due|deadline|deadlne)\b/gi, ' ')
           .replace(/\s+/g, ' ')
           .trim();
 
