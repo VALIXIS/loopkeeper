@@ -270,7 +270,7 @@ export const AICopilotChatbot: React.FC = () => {
       {isOpen && (
         <div className="fixed bottom-20 right-5 z-50 w-full max-w-md h-[520px] rounded-3xl glass-panel-elevated border border-indigo-500/40 shadow-2xl flex flex-col justify-between overflow-hidden animate-fade-in-up">
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-indigo-900 via-slate-900 to-zinc-900 text-white border-b border-zinc-800 flex items-center justify-between shadow-md">
+          <div data-dark-preview="true" className="dark-ui-preview p-4 bg-gradient-to-r from-indigo-950 via-slate-900 to-zinc-950 text-white border-b border-zinc-800 flex items-center justify-between shadow-md">
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md">
                 <BrainIcon size={18} />
@@ -278,7 +278,7 @@ export const AICopilotChatbot: React.FC = () => {
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
                   LoopKeeper AI Copilot
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-400/20 text-cyan-200 border border-cyan-300/40">
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-cyan-500/25 text-cyan-200 border border-cyan-400/40">
                     Full Platform Control
                   </span>
                 </h3>

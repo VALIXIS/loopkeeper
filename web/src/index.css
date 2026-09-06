@@ -215,7 +215,9 @@ html.light [data-dark-preview="true"] .text-indigo-300 {
   color: #a5b4fc !important;
 }
 
+html.light .dark-ui-preview .text-cyan-200,
 html.light .dark-ui-preview .text-cyan-300,
+html.light [data-dark-preview="true"] .text-cyan-200,
 html.light [data-dark-preview="true"] .text-cyan-300 {
   color: #67e8f9 !important;
 }
