@@ -134,14 +134,14 @@ export const TranscriptViewer: React.FC<TranscriptViewerProps> = ({
                 ref={isHighlighted ? highlightedRef : undefined}
                 className={`p-3.5 rounded-2xl border transition-all duration-300 relative ${
                   isHighlighted
-                    ? 'bg-indigo-950/70 border-cyan-400 shadow-xl shadow-cyan-500/20 ring-2 ring-cyan-400/60 scale-[1.01]'
+                    ? 'bg-indigo-50 dark:bg-indigo-950/70 border-cyan-500 dark:border-cyan-400 shadow-xl shadow-cyan-500/20 ring-2 ring-cyan-400/60 scale-[1.01]'
                     : isActionTurn
-                    ? 'bg-slate-900/60 border-white/[0.08] hover:border-slate-600'
-                    : 'bg-slate-950/40 border-white/[0.04]'
+                    ? 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-white/[0.08] hover:border-slate-400 dark:hover:border-slate-600'
+                    : 'bg-slate-50/50 dark:bg-slate-950/40 border-slate-200/60 dark:border-white/[0.04]'
                 }`}
               >
                 {isHighlighted && (
-                  <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r bg-cyan-400 shadow-lg shadow-cyan-400/80" />
+                  <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r bg-cyan-500 dark:bg-cyan-400 shadow-lg shadow-cyan-400/80" />
                 )}
 
                 <div className="flex items-center justify-between text-xs mb-2">
@@ -159,24 +159,24 @@ export const TranscriptViewer: React.FC<TranscriptViewerProps> = ({
                     )}
 
                     {isActionTurn && (
-                      <span className="inline-flex items-center gap-1 text-[10px] text-cyan-400 font-semibold bg-cyan-950/60 px-2 py-0.5 rounded-md border border-cyan-500/30">
+                      <span className="inline-flex items-center gap-1 text-[10px] text-cyan-700 dark:text-cyan-400 font-semibold bg-cyan-100 dark:bg-cyan-950/60 px-2 py-0.5 rounded-md border border-cyan-300 dark:border-cyan-500/30">
                         <SparklesIcon size={10} /> Action Turn
                       </span>
                     )}
 
                     {isHighlighted && (
-                      <span className="inline-flex items-center gap-1 text-[10px] text-emerald-300 font-mono font-bold bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-500/40 animate-pulse">
+                      <span className="inline-flex items-center gap-1 text-[10px] text-emerald-800 dark:text-emerald-300 font-mono font-bold bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-400 dark:border-emerald-500/40 animate-pulse">
                         ● VERIFIED EVIDENCE ANCHOR
                       </span>
                     )}
                   </div>
 
                   {timestamp && (
-                    <span className="text-[10px] font-mono text-slate-500">{timestamp}</span>
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-500">{timestamp}</span>
                   )}
                 </div>
 
-                <p className={`text-xs leading-relaxed pl-1 ${isHighlighted ? 'text-white font-medium' : 'text-slate-300'}`}>
+                <p className={`text-xs leading-relaxed pl-1 ${isHighlighted ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
                   {speechText}
                 </p>
               </div>

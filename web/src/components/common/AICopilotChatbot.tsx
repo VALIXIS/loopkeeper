@@ -270,25 +270,25 @@ export const AICopilotChatbot: React.FC = () => {
       {isOpen && (
         <div className="fixed bottom-20 right-5 z-50 w-full max-w-md h-[520px] rounded-3xl glass-panel-elevated border border-indigo-500/40 shadow-2xl flex flex-col justify-between overflow-hidden animate-fade-in-up">
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-indigo-950/80 via-zinc-900 to-zinc-950 border-b border-zinc-800 flex items-center justify-between">
+          <div className="p-4 bg-gradient-to-r from-indigo-900 via-slate-900 to-zinc-900 text-white border-b border-zinc-800 flex items-center justify-between shadow-md">
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md">
                 <BrainIcon size={18} />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
                   LoopKeeper AI Copilot
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-400/20 text-cyan-200 border border-cyan-300/40">
                     Full Platform Control
                   </span>
                 </h3>
-                <p className="text-[10px] text-zinc-400">Autonomous execution & voice assistant</p>
+                <p className="text-[10px] text-slate-300">Autonomous execution & voice assistant</p>
               </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="text-zinc-500 hover:text-zinc-300 p-1.5 rounded-xl hover:bg-zinc-800 transition-colors"
+              className="text-slate-300 hover:text-white p-1.5 rounded-xl hover:bg-white/10 transition-colors"
             >
               <XIcon size={18} />
             </button>
@@ -305,11 +305,11 @@ export const AICopilotChatbot: React.FC = () => {
                   className={`max-w-[85%] p-3.5 rounded-2xl text-xs space-y-1.5 shadow-md ${
                     msg.sender === 'user'
                       ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-br-none'
-                      : 'bg-zinc-900/90 border border-zinc-800 text-zinc-200 rounded-bl-none'
+                      : 'bg-white dark:bg-zinc-900/90 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 rounded-bl-none shadow-sm'
                   }`}
                 >
                   {msg.sender === 'ai' && (
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
                       <SparklesIcon size={11} />
                       LoopKeeper AI
                     </div>
@@ -317,13 +317,13 @@ export const AICopilotChatbot: React.FC = () => {
                   <div className="leading-relaxed space-y-1 whitespace-pre-wrap">{msg.text}</div>
 
                   {msg.actionTaken && (
-                    <div className="pt-1.5 border-t border-zinc-800/80 text-[10px] font-mono text-emerald-400 flex items-center gap-1">
+                    <div className="pt-1.5 border-t border-slate-200 dark:border-zinc-800/80 text-[10px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                       <CheckCircleIcon size={11} />
                       Action executed live in prototype
                     </div>
                   )}
 
-                  <div className="text-[9px] font-mono text-zinc-400 text-right opacity-70">
+                  <div className="text-[9px] font-mono text-slate-500 dark:text-zinc-400 text-right opacity-75">
                     {msg.timestamp}
                   </div>
                 </div>
@@ -340,12 +340,12 @@ export const AICopilotChatbot: React.FC = () => {
           </div>
 
           {/* Suggestion Chips */}
-          <div className="p-2.5 bg-zinc-950/60 border-t border-zinc-800/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          <div className="p-2.5 bg-slate-100 dark:bg-zinc-950/60 border-t border-slate-200 dark:border-zinc-800/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
             {suggestionChips.map((chip, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSendMessage(chip)}
-                className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700/80 whitespace-nowrap shrink-0 transition-colors"
+                className="px-2.5 py-1 rounded-full text-[10px] font-medium bg-white hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-300 dark:border-zinc-700/80 whitespace-nowrap shrink-0 transition-colors shadow-sm"
               >
                 {chip}
               </button>
@@ -358,14 +358,14 @@ export const AICopilotChatbot: React.FC = () => {
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3 bg-zinc-950 border-t border-zinc-800 flex items-center gap-2"
+            className="p-3 bg-slate-100 dark:bg-zinc-950 border-t border-slate-200 dark:border-zinc-800 flex items-center gap-2"
           >
             <input
               type="text"
               value={inputText}
               onChange={e => setInputText(e.target.value)}
               placeholder="Ask AI or give command (e.g. 'rebalance workload')..."
-              className="flex-1 px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-cyan-500"
+              className="flex-1 px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-300 dark:border-zinc-800 text-xs text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
             />
             <button
               type="submit"
