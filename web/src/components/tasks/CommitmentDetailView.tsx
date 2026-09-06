@@ -451,7 +451,7 @@ export const CommitmentDetailView: React.FC = () => {
                     ) : (
                       <ExternalLinkIcon size={13} />
                     )}
-                    <span>Simulate GitHub PR Webhook</span>
+                    <span>Trigger GitHub PR Webhook (384-dim Vector AI)</span>
                   </button>
                 ) : (
                   <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shrink-0 shadow-sm">
