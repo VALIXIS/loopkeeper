@@ -86,18 +86,65 @@ export const AccountabilityGraph: React.FC = () => {
   const originMeeting = meetings.find(m => m.id === selectedItem?.meeting_id);
   const ownersList = Array.from(new Set(actionItems.map(a => a.owner_name).filter(Boolean)));
 
-  // Listen for ESC & F key to exit/toggle fullscreen mode
+  // Native Fullscreen Toggle API (Triggers true F11 whole-screen mode)
+  const toggleFullscreenMode = async () => {
+    try {
+      const isNative = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+      if (!isNative) {
+        const el = containerRef.current;
+        if (el?.requestFullscreen) {
+          await el.requestFullscreen();
+        } else if ((el as any)?.webkitRequestFullscreen) {
+          await (el as any).webkitRequestFullscreen();
+        } else if ((el as any)?.msRequestFullscreen) {
+          await (el as any).msRequestFullscreen();
+        } else {
+          setIsFullscreen(prev => !prev);
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          await (document as any).webkitExitFullscreen();
+        } else if ((document as any).msExitFullscreen) {
+          await (document as any).msExitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.warn('Native fullscreen request blocked, using expanded viewport mode:', err);
+      setIsFullscreen(prev => !prev);
+    }
+  };
+
+  // Sync state with native browser Fullscreen events & bind F/F11/Esc hotkeys
   useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isNativeFull = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+      setIsFullscreen(isNativeFull);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isFullscreen) {
-        setIsFullscreen(false);
-      } else if ((e.key === 'f' || e.key === 'F') && !(e.target as HTMLElement)?.matches('input, select, textarea')) {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        } else {
+          setIsFullscreen(false);
+        }
+      } else if ((e.key === 'f' || e.key === 'F' || e.key === 'F11') && !(e.target as HTMLElement)?.matches('input, select, textarea')) {
         e.preventDefault();
-        setIsFullscreen(prev => !prev);
+        toggleFullscreenMode();
       }
     };
+
     window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+    };
   }, [isFullscreen]);
 
   // Filter items
@@ -117,9 +164,9 @@ export const AccountabilityGraph: React.FC = () => {
     const ambient: AmbientParticle[] = [];
     for (let i = 0; i < 45; i++) {
       ambient.push({
-        x: (Math.random() - 0.5) * 1200,
-        y: (Math.random() - 0.5) * 800,
-        z: (Math.random() - 0.5) * 1200,
+        x: (Math.random() - 0.5) * 1400,
+        y: (Math.random() - 0.5) * 900,
+        z: (Math.random() - 0.5) * 1400,
         size: Math.random() * 2 + 1,
         opacity: Math.random() * 0.5 + 0.2,
         speedY: (Math.random() - 0.5) * 0.3
@@ -134,10 +181,10 @@ export const AccountabilityGraph: React.FC = () => {
     const particles: Particle3D[] = [];
 
     // Orbit Radii (Spacious separation to eliminate cluttering)
-    const rMeeting = isFullscreen ? 260 : 190;
-    const rCom = isFullscreen ? 460 : 330;
-    const rOwner = isFullscreen ? 660 : 470;
-    const rJira = isFullscreen ? 840 : 590;
+    const rMeeting = isFullscreen ? 280 : 190;
+    const rCom = isFullscreen ? 500 : 330;
+    const rOwner = isFullscreen ? 720 : 470;
+    const rJira = isFullscreen ? 920 : 590;
 
     // Central Core Node
     const coreId = 'node-core-ai';
@@ -282,7 +329,7 @@ export const AccountabilityGraph: React.FC = () => {
       if (!canvas || !canvas.parentElement) return;
       const rect = canvas.parentElement.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      const targetHeight = isFullscreen ? rect.height : 620;
+      const targetHeight = isFullscreen ? Math.max(500, window.innerHeight - (document.fullscreenElement ? 80 : 160)) : 620;
 
       canvas.width = rect.width * dpr;
       canvas.height = targetHeight * dpr;
@@ -298,7 +345,7 @@ export const AccountabilityGraph: React.FC = () => {
       if (!ctx || !canvas || !canvas.parentElement) return;
       const rect = canvas.parentElement.getBoundingClientRect();
       const cssWidth = rect.width;
-      const cssHeight = isFullscreen ? rect.height : 620;
+      const cssHeight = isFullscreen ? Math.max(500, window.innerHeight - (document.fullscreenElement ? 80 : 160)) : 620;
 
       // Smooth Physics & Rotation Lerp
       const rot = rotationRef.current;
@@ -323,20 +370,20 @@ export const AccountabilityGraph: React.FC = () => {
       const cy = cssHeight / 2;
 
       const grad = ctx.createRadialGradient(cx, cy, 80, cx, cy, Math.max(cssWidth, cssHeight) / 0.9);
-      grad.addColorStop(0, 'rgba(99, 102, 241, 0.14)');
-      grad.addColorStop(0.4, 'rgba(6, 182, 212, 0.06)');
-      grad.addColorStop(1, 'rgba(5, 7, 15, 0.95)');
+      grad.addColorStop(0, 'rgba(99, 102, 241, 0.16)');
+      grad.addColorStop(0.4, 'rgba(6, 182, 212, 0.07)');
+      grad.addColorStop(1, 'rgba(5, 7, 15, 0.96)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, cssWidth, cssHeight);
 
       // 3D Rotation matrices
       const cosX = Math.cos(rot.currentX), sinX = Math.sin(rot.currentX);
       const cosY = Math.cos(rot.currentY), sinY = Math.sin(rot.currentY);
-      const cameraZ = isFullscreen ? 680 : 540;
-      const fov = (isFullscreen ? 520 : 460) * zoomLevel;
+      const cameraZ = isFullscreen ? 720 : 540;
+      const fov = (isFullscreen ? 560 : 460) * zoomLevel;
 
       // Draw 3D Orbital Grid Floor Rings
-      const orbitalRings = isFullscreen ? [260, 460, 660, 840] : [190, 330, 470, 590];
+      const orbitalRings = isFullscreen ? [280, 500, 720, 920] : [190, 330, 470, 590];
       orbitalRings.forEach((r, idx) => {
         ctx.beginPath();
         const segments = 64;
@@ -358,7 +405,7 @@ export const AccountabilityGraph: React.FC = () => {
           if (i === 0) ctx.moveTo(sx, sy);
           else ctx.lineTo(sx, sy);
         }
-        const colors = ['rgba(99, 102, 241, 0.12)', 'rgba(6, 182, 212, 0.10)', 'rgba(192, 132, 252, 0.08)', 'rgba(245, 158, 11, 0.06)'];
+        const colors = ['rgba(99, 102, 241, 0.14)', 'rgba(6, 182, 212, 0.12)', 'rgba(192, 132, 252, 0.10)', 'rgba(245, 158, 11, 0.08)'];
         ctx.strokeStyle = colors[idx % colors.length];
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 4]);
@@ -369,8 +416,8 @@ export const AccountabilityGraph: React.FC = () => {
       // Draw Floating Ambient Cyber Starfield Particles
       ambientParticlesRef.current.forEach(p => {
         p.y += p.speedY;
-        if (p.y > 400) p.y = -400;
-        if (p.y < -400) p.y = 400;
+        if (p.y > 450) p.y = -450;
+        if (p.y < -450) p.y = 450;
 
         let x1 = p.x * cosY - p.z * sinY;
         let z1 = p.x * sinY + p.z * cosY;
@@ -432,12 +479,12 @@ export const AccountabilityGraph: React.FC = () => {
 
             if (isHighlightedPath) {
               ctx.strokeStyle = '#06b6d4';
-              ctx.lineWidth = 3.2;
+              ctx.lineWidth = 3.4;
               ctx.shadowColor = '#06b6d4';
-              ctx.shadowBlur = 16;
+              ctx.shadowBlur = 18;
             } else {
-              ctx.strokeStyle = 'rgba(99, 102, 241, 0.32)';
-              ctx.lineWidth = Math.max(0.9, 1.4 * p.scale);
+              ctx.strokeStyle = 'rgba(99, 102, 241, 0.35)';
+              ctx.lineWidth = Math.max(1.0, 1.5 * p.scale);
               ctx.shadowBlur = 0;
             }
             ctx.stroke();
@@ -459,10 +506,10 @@ export const AccountabilityGraph: React.FC = () => {
           const py = fromP.screenY + (toP.screenY - fromP.screenY) * pt.progress;
 
           ctx.beginPath();
-          ctx.arc(px, py, Math.max(2.5, 4.0 * fromP.scale), 0, Math.PI * 2);
+          ctx.arc(px, py, Math.max(2.5, 4.2 * fromP.scale), 0, Math.PI * 2);
           ctx.fillStyle = pt.color;
           ctx.shadowColor = pt.color;
-          ctx.shadowBlur = 12;
+          ctx.shadowBlur = 14;
           ctx.fill();
           ctx.shadowBlur = 0;
         }
@@ -495,7 +542,7 @@ export const AccountabilityGraph: React.FC = () => {
           nodeGrad.addColorStop(1, '#1e1b4b');
           ctx.fillStyle = nodeGrad;
           ctx.shadowColor = '#6366f1';
-          ctx.shadowBlur = 24;
+          ctx.shadowBlur = 26;
           ctx.fill();
           ctx.strokeStyle = '#a5b4fc';
           ctx.lineWidth = 3.0;
@@ -514,7 +561,7 @@ export const AccountabilityGraph: React.FC = () => {
           nodeGrad.addColorStop(1, '#3730a3');
           ctx.fillStyle = nodeGrad;
           ctx.shadowColor = '#818cf8';
-          ctx.shadowBlur = isSelected ? 18 : 10;
+          ctx.shadowBlur = isSelected ? 20 : 10;
           ctx.fill();
           ctx.strokeStyle = '#c7d2fe';
           ctx.lineWidth = 1.8;
@@ -532,7 +579,7 @@ export const AccountabilityGraph: React.FC = () => {
           ctx.closePath();
           ctx.fillStyle = '#c084fc';
           ctx.shadowColor = '#c084fc';
-          ctx.shadowBlur = 12;
+          ctx.shadowBlur = 14;
           ctx.fill();
           ctx.strokeStyle = '#f0abfc';
           ctx.lineWidth = 1.8;
@@ -546,7 +593,7 @@ export const AccountabilityGraph: React.FC = () => {
           ctx.closePath();
           ctx.fillStyle = node.color;
           ctx.shadowColor = node.color;
-          ctx.shadowBlur = 14;
+          ctx.shadowBlur = 16;
           ctx.fill();
           ctx.strokeStyle = '#ffffff';
           ctx.lineWidth = 1.8;
@@ -560,7 +607,7 @@ export const AccountabilityGraph: React.FC = () => {
           nodeGrad.addColorStop(1, '#0f172a');
           ctx.fillStyle = nodeGrad;
           ctx.shadowColor = node.color;
-          ctx.shadowBlur = isSelected ? 20 : 10;
+          ctx.shadowBlur = isSelected ? 22 : 12;
           ctx.fill();
           ctx.strokeStyle = isSelected || isFocused ? '#ffffff' : node.color;
           ctx.lineWidth = isSelected ? 3.0 : 1.5;
@@ -570,7 +617,7 @@ export const AccountabilityGraph: React.FC = () => {
         ctx.shadowBlur = 0;
 
         // Label Text Badge
-        if (scale > 0.40) {
+        if (scale > 0.38) {
           const fontSize = Math.max(10, Math.min(14, Math.round(12 * scale)));
           ctx.font = `bold ${fontSize}px JetBrains Mono, monospace`;
           const textWidth = ctx.measureText(node.label).width;
@@ -578,8 +625,8 @@ export const AccountabilityGraph: React.FC = () => {
           const paddingY = 4 * scale;
           const badgeY = screenY + rad + 10 * scale;
 
-          ctx.fillStyle = isSelected || isFocused ? 'rgba(79, 70, 229, 0.92)' : 'rgba(15, 23, 42, 0.88)';
-          ctx.strokeStyle = isSelected || isFocused ? '#c7d2fe' : 'rgba(255, 255, 255, 0.22)';
+          ctx.fillStyle = isSelected || isFocused ? 'rgba(79, 70, 229, 0.94)' : 'rgba(15, 23, 42, 0.90)';
+          ctx.strokeStyle = isSelected || isFocused ? '#c7d2fe' : 'rgba(255, 255, 255, 0.24)';
           ctx.lineWidth = 1;
 
           if (ctx.roundRect) {
@@ -595,7 +642,7 @@ export const AccountabilityGraph: React.FC = () => {
           ctx.textAlign = 'center';
           ctx.fillText(node.label, screenX, badgeY + fontSize);
 
-          if (node.subLabel && scale > 0.65) {
+          if (node.subLabel && scale > 0.62) {
             ctx.font = `${Math.max(9, Math.round(10 * scale))}px sans-serif`;
             ctx.fillStyle = '#cbd5e1';
             ctx.fillText(node.subLabel, screenX, badgeY + fontSize + 16 * scale);
@@ -639,14 +686,14 @@ export const AccountabilityGraph: React.FC = () => {
     } else {
       // Hover node detection
       const cssWidth = rect.width;
-      const cssHeight = isFullscreen ? rect.height : 620;
+      const cssHeight = isFullscreen ? Math.max(500, window.innerHeight - (document.fullscreenElement ? 80 : 160)) : 620;
       const cx = cssWidth / 2;
       const cy = cssHeight / 2;
       const rot = rotationRef.current;
       const cosX = Math.cos(rot.currentX), sinX = Math.sin(rot.currentX);
       const cosY = Math.cos(rot.currentY), sinY = Math.sin(rot.currentY);
-      const cameraZ = isFullscreen ? 680 : 540;
-      const fov = (isFullscreen ? 520 : 460) * zoomLevel;
+      const cameraZ = isFullscreen ? 720 : 540;
+      const fov = (isFullscreen ? 560 : 460) * zoomLevel;
 
       let found: GraphNode3D | null = null;
       let foundX = 0, foundY = 0;
@@ -780,12 +827,12 @@ export const AccountabilityGraph: React.FC = () => {
 
             {viewMode === '3d' && (
               <button
-                onClick={() => setIsFullscreen(prev => !prev)}
+                onClick={toggleFullscreenMode}
                 className="px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
-                title="Toggle Immersive Fullscreen Mode [Hotkey: F]"
+                title="Toggle Native Browser Fullscreen (F11)"
               >
                 {isFullscreen ? <MinimizeIcon size={13} /> : <MaximizeIcon size={13} />}
-                <span className="hidden sm:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
+                <span className="hidden sm:inline">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen (F11)'}</span>
               </button>
             )}
           </div>
@@ -858,31 +905,34 @@ export const AccountabilityGraph: React.FC = () => {
           aria-label="Interactive 3D Knowledge Graph visualizer. Use arrow keys to cycle nodes, Enter to select, R to reset view, S to toggle auto-spin."
           className={`relative overflow-hidden shadow-2xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/80 ${
             isFullscreen
-              ? 'fixed inset-0 z-[999] w-screen h-screen bg-[#05070f] flex flex-col p-4 sm:p-6'
+              ? 'fixed inset-0 z-[9999] w-screen h-screen bg-[#05070f] flex flex-col p-4 sm:p-6 border-0 rounded-none'
               : 'rounded-3xl bg-slate-950 border border-indigo-500/30'
           }`}
         >
           {/* Fullscreen Overlay Header Bar */}
           {isFullscreen && (
-            <div className="mb-4 z-20 flex items-center justify-between bg-slate-900/80 backdrop-blur-2xl px-5 py-3 rounded-2xl border border-indigo-500/30 shadow-xl">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center">
-                  <NetworkIcon size={20} className="text-cyan-400 animate-pulse" />
+            <div className="mb-4 z-20 flex items-center justify-between bg-slate-900/90 backdrop-blur-2xl px-6 py-3.5 rounded-2xl border border-indigo-500/30 shadow-2xl shrink-0">
+              <div className="flex items-center gap-3.5">
+                <div className="h-10 w-10 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                  <NetworkIcon size={22} className="text-cyan-400 animate-pulse" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-bold text-white tracking-wide">
-                    Executive Knowledge Graph Holodeck
+                  <h2 className="text-base sm:text-lg font-black text-white tracking-wider font-mono">
+                    LOOPKEEPER HOLODECK • 3D KNOWLEDGE GRAPH
                   </h2>
-                  <p className="text-[11px] text-slate-400 font-mono">
-                    Expanded Spatial Canvas • {nodesRef.current.length} Active Vector Nodes
+                  <p className="text-xs text-slate-400 font-mono flex items-center gap-2">
+                    <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span>Real-Time Vector Lineage</span>
+                    <span>•</span>
+                    <span>{nodesRef.current.length} Active Nodes</span>
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => setIsFullscreen(false)}
-                  className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-xs font-bold flex items-center gap-2 transition-all shadow-md"
+                  onClick={toggleFullscreenMode}
+                  className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-mono text-xs font-bold flex items-center gap-2 transition-all shadow-lg hover:scale-105 active:scale-95"
                 >
                   <MinimizeIcon size={14} />
                   <span>Exit Fullscreen (ESC)</span>
@@ -894,12 +944,12 @@ export const AccountabilityGraph: React.FC = () => {
           {/* Controls Overlay */}
           <div className="absolute top-4 right-4 z-10 flex flex-wrap items-center gap-2 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-zinc-800 shadow-lg text-xs">
             <button
-              onClick={() => setIsFullscreen(prev => !prev)}
+              onClick={toggleFullscreenMode}
               className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-mono text-[11px] font-bold flex items-center gap-1.5 shadow-md hover:scale-105 transition-all"
-              title="Toggle Immersive Fullscreen Holodeck [Hotkey: F]"
+              title="Toggle Fullscreen Holodeck [Hotkey: F11 / F]"
             >
               {isFullscreen ? <MinimizeIcon size={13} /> : <MaximizeIcon size={13} />}
-              <span>{isFullscreen ? 'Normal View' : 'Full Canvas'}</span>
+              <span>{isFullscreen ? 'Normal View' : 'Full Screen (F11)'}</span>
             </button>
 
             <button
@@ -967,7 +1017,7 @@ export const AccountabilityGraph: React.FC = () => {
             <p className="text-zinc-400 text-[10px] leading-relaxed">
               • <strong>Mouse</strong>: Click & drag to rotate 3D graph.<br />
               • <strong>Keyboard</strong>: Use <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">Tab</kbd> / <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">← →</kbd> to cycle nodes, <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">Enter</kbd> to inspect.<br />
-              • <strong>Shortcuts</strong>: <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">F</kbd> (Fullscreen), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">R</kbd> (Reset), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">S</kbd> (Spin).
+              • <strong>Shortcuts</strong>: <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">F11</kbd> / <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">F</kbd> (Fullscreen), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">R</kbd> (Reset), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">S</kbd> (Spin).
             </p>
           </div>
 
