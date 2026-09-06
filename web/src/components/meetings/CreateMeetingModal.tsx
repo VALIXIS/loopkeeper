@@ -276,17 +276,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     try {
       let joinUrl = '';
       if (selectedProvider === 'google_meet') {
-        // Strictly generate 3-4-3 lowercase alphabetic letters (a-z only, e.g. abc-defg-hij)
-        const alpha = 'abcdefghijklmnopqrstuvwxyz';
-        const getAlpha = (len: number) => {
-          let s = '';
-          for (let i = 0; i < len; i++) {
-            s += alpha.charAt(Math.floor(Math.random() * alpha.length));
-          }
-          return s;
-        };
-        const meetCode = `${getAlpha(3)}-${getAlpha(4)}-${getAlpha(3)}`;
-        joinUrl = `https://meet.google.com/${meetCode}`;
+        joinUrl = 'https://meet.google.com/new';
       } else if (selectedProvider === 'zoom') {
         const id = Math.floor(1000000000 + Math.random() * 9000000000);
         const pwd = 'lk' + Math.floor(1000 + Math.random() * 9000);

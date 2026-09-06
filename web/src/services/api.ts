@@ -1147,12 +1147,11 @@ export const api = {
       }
     }
     const isZoom = providerId === 'zoom';
-    const id = Math.random().toString(36).substring(2, 9);
     const zoomId = Math.floor(1000000000 + Math.random() * 9000000000);
     const pwd = 'lk' + Math.floor(1000 + Math.random() * 9000);
     const joinUrl = isZoom
       ? `https://zoom.us/j/${zoomId}?pwd=${pwd}`
-      : `https://meet.google.com/lk-${id}`;
+      : 'https://meet.google.com/new';
     return {
       provider: providerId,
       meeting: {
