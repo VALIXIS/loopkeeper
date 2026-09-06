@@ -197,9 +197,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, []);
 
+  const refreshDataSilently = useCallback(async () => {
+    try {
+      const [meetingsData, itemsData, overviewData] = await Promise.all([
+        api.getMeetings(),
+        api.getActionItems(),
+        api.getDashboardOverview()
+      ]);
+      setMeetings(meetingsData);
+      setActionItems(itemsData);
+      setDashboardOverview(overviewData);
+    } catch (err) {
+      console.warn('Silent sync warning', err);
+    }
+  }, []);
+
   useEffect(() => {
     refreshData();
-  }, [refreshData]);
+
+    // Polling interval every 4 seconds for cross-laptop & multi-device sync
+    const pollInterval = setInterval(() => {
+      refreshDataSilently();
+    }, 4000);
+
+    // Cross-tab storage event listener
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'loopkeeper_dispatch_event' || e.key === 'loopkeeper_meeting_data_changed') {
+        refreshDataSilently();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [refreshData, refreshDataSilently]);
 
   const navigateToMeeting = (id: string) => {
     setSelectedMeetingId(id);

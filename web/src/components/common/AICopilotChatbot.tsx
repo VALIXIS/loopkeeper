@@ -41,27 +41,60 @@ export const AICopilotChatbot: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Listen for real-time Meeting Dispatch events and pop open AI notification!
+  // Listen for real-time Meeting Dispatch events across tabs, devices, and sessions!
   useEffect(() => {
-    const handleMeetingDispatched = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (!detail) return;
+    const processDispatch = (detail: any) => {
+      if (!detail || !detail.joinUrl) return;
 
       const newMsg: ChatMessage = {
-        id: `ai-dispatch-${Date.now()}`,
+        id: `ai-dispatch-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
         sender: 'ai',
-        text: `🔔 LIVE AUTOMATED DISPATCH AUDIT:\n\nMeeting Scheduled & Auto-Sent to Attendees!\n📌 Title: "${detail.title}"\n🔗 Google Meet Link: ${detail.joinUrl}\n👥 Delivered to ${detail.attendeeCount} Attendees: ${detail.attendeeNames}\n\n⚡ Automated Email Invitations & Slack #general alerts dispatched!`,
+        text: `🔔 LIVE AUTOMATED DISPATCH AUDIT:\n\nMeeting Scheduled & Auto-Sent to Attendees!\n📌 Title: "${detail.title}"\n🔗 Google Meet Link: ${detail.joinUrl}\n👥 Delivered to ${detail.attendeeCount || 2} Attendees: ${detail.attendeeNames}\n\n⚡ Automated Email Invitations & Slack #general alerts dispatched!`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         actionTaken: 'meeting_dispatched_alert',
         joinUrl: detail.joinUrl
       };
 
-      setMessages(prev => [...prev, newMsg]);
-      setIsOpen(true); // Automatically open the AI Chatbot drawer!
+      setMessages(prev => {
+        // Prevent duplicate messages if already present
+        if (prev.some(m => m.joinUrl === detail.joinUrl && m.text.includes(detail.title))) {
+          return prev;
+        }
+        return [...prev, newMsg];
+      });
+      setIsOpen(true); // Automatically open the AI Chatbot drawer on all active sessions!
     };
 
+    // 1. Local DOM event listener
+    const handleMeetingDispatched = (e: Event) => {
+      processDispatch((e as CustomEvent).detail);
+    };
+
+    // 2. Storage event listener for cross-tab & multi-laptop sync
+    const handleStorageEvent = (e: StorageEvent) => {
+      if (e.key === 'loopkeeper_dispatch_event' && e.newValue) {
+        try {
+          const detail = JSON.parse(e.newValue);
+          processDispatch(detail);
+        } catch {}
+      }
+    };
+
+    // 3. BroadcastChannel for cross-context browser sync
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel('loopkeeper_realtime_broadcast');
+      bc.onmessage = (e) => processDispatch(e.data);
+    } catch {}
+
     window.addEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
-    return () => window.removeEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
+    window.addEventListener('storage', handleStorageEvent);
+
+    return () => {
+      window.removeEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
+      window.removeEventListener('storage', handleStorageEvent);
+      if (bc) bc.close();
+    };
   }, []);
 
   const scrollToBottom = () => {

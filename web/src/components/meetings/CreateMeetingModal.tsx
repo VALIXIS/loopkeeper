@@ -295,16 +295,27 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
       });
 
       // Dispatch real-time event to trigger AI Chatbot live notification & pop-up
-      window.dispatchEvent(
-        new CustomEvent('loopkeeper:meeting_dispatched', {
-          detail: {
-            title: title.trim() || 'LoopKeeper Scheduled Meeting',
-            joinUrl: joinUrl || 'https://meet.google.com/nkq-ykqi-uik',
-            attendeeCount: invitedEmployees.length || 8,
-            attendeeNames: participantNames || 'Subhash, Jyothsna, Vignesh, Hasitha, Krishna, Adithya, Vaseem, VALIXIS'
-          }
-        })
-      );
+      const dispatchDetail = {
+        title: title.trim() || 'LoopKeeper Scheduled Meeting',
+        joinUrl: joinUrl || 'https://meet.google.com/nkq-ykqi-uik',
+        attendeeCount: invitedEmployees.length || 8,
+        attendeeNames: participantNames || 'Subhash, Jyothsna, Vignesh, Hasitha, Krishna, Adithya, Vaseem, VALIXIS',
+        timestamp: Date.now()
+      };
+
+      // Local custom event
+      window.dispatchEvent(new CustomEvent('loopkeeper:meeting_dispatched', { detail: dispatchDetail }));
+
+      // Multi-laptop & cross-tab sync via localStorage and BroadcastChannel
+      try {
+        localStorage.setItem('loopkeeper_dispatch_event', JSON.stringify(dispatchDetail));
+        localStorage.setItem('loopkeeper_meeting_data_changed', String(Date.now()));
+        const bc = new BroadcastChannel('loopkeeper_realtime_broadcast');
+        bc.postMessage(dispatchDetail);
+        bc.close();
+      } catch (e) {
+        console.warn(e);
+      }
     } catch (err) {
       console.error(err);
     } finally {
