@@ -769,6 +769,56 @@ export const AccountabilityGraph: React.FC = () => {
     }
   };
 
+  // Mouse Wheel Zoom & Touch Pinch-to-Zoom Handlers for 3D Holodeck Graph
+  const touchDistanceRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const zoomDelta = e.deltaY < 0 ? 0.15 : -0.15;
+      setZoomLevel(prev => Math.min(Math.max(prev + zoomDelta, 0.3), 3.5));
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        touchDistanceRef.current = Math.hypot(dx, dy);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && touchDistanceRef.current !== null) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const newDist = Math.hypot(dx, dy);
+        const diff = (newDist - touchDistanceRef.current) * 0.006;
+        setZoomLevel(prev => Math.min(Math.max(prev + diff, 0.3), 3.5));
+        touchDistanceRef.current = newDist;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      touchDistanceRef.current = null;
+    };
+
+    canvas.addEventListener('wheel', handleWheel, { passive: false });
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: true });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      canvas.removeEventListener('wheel', handleWheel);
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
+
   // Focus node info text for screen reader
   const focusedNode = nodesRef.current.find(n => n.id === focusedNodeId);
 
@@ -1009,8 +1059,8 @@ export const AccountabilityGraph: React.FC = () => {
               <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-[9px] text-zinc-400 border border-zinc-700">Hotkeys Active</span>
             </div>
             <p className="text-zinc-400 text-[10px] leading-relaxed">
-              • <strong>Mouse</strong>: Click & drag to rotate 3D graph.<br />
-              • <strong>Shortcuts</strong>: <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">R</kbd> (Reset Camera), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">S</kbd> (Auto-Spin), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">F11</kbd> / <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">F</kbd> (Fullscreen).
+              • <strong>Mouse</strong>: Click & drag to rotate 3D graph. Scroll wheel or pinch to Zoom In / Out.<br />
+              • <strong>Shortcuts</strong>: <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">R</kbd> (Reset Camera), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">S</kbd> (Auto-Spin), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">+</kbd> / <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">-</kbd> (Zoom), <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">F11</kbd> / <kbd className="px-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-300">F</kbd> (Fullscreen).
             </p>
           </div>
 
