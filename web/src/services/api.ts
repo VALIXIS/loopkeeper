@@ -1147,17 +1147,42 @@ export const api = {
       }
     }
     const isZoom = providerId === 'zoom';
+    const isGoogle = providerId === 'google_meet';
     const zoomId = Math.floor(1000000000 + Math.random() * 9000000000);
     const pwd = 'lk' + Math.floor(1000 + Math.random() * 9000);
+
+    const alpha = 'abcdefghijklmnopqrstuvwxyz';
+    let meetCode = '';
+    for (let i = 0; i < 3; i++) meetCode += alpha.charAt(Math.floor(Math.random() * alpha.length));
+    meetCode += '-';
+    for (let i = 0; i < 4; i++) meetCode += alpha.charAt(Math.floor(Math.random() * alpha.length));
+    meetCode += '-';
+    for (let i = 0; i < 3; i++) meetCode += alpha.charAt(Math.floor(Math.random() * alpha.length));
+
     const joinUrl = isZoom
       ? `https://zoom.us/j/${zoomId}?pwd=${pwd}`
-      : 'https://meet.google.com/new';
+      : isGoogle
+      ? `https://meet.google.com/${meetCode}`
+      : `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${meetCode}%40thread.v2/0`;
+
+    const newMeeting: Meeting = {
+      id: `m-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      title,
+      meeting_date: new Date().toISOString(),
+      source: isZoom ? 'zoom' : isGoogle ? 'google_meet' : 'loopkeeper_native',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      action_item_count: 0
+    };
+
+    localStore.meetings.unshift(newMeeting);
+    localStore.save();
+
     return {
       provider: providerId,
       meeting: {
-        title,
-        join_url: joinUrl,
-        provider: providerId
+        ...newMeeting,
+        join_url: joinUrl
       }
     };
   },

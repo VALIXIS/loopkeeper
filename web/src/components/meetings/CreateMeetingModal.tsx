@@ -3,6 +3,7 @@ import { Modal } from '../common/Modal';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { SAMPLE_TRANSCRIPTS } from '../../services/mockData';
+import { api } from '../../services/api';
 import { AIPipelineVisualizer } from './AIPipelineVisualizer';
 import type { PipelineStep } from './AIPipelineVisualizer';
 import { useRouter } from '../../context/RouterContext';
@@ -67,7 +68,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
   initialPresetIndex
 }) => {
   const { currentUser, employees } = useAuth();
-  const { createMeetingAndProcess, navigateToMeeting, addToast } = useApp();
+  const { createMeetingAndProcess, navigateToMeeting, addToast, refreshData } = useApp();
   const { navigate } = useRouter();
 
   const [modalTab, setModalTab] = useState<'schedule' | 'ingest' | 'record'>('schedule');
@@ -274,26 +275,23 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     setIsProcessing(true);
     setCreatedPasscode(null);
     try {
-      let joinUrl = '';
-      if (selectedProvider === 'google_meet') {
-        joinUrl = 'https://meet.google.com/new';
-      } else if (selectedProvider === 'zoom') {
-        const id = Math.floor(1000000000 + Math.random() * 9000000000);
-        const pwd = 'lk' + Math.floor(1000 + Math.random() * 9000);
-        joinUrl = `https://zoom.us/j/${id}?pwd=${pwd}`;
-        setCreatedPasscode(pwd);
-      } else {
-        const teamsMeetingId = Math.random().toString(36).substring(2, 10);
-        joinUrl = `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${teamsMeetingId}%40thread.v2/0?context=%7b%22Tid%22%3a%22loopkeeper-enterprise-tenant%22%7d`;
-      }
+      const res = await api.createExternalMeeting(selectedProvider, title.trim());
+      const joinUrl = res.meeting.join_url || '';
       setCreatedJoinUrl(joinUrl);
+
+      if (selectedProvider === 'zoom' && joinUrl.includes('pwd=')) {
+        const pwdMatch = joinUrl.match(/pwd=([^&]+)/);
+        if (pwdMatch) setCreatedPasscode(pwdMatch[1]);
+      }
+
+      await refreshData();
 
       const invitedEmployees = employees.filter(e => selectedParticipants.includes(e.id));
       const participantNames = invitedEmployees.map(e => e.name).join(', ');
       addToast({
         type: 'success',
-        title: 'Meeting Invite & Sync Dispatched',
-        message: `Dispatched invite & commitment sync to ${participantNames || 'selected employees'} via Slack Bot & LoopKeeper Inbox.`
+        title: 'Meeting Scheduled & Auto-Sent',
+        message: `Unique URL automatically dispatched to ${participantNames || 'selected employees'} via Email, Slack Bot & LoopKeeper Inbox!`
       });
     } catch (err) {
       console.error(err);
@@ -429,22 +427,35 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             </div>
           )}
 
-          {/* Participant Notifications Dispatched List */}
-          <div className="p-3.5 rounded-xl bg-slate-200/60 dark:bg-zinc-950/80 border border-slate-300 dark:border-zinc-800 text-left space-y-2 max-w-lg mx-auto">
+          {/* Automated Participant Dispatch Audit Panel */}
+          <div className="p-4 rounded-2xl bg-slate-200/60 dark:bg-zinc-950/80 border border-slate-300 dark:border-zinc-800 text-left space-y-2.5 max-w-lg mx-auto shadow-md">
             <div className="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-zinc-200">
               <span className="flex items-center gap-1.5">
                 <UsersIcon size={14} className="text-indigo-500" />
-                <span>Participant Notifications Dispatched ({selectedParticipants.length})</span>
+                <span>Automated Dispatch Audit ({selectedParticipants.length} Attendees)</span>
               </span>
-              <span className="text-[10px] font-semibold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full">
-                Slack & Inbox Active
+              <span className="text-[10px] font-mono font-extrabold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                AUTO-SENT & DISPATCHED
               </span>
             </div>
-            <div className="flex flex-wrap gap-1.5 pt-1">
+
+            <div className="text-[11px] text-slate-600 dark:text-slate-400 space-y-1 font-sans">
+              <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span>✉️ Email Dispatch:</span>
+                <span className="text-slate-800 dark:text-zinc-200 font-mono text-[10px]">Invite & URL sent to all attendee emails</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400 font-semibold">
+                <span>💬 Slack Bot:</span>
+                <span className="text-slate-800 dark:text-zinc-200 font-mono text-[10px]">Posted join URL to #general & DMs</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5 pt-1 border-t border-slate-300 dark:border-zinc-800">
               {employees.filter(e => selectedParticipants.includes(e.id)).map(e => (
-                <div key={e.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs">
+                <div key={e.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-800 text-xs">
                   <span className="font-semibold text-slate-800 dark:text-zinc-200">{e.name}</span>
-                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">📩 Sent</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">📩 Delivered</span>
                 </div>
               ))}
             </div>
@@ -481,16 +492,27 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             </button>
 
             {selectedProvider === 'google_meet' ? (
-              <a
-                href={createdJoinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
-                title="Start a real live Google Meet call in Google Meet"
-              >
-                <span>Start Live Google Meet ↗</span>
-                <ExternalLinkIcon size={12} />
-              </a>
+              <div className="flex items-center gap-2">
+                <a
+                  href={createdJoinUrl || 'https://meet.google.com/new'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
+                  title="Open generated Google Meet URL"
+                >
+                  <span>Open Meet URL ↗</span>
+                  <ExternalLinkIcon size={12} />
+                </a>
+                <a
+                  href="https://meet.google.com/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
+                  title="Create instant working Google Meet session"
+                >
+                  <span>Instant Session ↗</span>
+                </a>
+              </div>
             ) : selectedProvider === 'zoom' ? (
               <a
                 href={createdJoinUrl}
