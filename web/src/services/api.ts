@@ -1148,8 +1148,6 @@ export const api = {
     }
     const isZoom = providerId === 'zoom';
     const isGoogle = providerId === 'google_meet';
-    const zoomId = Math.floor(1000000000 + Math.random() * 9000000000);
-    const pwd = 'lk' + Math.floor(1000 + Math.random() * 9000);
 
     const alpha = 'abcdefghijklmnopqrstuvwxyz';
     let meetCode = '';
@@ -1162,7 +1160,7 @@ export const api = {
     const joinUrl = customUrl?.trim()
       ? customUrl.trim()
       : isZoom
-      ? `https://zoom.us/j/${zoomId}?pwd=${pwd}`
+      ? 'https://zoom.us/j/85940192831?pwd=loop2026'
       : isGoogle
       ? 'https://meet.google.com/zmg-zvzi-sor'
       : `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${meetCode}%40thread.v2/0`;

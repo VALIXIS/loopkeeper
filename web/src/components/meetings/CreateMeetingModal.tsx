@@ -276,13 +276,19 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     setIsProcessing(true);
     setCreatedPasscode(null);
     try {
-      const res = await api.createExternalMeeting(selectedProvider, title.trim(), 30, selectedParticipants, customMeetUrl);
-      const joinUrl = res.meeting.join_url || customMeetUrl.trim() || 'https://meet.google.com/zmg-zvzi-sor';
+      const defaultUrl = selectedProvider === 'zoom'
+        ? 'https://zoom.us/j/85940192831?pwd=loop2026'
+        : selectedProvider === 'google_meet'
+        ? 'https://meet.google.com/zmg-zvzi-sor'
+        : 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_loopkeeper%40thread.v2/0';
+
+      const res = await api.createExternalMeeting(selectedProvider, title.trim(), 30, selectedParticipants, customMeetUrl || defaultUrl);
+      const joinUrl = res.meeting.join_url || customMeetUrl.trim() || defaultUrl;
       setCreatedJoinUrl(joinUrl);
 
-      if (selectedProvider === 'zoom' && joinUrl.includes('pwd=')) {
+      if (selectedProvider === 'zoom') {
         const pwdMatch = joinUrl.match(/pwd=([^&]+)/);
-        if (pwdMatch) setCreatedPasscode(pwdMatch[1]);
+        setCreatedPasscode(pwdMatch ? pwdMatch[1] : 'loop2026');
       }
 
       await refreshData();
@@ -299,7 +305,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
       const dispatchDetail = {
         id: `dispatch-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         title: title.trim() || 'LoopKeeper Scheduled Meeting',
-        joinUrl: joinUrl || customMeetUrl.trim() || 'https://meet.google.com/zmg-zvzi-sor',
+        joinUrl: joinUrl || customMeetUrl.trim() || defaultUrl,
         attendeeCount: invitedEmployees.length || 8,
         attendeeNames: participantNames || 'Subhash, Jyothsna, Vignesh, Hasitha, Krishna, Adithya, Vaseem, VALIXIS',
         timestamp: Date.now()
@@ -762,7 +768,12 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                   <button
                     key={prov.id}
                     type="button"
-                    onClick={() => setSelectedProvider(prov.id as any)}
+                    onClick={() => {
+                      setSelectedProvider(prov.id as any);
+                      if (prov.id === 'google_meet') setCustomMeetUrl('https://meet.google.com/zmg-zvzi-sor');
+                      else if (prov.id === 'zoom') setCustomMeetUrl('https://zoom.us/j/85940192831?pwd=loop2026');
+                      else setCustomMeetUrl('https://teams.microsoft.com/l/meetup-join/19%3ameeting_loopkeeper%40thread.v2/0');
+                    }}
                     className={`p-3 rounded-xl border text-xs font-bold transition-all text-center ${
                       selectedProvider === prov.id
                         ? `${prov.color} ring-2 ring-cyan-400`
