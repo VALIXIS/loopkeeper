@@ -19,13 +19,14 @@ import {
   MessageSquareIcon,
   AlertTriangleIcon,
   RefreshCwIcon,
-  NetworkIcon
+  NetworkIcon,
+  TrashIcon
 } from '../common/Icons';
 
 export const CommitmentDetailView: React.FC = () => {
   const { route, navigateToMeeting, navigate } = useRouter();
   const { employees, currentUser } = useAuth();
-  const { updateTask, addToast } = useApp();
+  const { updateTask, deleteTask, addToast } = useApp();
 
   const taskId = route.params.commitmentId;
   const [detail, setDetail] = useState<ActionItemDetail | null>(null);
@@ -275,6 +276,20 @@ export const CommitmentDetailView: React.FC = () => {
               className="px-3.5 py-1.5 rounded-xl bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 text-xs font-semibold border border-slate-300 dark:border-zinc-700 transition-all"
             >
               {isEditing ? 'Cancel Edit' : 'Edit Details'}
+            </button>
+
+            <button
+              onClick={async () => {
+                if (taskId && window.confirm('Are you sure you want to delete this commitment? This action cannot be undone.')) {
+                  await deleteTask(taskId);
+                  navigate('/commitments');
+                }
+              }}
+              className="px-3.5 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 text-xs font-semibold border border-rose-500/30 transition-all flex items-center gap-1.5"
+              title="Delete this commitment"
+            >
+              <TrashIcon size={13} />
+              <span>Delete</span>
             </button>
           </div>
         </div>

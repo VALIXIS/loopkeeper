@@ -11,7 +11,8 @@ import {
   CheckCircleIcon,
   UsersIcon,
   ArrowRightIcon,
-  SparklesIcon
+  SparklesIcon,
+  TrashIcon
 } from '../common/Icons';
 
 interface ActionItemListProps {
@@ -23,7 +24,7 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
   onSelectTask,
   defaultFilter = 'all'
 }) => {
-  const { actionItems, updateTask } = useApp();
+  const { actionItems, updateTask, deleteTask } = useApp();
   const { employees } = useAuth();
 
   const [statusFilter, setStatusFilter] = useState<string>(defaultFilter);
@@ -59,6 +60,13 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
     e.stopPropagation();
     const newStatus: TaskStatus = item.status === 'done' ? 'pending' : 'done';
     await updateTask(item.id, { status: newStatus });
+  };
+
+  const handleDeleteTask = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this commitment?')) {
+      await deleteTask(id);
+    }
   };
 
   return (
@@ -233,8 +241,17 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
 
                 {/* Right Metrics & CTA */}
                 <div className="flex items-center md:flex-col items-end justify-between gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-zinc-800">
-                  <div className="w-28">
-                    <ConfidenceMeter score={item.confidence} size="sm" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-28">
+                      <ConfidenceMeter score={item.confidence} size="sm" />
+                    </div>
+                    <button
+                      onClick={e => handleDeleteTask(e, item.id)}
+                      className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                      title="Delete commitment"
+                    >
+                      <TrashIcon size={14} />
+                    </button>
                   </div>
 
                   <div className="flex items-center gap-1 text-xs text-cyan-400 font-semibold group-hover:translate-x-1 transition-transform">

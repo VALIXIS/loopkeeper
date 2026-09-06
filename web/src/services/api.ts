@@ -731,6 +731,19 @@ export const api = {
     localStore.save();
   },
 
+  async deleteActionItem(id: string): Promise<void> {
+    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+      try {
+        await fetch(`${API_BASE_URL}/action-items/${id}`, { method: 'DELETE' });
+      } catch (err) {
+        console.warn('Backend deleteActionItem failed, updating local store', err);
+      }
+    }
+    localStore.actionItems = localStore.actionItems.filter(a => a.id !== id);
+    delete localStore.comments[id];
+    localStore.save();
+  },
+
   async addComment(taskId: string, authorName: string, text: string, type: 'comment' | 'warning' | 'instruction' = 'comment'): Promise<TaskComment> {
     const comment: TaskComment = {
       id: `c-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
