@@ -73,6 +73,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
   const [modalTab, setModalTab] = useState<'schedule' | 'ingest' | 'record'>('schedule');
   const [selectedProvider, setSelectedProvider] = useState<'google_meet' | 'zoom' | 'ms_teams'>('google_meet');
+  const [customMeetUrl, setCustomMeetUrl] = useState<string>('https://meet.google.com/zmg-zvzi-sor');
   const [createdJoinUrl, setCreatedJoinUrl] = useState<string | null>(null);
   const [createdPasscode, setCreatedPasscode] = useState<string | null>(null);
 
@@ -275,8 +276,8 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     setIsProcessing(true);
     setCreatedPasscode(null);
     try {
-      const res = await api.createExternalMeeting(selectedProvider, title.trim(), 30, selectedParticipants);
-      const joinUrl = res.meeting.join_url || '';
+      const res = await api.createExternalMeeting(selectedProvider, title.trim(), 30, selectedParticipants, customMeetUrl);
+      const joinUrl = res.meeting.join_url || customMeetUrl.trim() || 'https://meet.google.com/zmg-zvzi-sor';
       setCreatedJoinUrl(joinUrl);
 
       if (selectedProvider === 'zoom' && joinUrl.includes('pwd=')) {
@@ -291,13 +292,13 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
       addToast({
         type: 'success',
         title: 'Meeting Scheduled & Auto-Sent',
-        message: `Unique URL automatically dispatched to ${participantNames || 'selected employees'} via Email, Slack Bot & LoopKeeper Inbox!`
+        message: `Shared meeting room URL automatically dispatched to ${participantNames || 'selected employees'} via Email, Slack Bot & LoopKeeper Inbox!`
       });
 
       // Dispatch real-time event to trigger AI Chatbot live notification & pop-up
       const dispatchDetail = {
         title: title.trim() || 'LoopKeeper Scheduled Meeting',
-        joinUrl: joinUrl || 'https://meet.google.com/new',
+        joinUrl: joinUrl || customMeetUrl.trim() || 'https://meet.google.com/zmg-zvzi-sor',
         attendeeCount: invitedEmployees.length || 8,
         attendeeNames: participantNames || 'Subhash, Jyothsna, Vignesh, Hasitha, Krishna, Adithya, Vaseem, VALIXIS',
         timestamp: Date.now()
@@ -529,23 +530,23 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             {selectedProvider === 'google_meet' ? (
               <div className="flex items-center gap-2">
                 <a
-                  href={createdJoinUrl || 'https://meet.google.com/new'}
+                  href={createdJoinUrl || customMeetUrl || 'https://meet.google.com/zmg-zvzi-sor'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
-                  title="Open generated Google Meet URL"
+                  title="Open shared Google Meet room URL"
                 >
-                  <span>Open Meet URL ↗</span>
+                  <span>Open Shared Meet Room ↗</span>
                   <ExternalLinkIcon size={12} />
                 </a>
                 <a
-                  href="https://meet.google.com/new"
+                  href={createdJoinUrl || customMeetUrl || 'https://meet.google.com/zmg-zvzi-sor'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
-                  title="Create instant working Google Meet session"
+                  title="Join active Google Meet room"
                 >
-                  <span>Instant Session ↗</span>
+                  <span>Join Session ↗</span>
                 </a>
               </div>
             ) : selectedProvider === 'zoom' ? (
@@ -782,6 +783,27 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
                     {prov.name}
                   </button>
                 ))}
+              </div>
+
+              {/* Shared Room Link Input */}
+              <div className="pt-2 border-t border-slate-200 dark:border-zinc-800 space-y-1">
+                <label className="text-xs font-bold text-slate-700 dark:text-zinc-300 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                    <ExternalLinkIcon size={13} />
+                    <span>Shared Meeting Room URL (Dispatched to All Attendees)</span>
+                  </span>
+                  <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">100% Same Room Sync</span>
+                </label>
+                <input
+                  type="url"
+                  value={customMeetUrl}
+                  onChange={e => setCustomMeetUrl(e.target.value)}
+                  placeholder="e.g. https://meet.google.com/zmg-zvzi-sor"
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 text-xs text-slate-900 dark:text-zinc-100 font-mono focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+                <p className="text-[10px] text-slate-500 dark:text-zinc-500">
+                  💡 All selected employees will receive this exact room link via AI Copilot pop-up & toasts so everyone joins the same room.
+                </p>
               </div>
             </div>
           ) : (
