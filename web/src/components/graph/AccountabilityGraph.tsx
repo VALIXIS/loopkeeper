@@ -470,17 +470,36 @@ export const AccountabilityGraph: React.FC = () => {
 
         ctx.shadowBlur = 0;
 
-        // Label Text
+        // Label Text Badge
         if (scale > 0.45) {
-          ctx.font = `bold ${Math.max(9, Math.min(13, Math.round(11 * scale)))}px JetBrains Mono, monospace`;
-          ctx.fillStyle = isSelected || isFocused ? '#ffffff' : p.depth < 520 ? '#f1f5f9' : '#94a3b8';
+          const fontSize = Math.max(9, Math.min(13, Math.round(11 * scale)));
+          ctx.font = `bold ${fontSize}px JetBrains Mono, monospace`;
+          const textWidth = ctx.measureText(node.label).width;
+          const paddingX = 8 * scale;
+          const paddingY = 3 * scale;
+          const badgeY = screenY + rad + 8 * scale;
+
+          ctx.fillStyle = isSelected || isFocused ? 'rgba(79, 70, 229, 0.9)' : 'rgba(15, 23, 42, 0.85)';
+          ctx.strokeStyle = isSelected || isFocused ? '#c7d2fe' : 'rgba(255, 255, 255, 0.2)';
+          ctx.lineWidth = 1;
+
+          if (ctx.roundRect) {
+            ctx.beginPath();
+            ctx.roundRect(screenX - textWidth / 2 - paddingX, badgeY, textWidth + paddingX * 2, fontSize + paddingY * 2, 6);
+            ctx.fill();
+            ctx.stroke();
+          } else {
+            ctx.fillRect(screenX - textWidth / 2 - paddingX, badgeY, textWidth + paddingX * 2, fontSize + paddingY * 2);
+          }
+
+          ctx.fillStyle = '#ffffff';
           ctx.textAlign = 'center';
-          ctx.fillText(node.label, screenX, screenY + rad + 15 * scale);
+          ctx.fillText(node.label, screenX, badgeY + fontSize);
 
           if (node.subLabel && scale > 0.75) {
             ctx.font = `${Math.max(8, Math.round(9 * scale))}px sans-serif`;
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText(node.subLabel, screenX, screenY + rad + 27 * scale);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillText(node.subLabel, screenX, badgeY + fontSize + 14 * scale);
           }
         }
       });
