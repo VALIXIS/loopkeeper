@@ -316,6 +316,18 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
       } catch (e) {
         console.warn(e);
       }
+
+      // Global cross-laptop broadcast over ntfy.sh network pub/sub relay
+      try {
+        fetch('https://ntfy.sh/loopkeeper_global_realtime_events_2026', {
+          method: 'POST',
+          headers: {
+            'Title': dispatchDetail.title || 'LoopKeeper Meeting Notification',
+            'Tags': 'calendar,bell'
+          },
+          body: JSON.stringify(dispatchDetail)
+        }).catch(() => {});
+      } catch (e) {}
     } catch (err) {
       console.error(err);
     } finally {

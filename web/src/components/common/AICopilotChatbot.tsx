@@ -41,7 +41,7 @@ export const AICopilotChatbot: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Listen for real-time Meeting Dispatch events across tabs, devices, and sessions!
+  // Listen for real-time Meeting Dispatch events across tabs, devices, laptops, and sessions!
   useEffect(() => {
     const processDispatch = (detail: any) => {
       if (!detail || !detail.joinUrl) return;
@@ -62,7 +62,17 @@ export const AICopilotChatbot: React.FC = () => {
         }
         return [...prev, newMsg];
       });
-      setIsOpen(true); // Automatically open the AI Chatbot drawer on all active sessions!
+
+      // Show instant Toast notification on all logged-in devices
+      try {
+        addToast({
+          type: 'info',
+          title: '🔔 Meeting Dispatched Live!',
+          message: `Meeting "${detail.title}" scheduled — Google Meet space ready for all attendees.`
+        });
+      } catch (e) {}
+
+      setIsOpen(true); // Automatically open the AI Chatbot drawer on all active sessions across laptops!
     };
 
     // 1. Local DOM event listener
@@ -87,6 +97,51 @@ export const AICopilotChatbot: React.FC = () => {
       bc.onmessage = (e) => processDispatch(e.data);
     } catch {}
 
+    // 4. Global real-time cross-laptop SSE subscription via ntfy.sh
+    let es: EventSource | null = null;
+    try {
+      es = new EventSource('https://ntfy.sh/loopkeeper_global_realtime_events_2026/json');
+      es.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.event === 'message' && data.message) {
+            const detail = JSON.parse(data.message);
+            if (detail && detail.joinUrl) {
+              processDispatch(detail);
+            }
+          }
+        } catch (err) {}
+      };
+    } catch (err) {}
+
+    // 5. High-frequency polling fallback for ntfy.sh (every 3s) ensuring zero missed notifications
+    let lastSeenMsgId = '';
+    const pollNtfy = async () => {
+      try {
+        const res = await fetch('https://ntfy.sh/loopkeeper_global_realtime_events_2026/json?poll=1&since=10m');
+        if (res.ok) {
+          const text = await res.text();
+          const lines = text.trim().split('\n');
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            try {
+              const data = JSON.parse(line);
+              if (data.event === 'message' && data.message && data.id !== lastSeenMsgId) {
+                const detail = JSON.parse(data.message);
+                if (detail && detail.joinUrl) {
+                  lastSeenMsgId = data.id;
+                  processDispatch(detail);
+                }
+              }
+            } catch (e) {}
+          }
+        }
+      } catch (e) {}
+    };
+
+    const ntfyPollInterval = setInterval(pollNtfy, 3000);
+    pollNtfy();
+
     window.addEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
     window.addEventListener('storage', handleStorageEvent);
 
@@ -94,8 +149,10 @@ export const AICopilotChatbot: React.FC = () => {
       window.removeEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
       window.removeEventListener('storage', handleStorageEvent);
       if (bc) bc.close();
+      if (es) es.close();
+      clearInterval(ntfyPollInterval);
     };
-  }, []);
+  }, [addToast]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
