@@ -442,6 +442,55 @@ html.light #root {
   background-color: #f8fafc !important;
 }
 
+/* Universal Light Theme High-Contrast Font System Overrides */
+html.light .text-indigo-200,
+html.light .text-indigo-300 {
+  color: #3730a3 !important;
+}
+
+html.light .text-cyan-200,
+html.light .text-cyan-300 {
+  color: #0369a1 !important;
+}
+
+html.light .text-purple-200,
+html.light .text-purple-300 {
+  color: #581c87 !important;
+}
+
+html.light .text-rose-200,
+html.light .text-rose-300 {
+  color: #991b1b !important;
+}
+
+html.light .text-amber-200,
+html.light .text-amber-300 {
+  color: #92400e !important;
+}
+
+html.light .text-emerald-200,
+html.light .text-emerald-300 {
+  color: #065f46 !important;
+}
+
+/* Light Theme Button & Badge Contrast Adjustments */
+html.light button.bg-indigo-600\/20,
+html.light button.bg-indigo-600\/15,
+html.light button.bg-indigo-500\/10,
+html.light button.bg-indigo-500\/15 {
+  background-color: #eef2ff !important;
+  border-color: #c7d2fe !important;
+  color: #3730a3 !important;
+}
+
+html.light button.bg-indigo-600\/20:hover,
+html.light button.bg-indigo-600\/15:hover,
+html.light button.bg-indigo-500\/10:hover,
+html.light button.bg-indigo-500\/15:hover {
+  background-color: #e0e7ff !important;
+  color: #1e1b4b !important;
+}
+
 /* Light Theme Scrollbars */
 html.light ::-webkit-scrollbar-track {
   background: #f1f5f9;

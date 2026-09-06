@@ -112,62 +112,62 @@ export const MeetingDetailView: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 relative z-10">
           <div className="space-y-2.5 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
                 {meeting.source.toUpperCase()} SOURCE
               </span>
-              <span className="text-xs text-slate-400 font-mono flex items-center gap-1">
-                <CalendarIcon size={13} className="text-cyan-400" />
+              <span className="text-xs text-slate-600 dark:text-slate-400 font-mono flex items-center gap-1">
+                <CalendarIcon size={13} className="text-cyan-600 dark:text-cyan-400" />
                 {formattedDate}
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               {meeting?.title}
             </h1>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            <div className="px-4 py-2.5 rounded-2xl bg-slate-950 border border-white/[0.08] text-right shadow-inner">
-              <span className="text-[10px] text-slate-400 uppercase font-bold block">
+            <div className="px-4 py-2.5 rounded-2xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/[0.08] text-right shadow-inner">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold block">
                 Commitments
               </span>
-              <span className="text-xl font-bold font-mono text-cyan-400">
+              <span className="text-xl font-bold font-mono text-cyan-600 dark:text-cyan-400">
                 {meeting?.action_items.length || 0}
               </span>
             </div>
             <button
-              onClick={() => navigate('/accountability')}
-              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-200 text-xs font-bold border border-indigo-500/40 transition-all hover:scale-[1.03] active:scale-[0.98] shadow-md"
+              onClick={() => navigate('/accountability?tab=graph')}
+              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-indigo-600/15 hover:bg-indigo-600/25 text-indigo-700 dark:text-indigo-200 text-xs font-bold border border-indigo-500/40 transition-all hover:scale-[1.03] active:scale-[0.98] shadow-md"
             >
-              <NetworkIcon size={16} className="text-cyan-400" />
+              <NetworkIcon size={16} className="text-indigo-600 dark:text-cyan-400" />
               <span>Trace in Graph</span>
             </button>
           </div>
         </div>
 
         {/* Participants Avatars */}
-        <div className="pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400 relative z-10">
+        <div className="pt-4 border-t border-slate-200 dark:border-white/[0.06] flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400 relative z-10">
           <div className="flex items-center gap-2.5">
-            <UsersIcon size={14} className="text-indigo-400" />
-            <span className="font-semibold text-slate-300">Participants:</span>
+            <UsersIcon size={14} className="text-indigo-600 dark:text-indigo-400" />
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Participants:</span>
             <div className="flex items-center -space-x-1.5">
               {meeting.participants?.map(p => (
                 <div
                   key={p.id}
                   title={p.name}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-900/80 text-indigo-200 font-bold text-[10px] ring-2 ring-slate-900 shrink-0"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/80 text-indigo-800 dark:text-indigo-200 font-bold text-[10px] ring-2 ring-slate-200 dark:ring-slate-900 shrink-0"
                 >
                   {p.name.charAt(0)}
                 </div>
               ))}
             </div>
-            <span className="text-slate-300 font-medium ml-1">
+            <span className="text-slate-700 dark:text-slate-300 font-medium ml-1">
               {meeting.participants?.map(p => p.name.split(' ')[0]).join(', ')}
             </span>
           </div>
 
-          <div className="font-mono text-[11px] text-slate-500">
-            Meeting ID: <span className="text-slate-400">{meeting.id.slice(0, 8)}...</span>
+          <div className="font-mono text-[11px] text-slate-500 dark:text-slate-500">
+            Meeting ID: <span className="text-slate-700 dark:text-slate-400">{meeting.id.slice(0, 8)}...</span>
           </div>
         </div>
       </div>
