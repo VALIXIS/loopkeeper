@@ -42,7 +42,6 @@ export const AICopilotChatbot: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const processedEventIds = useRef<Set<string>>(new Set());
-  const seenNtfyIds = useRef<Set<string>>(new Set());
 
   // Listen for real-time Meeting Dispatch events across tabs, devices, laptops, and sessions!
   useEffect(() => {
@@ -100,55 +99,6 @@ export const AICopilotChatbot: React.FC = () => {
       bc.onmessage = (e) => processDispatch(e.data);
     } catch {}
 
-    // 4. Global real-time cross-laptop SSE subscription via ntfy.sh
-    let es: EventSource | null = null;
-    try {
-      es = new EventSource('https://ntfy.sh/loopkeeper_global_realtime_events_2026/json');
-      es.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data.id && seenNtfyIds.current.has(data.id)) return;
-          if (data.id) seenNtfyIds.current.add(data.id);
-
-          if (data.event === 'message' && data.message) {
-            const detail = JSON.parse(data.message);
-            if (detail && detail.joinUrl) {
-              processDispatch(detail);
-            }
-          }
-        } catch (err) {}
-      };
-    } catch (err) {}
-
-    // 5. High-frequency polling fallback for ntfy.sh (every 3s) ensuring zero missed notifications
-    const pollNtfy = async () => {
-      try {
-        const res = await fetch('https://ntfy.sh/loopkeeper_global_realtime_events_2026/json?poll=1&since=10m');
-        if (res.ok) {
-          const text = await res.text();
-          const lines = text.trim().split('\n');
-          for (const line of lines) {
-            if (!line.trim()) continue;
-            try {
-              const data = JSON.parse(line);
-              if (data.id && seenNtfyIds.current.has(data.id)) continue;
-              if (data.id) seenNtfyIds.current.add(data.id);
-
-              if (data.event === 'message' && data.message) {
-                const detail = JSON.parse(data.message);
-                if (detail && detail.joinUrl) {
-                  processDispatch(detail);
-                }
-              }
-            } catch (e) {}
-          }
-        }
-      } catch (e) {}
-    };
-
-    const ntfyPollInterval = setInterval(pollNtfy, 3000);
-    pollNtfy();
-
     window.addEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
     window.addEventListener('storage', handleStorageEvent);
 
@@ -156,8 +106,6 @@ export const AICopilotChatbot: React.FC = () => {
       window.removeEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
       window.removeEventListener('storage', handleStorageEvent);
       if (bc) bc.close();
-      if (es) es.close();
-      clearInterval(ntfyPollInterval);
     };
   }, [addToast]);
 
