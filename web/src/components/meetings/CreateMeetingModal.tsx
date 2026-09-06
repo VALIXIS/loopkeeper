@@ -275,7 +275,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
     setIsProcessing(true);
     setCreatedPasscode(null);
     try {
-      const res = await api.createExternalMeeting(selectedProvider, title.trim());
+      const res = await api.createExternalMeeting(selectedProvider, title.trim(), 30, selectedParticipants);
       const joinUrl = res.meeting.join_url || '';
       setCreatedJoinUrl(joinUrl);
 

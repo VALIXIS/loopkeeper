@@ -1133,13 +1133,13 @@ export const api = {
     };
   },
 
-  async createExternalMeeting(providerId: string, title: string, durationMinutes: number = 30): Promise<any> {
-    if (localStore.isBackendAvailable && !localStore.forceMockMode) {
+  async createExternalMeeting(providerId: string, title: string, durationMinutes: number = 30, participantIds: string[] = []) {
+    if (!localStore.forceMockMode && localStore.isBackendAvailable) {
       try {
-        const res = await fetch(`${API_BASE_URL}/integrations/${providerId}/create-meeting`, {
+        const res = await fetch(`${API_BASE_URL}/meetings/external-create`, {
           method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify({ title, duration_minutes: durationMinutes })
+          body: JSON.stringify({ title, duration_minutes: durationMinutes, participant_ids: participantIds })
         });
         if (res.ok) return await res.json();
       } catch (err) {
@@ -1165,6 +1165,8 @@ export const api = {
       ? `https://meet.google.com/${meetCode}`
       : `https://teams.microsoft.com/l/meetup-join/19%3ameeting_${meetCode}%40thread.v2/0`;
 
+    const assignedParticipants = localStore.employees.filter(e => participantIds.includes(e.id));
+
     const newMeeting: Meeting = {
       id: `m-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       title,
@@ -1172,7 +1174,8 @@ export const api = {
       source: isZoom ? 'zoom' : isGoogle ? 'google_meet' : 'loopkeeper_native',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      action_item_count: 0
+      action_item_count: 0,
+      participants: assignedParticipants.length > 0 ? assignedParticipants : localStore.employees.slice(0, 3)
     };
 
     localStore.meetings.unshift(newMeeting);
