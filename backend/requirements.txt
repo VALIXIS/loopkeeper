@@ -1,8 +1,13 @@
-﻿fastapi
+fastapi
 uvicorn
 pydantic
 pydantic-settings
 SQLAlchemy
 psycopg2-binary
 pgvector
+requests
+cryptography
+google-generativeai
+python-multipart
 pytest
+
