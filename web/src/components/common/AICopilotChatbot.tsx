@@ -41,13 +41,22 @@ export const AICopilotChatbot: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  const processedEventIds = useRef<Set<string>>(new Set());
+  const seenNtfyIds = useRef<Set<string>>(new Set());
+
   // Listen for real-time Meeting Dispatch events across tabs, devices, laptops, and sessions!
   useEffect(() => {
     const processDispatch = (detail: any) => {
       if (!detail || !detail.joinUrl) return;
 
+      const eventKey = detail.id || `${detail.timestamp || Date.now()}-${detail.title}`;
+      if (processedEventIds.current.has(eventKey)) {
+        return;
+      }
+      processedEventIds.current.add(eventKey);
+
       const newMsg: ChatMessage = {
-        id: `ai-dispatch-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        id: `ai-dispatch-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         sender: 'ai',
         text: `🔔 LIVE AUTOMATED DISPATCH AUDIT:\n\nMeeting Scheduled & Auto-Sent to Attendees!\n📌 Title: "${detail.title}"\n🔗 Google Meet Link: ${detail.joinUrl}\n👥 Delivered to ${detail.attendeeCount || 2} Attendees: ${detail.attendeeNames}\n\n⚡ Automated Email Invitations & Slack #general alerts dispatched!`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -55,20 +64,14 @@ export const AICopilotChatbot: React.FC = () => {
         joinUrl: detail.joinUrl
       };
 
-      setMessages(prev => {
-        // Prevent duplicate messages if already present
-        if (prev.some(m => m.joinUrl === detail.joinUrl && m.text.includes(detail.title))) {
-          return prev;
-        }
-        return [...prev, newMsg];
-      });
+      setMessages(prev => [...prev, newMsg]);
 
-      // Show instant Toast notification on all logged-in devices
+      // Show instant Toast notification on all logged-in devices for every new meeting
       try {
         addToast({
           type: 'info',
-          title: '🔔 Meeting Dispatched Live!',
-          message: `Meeting "${detail.title}" scheduled — Google Meet space ready for all attendees.`
+          title: `🔔 Meeting Dispatched: "${detail.title}"`,
+          message: `Shared Google Meet space ready for all attendees.`
         });
       } catch (e) {}
 
@@ -104,6 +107,9 @@ export const AICopilotChatbot: React.FC = () => {
       es.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
+          if (data.id && seenNtfyIds.current.has(data.id)) return;
+          if (data.id) seenNtfyIds.current.add(data.id);
+
           if (data.event === 'message' && data.message) {
             const detail = JSON.parse(data.message);
             if (detail && detail.joinUrl) {
@@ -115,7 +121,6 @@ export const AICopilotChatbot: React.FC = () => {
     } catch (err) {}
 
     // 5. High-frequency polling fallback for ntfy.sh (every 3s) ensuring zero missed notifications
-    let lastSeenMsgId = '';
     const pollNtfy = async () => {
       try {
         const res = await fetch('https://ntfy.sh/loopkeeper_global_realtime_events_2026/json?poll=1&since=10m');
@@ -126,10 +131,12 @@ export const AICopilotChatbot: React.FC = () => {
             if (!line.trim()) continue;
             try {
               const data = JSON.parse(line);
-              if (data.event === 'message' && data.message && data.id !== lastSeenMsgId) {
+              if (data.id && seenNtfyIds.current.has(data.id)) continue;
+              if (data.id) seenNtfyIds.current.add(data.id);
+
+              if (data.event === 'message' && data.message) {
                 const detail = JSON.parse(data.message);
                 if (detail && detail.joinUrl) {
-                  lastSeenMsgId = data.id;
                   processDispatch(detail);
                 }
               }
