@@ -20,7 +20,7 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeeting }) => {
   const { navigate, navigateToAccountability } = useRouter();
-  const { currentUser } = useAuth();
+  const { currentUser, isManager } = useAuth();
   const [showAiDetails, setShowAiDetails] = React.useState(false);
   const [showDriftDetails, setShowDriftDetails] = React.useState(false);
 
@@ -135,8 +135,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onOpenCreateMeetin
       </div>
 
       {/* Commitments at Risk & Upcoming Meetings */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <OverloadedMembersCard />
+      <div className={`grid grid-cols-1 ${isManager ? 'lg:grid-cols-2' : 'grid-cols-1'} gap-5`}>
+        {isManager && <OverloadedMembersCard />}
         <UpcomingDeadlinesCard />
       </div>
 

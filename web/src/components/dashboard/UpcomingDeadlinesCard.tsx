@@ -1,14 +1,25 @@
-import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { useRouter } from '../../context/RouterContext';
 import { ClockIcon, CalendarIcon, ArrowRightIcon } from '../common/Icons';
 import { PostponementBadge, VerificationBadge } from '../common/Badge';
 
 export const UpcomingDeadlinesCard: React.FC = () => {
-  const { dashboardOverview } = useApp();
+  const { dashboardOverview, actionItems } = useApp();
+  const { isManager, currentUser } = useAuth();
   const { navigate, navigateToCommitment } = useRouter();
 
-  const deadlines = dashboardOverview?.upcoming_deadlines || [];
+  const rawDeadlines = dashboardOverview?.upcoming_deadlines?.length
+    ? dashboardOverview.upcoming_deadlines
+    : actionItems;
+
+  const deadlines = isManager
+    ? rawDeadlines
+    : rawDeadlines.filter(item =>
+        item.owner_employee_id === currentUser.id ||
+        item.owner_name?.toLowerCase().trim() === currentUser.name.toLowerCase().trim() ||
+        (item as any).assigned_to?.toLowerCase().trim() === currentUser.name.toLowerCase().trim()
+      );
 
   return (
     <div className="rounded-2xl bg-slate-900/80 border border-white/[0.08] p-4 shadow-lg flex flex-col justify-between backdrop-blur-xl hover:border-slate-700 transition-all">

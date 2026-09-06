@@ -10,12 +10,20 @@ export const MOCK_EMPLOYEES: Employee[] = [
     is_manager: true
   },
   {
+    id: '43e5d5fc-fc54-49bb-8faa-79018cf49348',
+    name: 'Jyothsna',
+    email: 'jyothsna@valixis.com',
+    role: 'Product & Architecture Lead (Manager)',
+    department: 'Engineering',
+    is_manager: true
+  },
+  {
     id: '43e5d5fc-fc54-49bb-8faa-79018cf49349',
     name: 'VALIXIS',
     email: 'official.valixis@gmail.com',
-    role: 'Founder & Technical Director',
-    department: 'Executive',
-    is_manager: true
+    role: 'Senior Systems Engineer',
+    department: 'Core Engineering',
+    is_manager: false
   },
   {
     id: '5af2f8a8-a881-408a-8fdd-1fee384f1779',
@@ -23,14 +31,6 @@ export const MOCK_EMPLOYEES: Employee[] = [
     email: 'vignesh@valixis.com',
     role: 'Systems & App Developer',
     department: 'Core Engineering',
-    is_manager: false
-  },
-  {
-    id: '43e5d5fc-fc54-49bb-8faa-79018cf49348',
-    name: 'Jyothsna',
-    email: 'jyothsna@valixis.com',
-    role: 'Product & Architecture Lead',
-    department: 'Engineering',
     is_manager: false
   },
   {

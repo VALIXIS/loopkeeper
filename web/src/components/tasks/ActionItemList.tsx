@@ -25,13 +25,22 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
   defaultFilter = 'all'
 }) => {
   const { actionItems, updateTask, deleteTask } = useApp();
-  const { employees } = useAuth();
+  const { employees, isManager, currentUser } = useAuth();
 
   const [statusFilter, setStatusFilter] = useState<string>(defaultFilter);
   const [ownerFilter, setOwnerFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const filteredItems = actionItems.filter(item => {
+    // Employee Task Scoping (Employees only see their own tasks)
+    if (!isManager) {
+      const isMine =
+        item.owner_employee_id === currentUser.id ||
+        item.owner_name?.toLowerCase().trim() === currentUser.name.toLowerCase().trim() ||
+        (item as any).assigned_to?.toLowerCase().trim() === currentUser.name.toLowerCase().trim();
+      if (!isMine) return false;
+    }
+
     // Status filter
     if (statusFilter === 'postponed') {
       if ((item.postponement_count || 0) < 1) return false;
@@ -39,8 +48,8 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
       if (item.status !== statusFilter) return false;
     }
 
-    // Owner filter
-    if (ownerFilter !== 'all' && item.owner_employee_id !== ownerFilter) {
+    // Owner filter (Managers only)
+    if (isManager && ownerFilter !== 'all' && item.owner_employee_id !== ownerFilter) {
       return false;
     }
 
@@ -118,21 +127,30 @@ export const ActionItemList: React.FC<ActionItemListProps> = ({
             ))}
           </div>
 
-          {/* Owner Dropdown */}
+          {/* Owner Filter (Managers) vs Scoped Badge (Employees) */}
           <div className="flex items-center gap-2">
-            <UsersIcon size={14} className="text-zinc-400" />
-            <select
-              value={ownerFilter}
-              onChange={e => setOwnerFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500 transition-colors"
-            >
-              <option value="all">All Assignees</option>
-              {employees.map(emp => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.name}
-                </option>
-              ))}
-            </select>
+            {isManager ? (
+              <>
+                <UsersIcon size={14} className="text-zinc-400" />
+                <select
+                  value={ownerFilter}
+                  onChange={e => setOwnerFilter(e.target.value)}
+                  className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-cyan-500 transition-colors"
+                >
+                  <option value="all">All Team Assignees</option>
+                  {employees.map(emp => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.name}
+                    </option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-300">
+                <UsersIcon size={14} className="text-cyan-400" />
+                <span>My Scoped Tasks ({currentUser.name})</span>
+              </div>
+            )}
           </div>
         </div>
 

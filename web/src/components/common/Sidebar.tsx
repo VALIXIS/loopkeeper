@@ -11,6 +11,8 @@ import {
 
 } from './Icons';
 
+import { useAuth } from '../../context/AuthContext';
+
 interface SidebarItem {
   id: string;
   path: string;
@@ -21,12 +23,21 @@ interface SidebarItem {
 }
 
 export const Sidebar: React.FC = () => {
-  const { dashboardOverview, actionItems } = useApp();
+  const { actionItems } = useApp();
+  const { isManager, currentUser } = useAuth();
   const { route, navigate } = useRouter();
 
-  const overdueCount = dashboardOverview?.overdue_tasks || 0;
-  const postponedCount = dashboardOverview?.repeatedly_postponed_tasks || 0;
-  const openCount = actionItems.filter(a => a.status === 'pending').length;
+  const userItems = isManager
+    ? actionItems
+    : actionItems.filter(item =>
+        item.owner_employee_id === currentUser.id ||
+        item.owner_name?.toLowerCase().trim() === currentUser.name.toLowerCase().trim() ||
+        (item as any).assigned_to?.toLowerCase().trim() === currentUser.name.toLowerCase().trim()
+      );
+
+  const overdueCount = userItems.filter(a => a.status === 'overdue').length;
+  const postponedCount = userItems.filter(a => (a.postponement_count || 0) > 0).length;
+  const openCount = userItems.filter(a => a.status === 'pending' || (a.status as string) === 'in_progress').length;
 
   const items: SidebarItem[] = [
     {

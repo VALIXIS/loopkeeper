@@ -1,5 +1,5 @@
-import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { useRouter } from '../../context/RouterContext';
 import {
   CheckSquareIcon,
@@ -10,13 +10,22 @@ import {
 } from '../common/Icons';
 
 export const MetricsGrid: React.FC = () => {
-  const { dashboardOverview } = useApp();
+  const { actionItems } = useApp();
+  const { isManager, currentUser } = useAuth();
   const { navigate, navigateToAccountability } = useRouter();
 
-  const totalOpen = dashboardOverview?.total_open_tasks || 0;
-  const overdue = dashboardOverview?.overdue_tasks || 0;
-  const completed = dashboardOverview?.completed_tasks || 0;
-  const postponed = dashboardOverview?.repeatedly_postponed_tasks || 0;
+  const scopedItems = isManager
+    ? actionItems
+    : actionItems.filter(item =>
+        item.owner_employee_id === currentUser.id ||
+        item.owner_name?.toLowerCase().trim() === currentUser.name.toLowerCase().trim() ||
+        (item as any).assigned_to?.toLowerCase().trim() === currentUser.name.toLowerCase().trim()
+      );
+
+  const totalOpen = scopedItems.filter(i => i.status === 'pending' || (i.status as string) === 'in_progress').length;
+  const overdue = scopedItems.filter(i => i.status === 'overdue').length;
+  const completed = scopedItems.filter(i => i.status === 'done').length;
+  const postponed = scopedItems.filter(i => (i.postponement_count || 0) > 0).length;
 
   const totalAll = totalOpen + overdue + completed;
   const completionRate = totalAll > 0 ? Math.round((completed / totalAll) * 100) : 100;

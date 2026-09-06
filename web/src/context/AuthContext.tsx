@@ -3,17 +3,23 @@ import type { Employee } from '../types';
 import { MOCK_EMPLOYEES } from '../services/mockData';
 import { api } from '../services/api';
 
+import { LoginModal } from '../components/common/LoginModal';
+
 interface AuthContextType {
   currentUser: Employee;
   employees: Employee[];
   switchUser: (employeeId: string) => void;
   isManager: boolean;
+  isLoginModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [employeesList, setEmployeesList] = useState<Employee[]>(MOCK_EMPLOYEES);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<Employee>(() => {
     const saved = localStorage.getItem('loopkeeper_user_id');
     if (saved) {
@@ -46,16 +52,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const openLoginModal = () => setIsLoginModalOpen(true);
+  const closeLoginModal = () => setIsLoginModalOpen(false);
+
+  const isManager = currentUser.is_manager || currentUser.role?.toLowerCase().includes('manager') || currentUser.name === 'Subhash' || currentUser.name === 'Jyothsna';
+
   return (
     <AuthContext.Provider
       value={{
         currentUser,
         employees: employeesList,
         switchUser,
-        isManager: currentUser.is_manager || currentUser.role === 'manager'
+        isManager,
+        isLoginModalOpen,
+        openLoginModal,
+        closeLoginModal
       }}
     >
       {children}
+      <LoginModal isOpen={isLoginModalOpen} onClose={closeLoginModal} />
     </AuthContext.Provider>
   );
 };

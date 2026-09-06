@@ -20,7 +20,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
-  const { currentUser, employees, switchUser } = useAuth();
+  const { currentUser, employees, switchUser, openLoginModal } = useAuth();
   const { backendStatus, forceMockMode, setForceMockMode } = useApp();
   const { theme, toggleTheme } = useTheme();
   const { navigate } = useRouter();
@@ -160,7 +160,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
               >
                 <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 flex items-center justify-between">
                   <span>Switch Active User</span>
-                  <span className="text-cyan-400 font-mono">VALIXIS RLS</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUserMenu(false);
+                      openLoginModal();
+                    }}
+                    className="text-cyan-400 hover:text-cyan-300 font-mono font-bold text-[10px] underline"
+                  >
+                    🔑 Login Portal
+                  </button>
                 </div>
                 <div className="mt-1 space-y-1 max-h-64 overflow-y-auto">
                   {employees.map(emp => (
