@@ -195,18 +195,30 @@ export const RecordingSessionView: React.FC = () => {
             recognition.lang = 'en-US';
 
             recognition.onresult = (event: any) => {
-              for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                  const speechText = event.results[i][0].transcript.trim();
-                  if (speechText) {
-                    const mins = Math.floor(elapsedSecondsRef.current / 60).toString().padStart(2, '0');
-                    const secs = (elapsedSecondsRef.current % 60).toString().padStart(2, '0');
-                    setTranscriptLines(prev => [
-                      ...prev,
-                      { speaker: selectedSpeakerRef.current || currentUser?.name || 'Subhash', text: speechText, time: `00:${mins}:${secs}` }
-                    ]);
+              let liveText = '';
+              for (let i = 0; i < event.results.length; ++i) {
+                liveText += event.results[i][0].transcript + ' ';
+              }
+              const cleanSpeech = liveText.trim();
+              if (cleanSpeech) {
+                const mins = Math.floor(elapsedSecondsRef.current / 60).toString().padStart(2, '0');
+                const secs = (elapsedSecondsRef.current % 60).toString().padStart(2, '0');
+                const timeStr = `00:${mins}:${secs}`;
+                const speakerName = selectedSpeakerRef.current || currentUser?.name || 'Subhash';
+
+                setTranscriptLines(prev => {
+                  if (prev.length === 0) {
+                    return [{ speaker: speakerName, text: cleanSpeech, time: timeStr }];
                   }
-                }
+                  const updated = [...prev];
+                  const lastTurn = updated[updated.length - 1];
+                  if (lastTurn.speaker === speakerName) {
+                    updated[updated.length - 1] = { speaker: speakerName, text: cleanSpeech, time: lastTurn.time };
+                    return updated;
+                  } else {
+                    return [...prev, { speaker: speakerName, text: cleanSpeech, time: timeStr }];
+                  }
+                });
               }
             };
 
@@ -292,14 +304,11 @@ export const RecordingSessionView: React.FC = () => {
     setIsProcessing(true);
     setProcessingStage('uploading');
 
-    const finalTitle = meetingTitle.trim() || 'Live Meeting & Screen Audio Capture';
-    const defaultCommitmentText = meetingTitle.trim() && meetingTitle.trim().length > 3
-      ? `I will complete the ${meetingTitle.trim()} engineering deliverables and submit the verified PR by Friday.`
-      : `I will complete the Sprint architecture & release verification by Friday.`;
+    const finalTitle = meetingTitle.trim() || `Live Meeting Recording - ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
     const fullTranscript = transcriptLines.length > 0
       ? transcriptLines.map(t => `[${t.time}] ${t.speaker}: ${t.text}`).join('\n')
-      : `[00:00:05] ${selectedSpeaker}: ${defaultCommitmentText}`;
+      : `[00:00:05] ${selectedSpeaker}: Spoken live meeting session.`;
 
     try {
       // Stage 1 -> 2
@@ -530,47 +539,6 @@ export const RecordingSessionView: React.FC = () => {
                   </div>
                 ))
               )}
-            </div>
-
-            {/* 1-Click Preset Spoken Turn Injectors */}
-            <div className="space-y-1.5 pt-1 border-t border-zinc-900">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-indigo-400 flex items-center gap-1">
-                  <SparklesIcon size={12} className="text-cyan-400" />
-                  <span>1-Click Preset Spoken Turn Injector:</span>
-                </span>
-                <span className="text-[10px] text-zinc-500 font-mono">Instant AI Extraction Test</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  { speaker: selectedSpeaker || 'Subhash', text: 'I will complete the API backend endpoints and verify Jira issue SCRUM-1 by tomorrow.' },
-                  { speaker: 'Jyothsna', text: 'I will complete the UI component designs and push the GitHub PR by Friday.' },
-                  { speaker: 'Vignesh', text: 'I will execute the database query performance optimizations and deployment scripts.' },
-                  { speaker: 'Hasitha', text: 'I will conduct physical device QA testing across dark mode and submit QA report by Sep 10.' }
-                ].map((preset, pIdx) => (
-                  <button
-                    key={pIdx}
-                    type="button"
-                    onClick={() => {
-                      const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
-                      const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
-                      setTranscriptLines(prev => [
-                        ...prev,
-                        { speaker: preset.speaker, text: preset.text, time: `00:${mins}:${secs}` }
-                      ]);
-                      addToast({
-                        type: 'info',
-                        title: 'Speech Turn Added',
-                        message: `Added spoken turn for ${preset.speaker} to stream buffer.`
-                      });
-                    }}
-                    className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[11px] text-zinc-300 hover:text-cyan-300 font-sans transition-all text-left flex items-center gap-1.5"
-                  >
-                    <span className="text-cyan-400 font-bold font-mono text-[10px]">+ {preset.speaker}:</span>
-                    <span className="truncate max-w-[200px]">{preset.text}</span>
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Add Speech Turn Form */}

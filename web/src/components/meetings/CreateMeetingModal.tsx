@@ -141,18 +141,30 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
             recognition.interimResults = true;
             recognition.lang = 'en-US';
             recognition.onresult = (event: any) => {
-              for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                  const speechText = event.results[i][0].transcript.trim();
-                  if (speechText) {
-                    const mins = Math.floor(modalElapsedSeconds / 60).toString().padStart(2, '0');
-                    const secs = (modalElapsedSeconds % 60).toString().padStart(2, '0');
-                    setModalTranscriptLines(prev => [
-                      ...prev,
-                      { speaker: modalSpeaker || currentUser?.name || 'Subhash', text: speechText, time: `00:${mins}:${secs}` }
-                    ]);
+              let liveText = '';
+              for (let i = 0; i < event.results.length; ++i) {
+                liveText += event.results[i][0].transcript + ' ';
+              }
+              const cleanSpeech = liveText.trim();
+              if (cleanSpeech) {
+                const mins = Math.floor(modalElapsedSeconds / 60).toString().padStart(2, '0');
+                const secs = (modalElapsedSeconds % 60).toString().padStart(2, '0');
+                const timeStr = `00:${mins}:${secs}`;
+                const speakerName = modalSpeaker || currentUser?.name || 'Subhash';
+
+                setModalTranscriptLines(prev => {
+                  if (prev.length === 0) {
+                    return [{ speaker: speakerName, text: cleanSpeech, time: timeStr }];
                   }
-                }
+                  const updated = [...prev];
+                  const lastTurn = updated[updated.length - 1];
+                  if (lastTurn.speaker === speakerName) {
+                    updated[updated.length - 1] = { speaker: speakerName, text: cleanSpeech, time: lastTurn.time };
+                    return updated;
+                  } else {
+                    return [...prev, { speaker: speakerName, text: cleanSpeech, time: timeStr }];
+                  }
+                });
               }
             };
             recognition.start();
@@ -181,7 +193,7 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
 
     const fullTranscript = modalTranscriptLines.length > 0
       ? modalTranscriptLines.map(t => `[${t.time}] ${t.speaker}: ${t.text}`).join('\n')
-      : `[00:00:05] ${currentUser?.name || 'Subhash'}: Live meeting session completed with audio recording stream.`;
+      : `[00:00:05] ${currentUser?.name || 'Subhash'}: Spoken live meeting session.`;
 
     const meetingTitleToUse = title.trim() || 'Live Meeting & Screen Audio Capture';
 
