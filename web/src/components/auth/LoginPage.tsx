@@ -7,12 +7,11 @@ import {
   EyeIcon,
   EyeOffIcon,
   ArrowRightIcon,
-  ShieldAlertIcon,
-  UsersIcon
+  ShieldAlertIcon
 } from '../common/Icons';
 
 export const LoginPage: React.FC = () => {
-  const { login, switchUser, employees } = useAuth();
+  const { login } = useAuth();
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,12 +29,6 @@ export const LoginPage: React.FC = () => {
     } else {
       setErrorMsg('');
     }
-  };
-
-  const handleQuickSelect = (empId: string, email: string) => {
-    setEmailInput(email);
-    setPasswordInput('••••••••');
-    switchUser(empId);
   };
 
   return (
@@ -131,37 +124,10 @@ export const LoginPage: React.FC = () => {
             </button>
           </form>
 
-          {/* Quick Select Profile Pills */}
-          <div className="space-y-2 pt-2 border-t border-white/[0.08]">
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
-              <span className="flex items-center gap-1">
-                <UsersIcon size={12} className="text-indigo-400" />
-                <span>Quick Team Selector</span>
-              </span>
-              <span className="text-[10px] text-slate-500 font-normal">Click to sign in</span>
-            </div>
-
-            <div className="flex flex-wrap gap-1.5">
-              {employees.slice(0, 5).map(emp => (
-                <button
-                  key={emp.id}
-                  onClick={() => handleQuickSelect(emp.id, emp.email)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all flex items-center gap-1 ${
-                    emp.is_manager
-                      ? 'bg-purple-500/15 text-purple-300 border-purple-500/30 hover:border-purple-400'
-                      : 'bg-zinc-900 text-slate-300 border-slate-800 hover:border-cyan-500/40'
-                  }`}
-                >
-                  <span className="font-bold">{emp.name}</span>
-                  {emp.is_manager && <span className="text-[9px] text-purple-400 font-mono">👑</span>}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         <div className="text-center text-[11px] text-slate-500">
-          VALIXIS RLS Role Security Enabled • Subhash & Jyothsna Managers
+          VALIXIS RLS Role Security Active • Subhash & Jyothsna Managers
         </div>
       </div>
     </div>

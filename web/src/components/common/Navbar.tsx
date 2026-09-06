@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useRouter } from '../../context/RouterContext';
+import { UserProfileModal } from './UserProfileModal';
 import {
   BrainIcon,
   SparklesIcon,
@@ -20,11 +21,11 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
-  const { currentUser, employees, switchUser, openLoginModal } = useAuth();
+  const { currentUser, isManager } = useAuth();
   const { backendStatus, forceMockMode, setForceMockMode } = useApp();
   const { theme, toggleTheme } = useTheme();
   const { navigate } = useRouter();
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [showAiInspector, setShowAiInspector] = useState(false);
 
   return (
@@ -101,19 +102,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
           <button
             onClick={toggleTheme}
             className="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-white/[0.08] hover:border-cyan-500/40 transition-all hover:shadow-md"
-            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} theme`}
+            title="Toggle theme"
           >
-            {theme === 'dark' ? (
-              <SunIcon size={16} className="text-amber-400 transition-transform hover:rotate-45" />
-            ) : (
-              <MoonIcon size={16} className="text-indigo-400 transition-transform hover:-rotate-12" />
-            )}
+            {theme === 'dark' ? <SunIcon size={16} /> : <MoonIcon size={16} />}
           </button>
 
-          {/* Live Recording Direct Trigger */}
+          {/* Quick Record Navigation */}
           <button
             onClick={() => navigate('/recording')}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-white/[0.08] hover:border-rose-500/40 text-xs font-semibold transition-all hover:text-rose-400"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/[0.08] text-xs font-semibold transition-all"
           >
             <RadioIcon size={14} className="text-rose-500 animate-pulse" />
             <span>Record</span>
@@ -129,81 +126,36 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCreateMeeting }) => {
             <SparklesIcon size={12} className="text-cyan-200" />
           </button>
 
-          {/* Persona / User Selector */}
-          <div className="relative">
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/[0.08] hover:border-slate-700 transition-all"
-            >
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white font-bold text-xs ring-1 ring-cyan-500/50 shrink-0">
-                {currentUser.name.charAt(0)}
+          {/* Current Logged User Profile Button (Opens User Profile Modal) */}
+          <button
+            onClick={() => setIsProfileModalOpen(true)}
+            className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/[0.08] hover:border-indigo-500/50 transition-all cursor-pointer shadow-md"
+            title="Click to view logged-in user profile & data"
+          >
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white font-bold text-xs ring-1 ring-cyan-500/50 shrink-0">
+              {currentUser.name.charAt(0)}
+            </div>
+            <div className="text-left hidden lg:block">
+              <div className="text-xs font-semibold text-slate-200 flex items-center gap-1">
+                {currentUser.name}
+                {isManager && (
+                  <span className="text-[10px] text-purple-400 font-bold font-mono">(Lead)</span>
+                )}
               </div>
-              <div className="text-left hidden lg:block">
-                <div className="text-xs font-semibold text-slate-200 flex items-center gap-1">
-                  {currentUser.name}
-                  {currentUser.is_manager && (
-                    <span className="text-[10px] text-emerald-400 font-normal">(Lead)</span>
-                  )}
-                </div>
-                <div className="text-[10px] text-slate-400 truncate max-w-[120px]">
-                  {currentUser.role}
-                </div>
+              <div className="text-[10px] text-slate-400 truncate max-w-[120px]">
+                {currentUser.role}
               </div>
-              <ChevronDownIcon size={14} className="text-slate-400" />
-            </button>
-
-            {/* Persona Dropdown Menu */}
-            {showUserMenu && (
-              <div
-                className="absolute right-0 mt-2 w-64 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl p-2 z-50 animate-fade-in-up"
-                onClick={() => setShowUserMenu(false)}
-              >
-                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 flex items-center justify-between">
-                  <span>Switch Active User</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowUserMenu(false);
-                      openLoginModal();
-                    }}
-                    className="text-cyan-400 hover:text-cyan-300 font-mono font-bold text-[10px] underline"
-                  >
-                    🔑 Login Portal
-                  </button>
-                </div>
-                <div className="mt-1 space-y-1 max-h-64 overflow-y-auto">
-                  {employees.map(emp => (
-                    <button
-                      key={emp.id}
-                      onClick={() => switchUser(emp.id)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-xs transition-colors ${
-                        emp.id === currentUser.id
-                          ? 'bg-indigo-600/25 text-indigo-200 border border-indigo-500/40 shadow-inner'
-                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                      }`}
-                    >
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-700 text-slate-200 font-bold text-[10px] ring-1 ring-white/10 shrink-0">
-                        {emp.name.charAt(0)}
-                      </div>
-                      <div className="flex-1 truncate">
-                        <div className="font-medium flex items-center justify-between">
-                          {emp.name}
-                          {emp.is_manager && (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                              Manager
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-[10px] text-slate-400 truncate">{emp.role}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+            <ChevronDownIcon size={14} className="text-slate-400" />
+          </button>
         </div>
       </div>
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
 
       {/* AI Telemetry & Model Inspector Modal */}
       {showAiInspector && (
