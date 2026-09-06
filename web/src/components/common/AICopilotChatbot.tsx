@@ -133,46 +133,98 @@ export const AICopilotChatbot: React.FC = () => {
         lower.includes('add commitment') ||
         lower.includes('new commitment')
       ) {
-        // 1. Extract Assignee from Employees list
-        const matchedEmp = employees.find(emp =>
-          lower.includes(emp.name.toLowerCase())
-        ) || currentUser;
+        let workingText = query.trim();
 
-        // 2. Extract Title from query
-        let taskTitle = query;
-        if (lower.includes('name of the task is')) {
-          const parts = query.split(/name of the task is/i);
-          taskTitle = parts[1] ? parts[1].split(/by|before|until|due/i)[0].trim() : query;
-        } else if (lower.includes('task is')) {
-          const parts = query.split(/task is/i);
-          taskTitle = parts[1] ? parts[1].split(/by|before|until|due/i)[0].trim() : query;
-        } else if (lower.includes('create') && lower.includes('to')) {
-          const parts = query.split(/to/i);
-          taskTitle = parts.slice(1).join('to').split(/by|before|until|due/i)[0].trim();
-        }
+        // 1. STAGE 1: Extract & Match Assignee
+        let matchedEmp = currentUser;
+        const words = lower.split(/\s+/);
 
-        // Clean up title text
-        taskTitle = taskTitle.replace(/^(a new task|new task|task|and assign it|and assign|it|to)\s*/i, '').trim();
-        if (!taskTitle || taskTitle.length < 3) {
-          taskTitle = `New task created via AI Copilot for ${matchedEmp.name}`;
-        }
-        taskTitle = taskTitle.charAt(0).toUpperCase() + taskTitle.slice(1);
+        for (const emp of employees) {
+          const empLower = emp.name.toLowerCase();
+          // Find matching word (e.g. "jyothsnaa" matching employee "Jyothsna")
+          const matchedWord = words.find(
+            w => w.startsWith(empLower) || (w.length >= 4 && empLower.startsWith(w))
+          );
 
-        // 3. Extract Deadline date if present
-        let deadlineIso = new Date(Date.now() + 3 * 86400000).toISOString();
-        if (lower.includes('september') || lower.includes('sept')) {
-          const match = lower.match(/(september|sept)\s*(\d+)/i);
-          if (match && match[2]) {
-            const day = parseInt(match[2], 10);
-            const currentYear = new Date().getFullYear();
-            const dateObj = new Date(currentYear, 8, day, 17, 0, 0);
-            deadlineIso = dateObj.toISOString();
+          if (lower.includes(empLower) || matchedWord) {
+            matchedEmp = emp;
+            const targetWord = matchedWord || empLower;
+            const reg = new RegExp(`\\b${targetWord}\\b|${targetWord}`, 'gi');
+            workingText = workingText.replace(reg, '');
+            break;
           }
-        } else if (lower.includes('tomorrow')) {
-          deadlineIso = new Date(Date.now() + 86400000).toISOString();
-        } else if (lower.includes('next week') || lower.includes('monday')) {
-          deadlineIso = new Date(Date.now() + 5 * 86400000).toISOString();
         }
+
+        // 2. STAGE 2: Extract Target Deadline Date
+        let deadlineIso = new Date(Date.now() + 3 * 86400000).toISOString();
+        const currentYear = new Date().getFullYear();
+        const monthMap: Record<string, number> = {
+          jan: 0, january: 0,
+          feb: 1, february: 1,
+          mar: 2, march: 2,
+          apr: 3, april: 3,
+          may: 4,
+          jun: 5, june: 5,
+          jul: 6, july: 6,
+          aug: 7, august: 7,
+          sep: 8, sept: 8, september: 8,
+          oct: 9, october: 9,
+          nov: 10, november: 10,
+          dec: 11, december: 11
+        };
+
+        const dateRegex = /(?:and\s+)?(?:deadline|deadlne|due(?:\s+date)?|by|before|until)?(?:\s+is)?\s*(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)\s*(\d{1,2})(?:st|nd|rd|th)?/i;
+        const reverseDateRegex = /(?:and\s+)?(?:deadline|deadlne|due(?:\s+date)?|by|before|until)?(?:\s+is)?\s*(\d{1,2})(?:st|nd|rd|th)?\s*(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)/i;
+        const relativeDateRegex = /(?:and\s+)?(?:deadline|deadlne|due(?:\s+date)?|by|before|until)?(?:\s+is)?\s*(tomorrow|next week|monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i;
+
+        let dateMatch = workingText.match(dateRegex);
+        if (dateMatch) {
+          const monthKey = dateMatch[1].toLowerCase();
+          const dayVal = parseInt(dateMatch[2], 10);
+          if (monthMap[monthKey] !== undefined && dayVal >= 1 && dayVal <= 31) {
+            const dateObj = new Date(currentYear, monthMap[monthKey], dayVal, 17, 0, 0);
+            deadlineIso = dateObj.toISOString();
+            workingText = workingText.replace(dateMatch[0], '');
+          }
+        } else {
+          dateMatch = workingText.match(reverseDateRegex);
+          if (dateMatch) {
+            const dayVal = parseInt(dateMatch[1], 10);
+            const monthKey = dateMatch[2].toLowerCase();
+            if (monthMap[monthKey] !== undefined && dayVal >= 1 && dayVal <= 31) {
+              const dateObj = new Date(currentYear, monthMap[monthKey], dayVal, 17, 0, 0);
+              deadlineIso = dateObj.toISOString();
+              workingText = workingText.replace(dateMatch[0], '');
+            }
+          } else {
+            dateMatch = workingText.match(relativeDateRegex);
+            if (dateMatch) {
+              const rel = dateMatch[1].toLowerCase();
+              if (rel === 'tomorrow') {
+                deadlineIso = new Date(Date.now() + 86400000).toISOString();
+              } else if (rel === 'next week') {
+                deadlineIso = new Date(Date.now() + 7 * 86400000).toISOString();
+              } else {
+                deadlineIso = new Date(Date.now() + 4 * 86400000).toISOString();
+              }
+              workingText = workingText.replace(dateMatch[0], '');
+            }
+          }
+        }
+
+        // 3. STAGE 3: Extract Clean Task Title
+        let taskTitle = workingText
+          .replace(/\b(create|add|assign|new|task|commitment|issue|and)\b/gi, ' ')
+          .replace(/\b(name of the task is|task name|title is|task is|to|for|with)\b/gi, ' ')
+          .replace(/\b(deadlne|deadline|due|by|before|until|is|and)\b/gi, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        if (!taskTitle || taskTitle.length < 2) {
+          taskTitle = `Complete task assignment for ${matchedEmp.name}`;
+        }
+
+        taskTitle = taskTitle.charAt(0).toUpperCase() + taskTitle.slice(1);
 
         // 4. Execute Task Creation & Auto Jira Issue Sync!
         const newTask = await createTask({
