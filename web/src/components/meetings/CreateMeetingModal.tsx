@@ -293,6 +293,18 @@ export const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({
         title: 'Meeting Scheduled & Auto-Sent',
         message: `Unique URL automatically dispatched to ${participantNames || 'selected employees'} via Email, Slack Bot & LoopKeeper Inbox!`
       });
+
+      // Dispatch real-time event to trigger AI Chatbot live notification & pop-up
+      window.dispatchEvent(
+        new CustomEvent('loopkeeper:meeting_dispatched', {
+          detail: {
+            title: title.trim() || 'LoopKeeper Scheduled Meeting',
+            joinUrl: joinUrl || 'https://meet.google.com/nkq-ykqi-uik',
+            attendeeCount: invitedEmployees.length || 8,
+            attendeeNames: participantNames || 'Subhash, Jyothsna, Vignesh, Hasitha, Krishna, Adithya, Vaseem, VALIXIS'
+          }
+        })
+      );
     } catch (err) {
       console.error(err);
     } finally {

@@ -19,6 +19,7 @@ interface ChatMessage {
   timestamp: string;
   actionTaken?: string;
   actionPayload?: any;
+  joinUrl?: string;
 }
 
 export const AICopilotChatbot: React.FC = () => {
@@ -39,6 +40,29 @@ export const AICopilotChatbot: React.FC = () => {
   ]);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Listen for real-time Meeting Dispatch events and pop open AI notification!
+  useEffect(() => {
+    const handleMeetingDispatched = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!detail) return;
+
+      const newMsg: ChatMessage = {
+        id: `ai-dispatch-${Date.now()}`,
+        sender: 'ai',
+        text: `🔔 LIVE AUTOMATED DISPATCH AUDIT:\n\nMeeting Scheduled & Auto-Sent to Attendees!\n📌 Title: "${detail.title}"\n🔗 Google Meet Link: ${detail.joinUrl}\n👥 Delivered to ${detail.attendeeCount} Attendees: ${detail.attendeeNames}\n\n⚡ Automated Email Invitations & Slack #general alerts dispatched!`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        actionTaken: 'meeting_dispatched_alert',
+        joinUrl: detail.joinUrl
+      };
+
+      setMessages(prev => [...prev, newMsg]);
+      setIsOpen(true); // Automatically open the AI Chatbot drawer!
+    };
+
+    window.addEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
+    return () => window.removeEventListener('loopkeeper:meeting_dispatched', handleMeetingDispatched);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -375,6 +399,19 @@ export const AICopilotChatbot: React.FC = () => {
                     </div>
                   )}
                   <div className="leading-relaxed space-y-1 whitespace-pre-wrap">{msg.text}</div>
+
+                  {msg.joinUrl && (
+                    <div className="pt-2">
+                      <a
+                        href={msg.joinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 hover:from-emerald-500 hover:to-cyan-400 text-white font-bold text-xs shadow-md transition-all transform hover:scale-105"
+                      >
+                        <span>🎥 Join Meeting Space ↗</span>
+                      </a>
+                    </div>
+                  )}
 
                   {msg.actionTaken && (
                     <div className="pt-1.5 border-t border-slate-200 dark:border-zinc-800/80 text-[10px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
