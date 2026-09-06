@@ -66,7 +66,7 @@ class SLMProvider(AIProvider):
                 if not line_clean:
                     continue
                 lower = line_clean.lower()
-                if any(k in lower for k in ["todo", "action item", "will finish", "assigned to", "deliver", "fix", "refactor"]):
+                if any(k in lower for k in ["todo", "action item", "will finish", "will complete", "i will", "i'll", "i commit", "assigned to", "deliver", "fix", "refactor", "complete", "responsible for", "going to"]):
                     owner = "Unassigned"
                     owner_match = re.search(r'(?i:assigned to|owner:?|for)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)', line_clean)
                     if not owner_match:

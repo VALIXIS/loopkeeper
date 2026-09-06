@@ -407,25 +407,50 @@ export const api = {
         owner = localStore.employees.find(e => e.id === meeting.created_by);
       }
 
-      // 2. Extract Title
+      // 2. Extract Title & Smart Deadline
       let title = line.replace(/\[\d\d:\d\d:\d\d\]\s*/g, '').trim();
       if (title.includes(':')) {
         title = title.split(':')[1].trim();
       }
-      title = title.replace(/^(I will|I'll|I need to|Adithya,|Vaseem,|Krishna,|Hasitha,|Vignesh,|Jyothsna,|Subhash,|still working on|please|we need to|assigned to)\s*/i, '');
+      const rawTextForDeadline = title;
+      title = title.replace(/^(I will|I'll|I am going to|I plan to|I need to|We will|Adithya,|Vaseem,|Krishna,|Hasitha,|Vignesh,|Jyothsna,|Subhash,|still working on|please|we need to|assigned to)\s*/i, '');
       title = title.charAt(0).toUpperCase() + title.slice(1);
       if (!title || title.length < 2) title = `Commitment turn ${index + 1} from ${meeting?.title || 'meeting'}`;
 
-      // 3. Semantic match against existing active tasks
+      // Smart Deadline Parsing from spoken text (e.g., "by September 15", "by tomorrow", "by Friday")
+      let deadlineDate = new Date(Date.now() + (index + 2) * 86400000 * 2).toISOString();
+      const monthMatch = rawTextForDeadline.match(/(?:by|due|deadline:?|on)?\s*(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)\s+(\d{1,2})(?:st|nd|rd|th)?/i);
+      if (monthMatch) {
+        const monthNames: Record<string, number> = {
+          january: 0, jan: 0, february: 1, feb: 1, march: 2, mar: 2, april: 3, apr: 3,
+          may: 4, june: 5, jun: 5, july: 6, jul: 6, august: 7, aug: 7,
+          september: 8, sep: 8, sept: 8, october: 9, oct: 9, november: 10, nov: 10, december: 11, dec: 11
+        };
+        const mIdx = monthNames[monthMatch[1].toLowerCase()];
+        const dayNum = parseInt(monthMatch[2], 10);
+        if (mIdx !== undefined && !isNaN(dayNum)) {
+          const targetYear = new Date().getFullYear();
+          const parsedD = new Date(Date.UTC(targetYear, mIdx, dayNum, 18, 0, 0));
+          deadlineDate = parsedD.toISOString();
+        }
+      } else if (/tomorrow/i.test(rawTextForDeadline)) {
+        deadlineDate = new Date(Date.now() + 86400000).toISOString();
+      }
+
+      // 3. Semantic match against existing active tasks (exclude generic filler words)
+      const stopWords = new Set(['i', 'will', 'complete', 'finish', 'working', 'deliver', 'report', 'review', 'testing', 'issue', 'action', 'item', 'meeting', 'today', 'tomorrow', 'monday', 'friday', 'september', 'august', 'subhash', 'valixis', 'vaseem', 'vignesh', 'krishna', 'hasitha', 'adithya', 'jyothsna', 'the', 'lok', 'keeper', 'ui', 'by', 'of']);
+      const lineWords = lower.split(/\s+/).map(w => w.replace(/[^a-z0-9]/g, '')).filter(w => w.length > 3 && !stopWords.has(w));
+
       const existingTask = localStore.actionItems.find(a => {
         const aTitle = a.title.toLowerCase();
-        const lineWords = lower.split(/\s+/);
         if (a.owner_employee_id && owner && a.owner_employee_id === owner.id) {
-          const hasCommonKeywords = lineWords.some(w => w.length > 4 && aTitle.includes(w));
-          if (hasCommonKeywords) return true;
+          // Require specific domain keywords overlap
+          const hasDomainMatch = lineWords.some(w => aTitle.includes(w));
+          if (hasDomainMatch) return true;
         }
         if (lower.includes('payment') && aTitle.includes('payment')) return true;
         if (lower.includes('auth') && aTitle.includes('auth')) return true;
+        if (lower.includes('hnsw') && aTitle.includes('hnsw')) return true;
         return false;
       });
 
@@ -434,14 +459,11 @@ export const api = {
         const isPostponed = lower.includes('move it to') || lower.includes('postpone') || lower.includes('still working on') || lower.includes('monday');
         const newPostponementCount = isPostponed ? (existingTask.postponement_count || 0) + 1 : (existingTask.postponement_count || 0);
 
-        let updatedDeadline = existingTask.deadline;
-        if (lower.includes('monday')) {
-          updatedDeadline = new Date(Date.now() + 3 * 86400000).toISOString();
-        }
-
+        existingTask.meeting_id = meetingId;
+        existingTask.meeting_title = meeting?.title || existingTask.meeting_title;
         existingTask.last_seen_at = new Date().toISOString();
         existingTask.postponement_count = newPostponementCount;
-        existingTask.deadline = updatedDeadline;
+        existingTask.deadline = deadlineDate || existingTask.deadline;
         existingTask.updated_at = new Date().toISOString();
 
         if (!localStore.history[existingTask.id]) localStore.history[existingTask.id] = [];
@@ -454,7 +476,7 @@ export const api = {
             meeting_title: meeting?.title || 'Meeting',
             event_type: 'postponed',
             previous_value: { postponement_count: existingTask.postponement_count - 1 },
-            new_value: { postponement_count: newPostponementCount, deadline: updatedDeadline },
+            new_value: { postponement_count: newPostponementCount, deadline: deadlineDate },
             evidence_text: line.trim(),
             created_at: new Date().toISOString()
           });
@@ -482,7 +504,6 @@ export const api = {
       } else {
         // New Commitment
         const confidence = 0.89 + (Math.random() * 0.09);
-        const deadlineDate = new Date(Date.now() + (index + 2) * 86400000 * 2).toISOString();
 
         const newItem: ActionItem = {
           id: `a-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 6)}`,
