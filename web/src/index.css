@@ -167,6 +167,71 @@ html.light .text-cyan-300 {
   color: #0284c7 !important;
 }
 
+/* Explicit high-contrast preservation for embedded dark UI mock previews (Slack simulator, terminals, code cards) */
+html.light .dark-ui-preview,
+html.light [data-dark-preview="true"] {
+  background-color: #1a1d21 !important;
+  color: #f8fafc !important;
+}
+
+html.light .dark-ui-preview *,
+html.light [data-dark-preview="true"] * {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+html.light .dark-ui-preview .text-zinc-100,
+html.light .dark-ui-preview .text-zinc-200,
+html.light .dark-ui-preview .text-slate-100,
+html.light .dark-ui-preview .text-slate-200,
+html.light .dark-ui-preview .text-white,
+html.light [data-dark-preview="true"] .text-zinc-100,
+html.light [data-dark-preview="true"] .text-zinc-200,
+html.light [data-dark-preview="true"] .text-slate-100,
+html.light [data-dark-preview="true"] .text-slate-200,
+html.light [data-dark-preview="true"] .text-white {
+  color: #ffffff !important;
+}
+
+html.light .dark-ui-preview .text-zinc-300,
+html.light .dark-ui-preview .text-zinc-400,
+html.light .dark-ui-preview .text-slate-300,
+html.light .dark-ui-preview .text-slate-400,
+html.light [data-dark-preview="true"] .text-zinc-300,
+html.light [data-dark-preview="true"] .text-zinc-400,
+html.light [data-dark-preview="true"] .text-slate-300,
+html.light [data-dark-preview="true"] .text-slate-400 {
+  color: #cbd5e1 !important;
+}
+
+html.light .dark-ui-preview .text-zinc-500,
+html.light .dark-ui-preview .text-slate-500,
+html.light [data-dark-preview="true"] .text-zinc-500,
+html.light [data-dark-preview="true"] .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+html.light .dark-ui-preview .text-indigo-300,
+html.light [data-dark-preview="true"] .text-indigo-300 {
+  color: #a5b4fc !important;
+}
+
+html.light .dark-ui-preview .text-cyan-300,
+html.light [data-dark-preview="true"] .text-cyan-300 {
+  color: #67e8f9 !important;
+}
+
+html.light .dark-ui-preview .text-emerald-400,
+html.light .dark-ui-preview .text-emerald-300,
+html.light [data-dark-preview="true"] .text-emerald-400,
+html.light [data-dark-preview="true"] .text-emerald-300 {
+  color: #34d399 !important;
+}
+
+html.light .dark-ui-preview .bg-\[\#111317\],
+html.light [data-dark-preview="true"] .bg-\[\#111317\] {
+  background-color: #111317 !important;
+}
+
 html.light .bg-tech-grid {
   background-image: 
     linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),

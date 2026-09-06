@@ -445,19 +445,19 @@ export const IntegrationsView: React.FC = () => {
 
       {/* Slack & Microsoft Teams Webhook Live Digest Simulator */}
       <div className="p-6 rounded-3xl glass-panel-elevated border border-indigo-500/30 space-y-4 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-zinc-800">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-sm">
+            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 shadow-sm">
               <SparklesIcon size={20} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
                 Slack & Teams Webhook Digest Simulator
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/15 text-purple-600 dark:text-purple-300 border border-purple-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-500/30">
                   Real-Time Webhook Engine
                 </span>
               </h3>
-              <p className="text-xs text-zinc-400">Simulate automated commitment dispatches to team messaging channels</p>
+              <p className="text-xs text-slate-600 dark:text-zinc-400">Simulate automated commitment dispatches to team messaging channels</p>
             </div>
           </div>
 
@@ -465,7 +465,7 @@ export const IntegrationsView: React.FC = () => {
             <select
               value={slackChannel}
               onChange={e => setSlackChannel(e.target.value)}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500 shadow-sm"
+              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-800 text-slate-900 dark:text-zinc-200 font-mono text-xs focus:outline-none focus:border-cyan-500 shadow-sm"
             >
               <option value="#engineering-commitments">#engineering-commitments</option>
               <option value="#product-sync">#product-sync</option>
@@ -496,7 +496,7 @@ export const IntegrationsView: React.FC = () => {
         </div>
 
         {/* Live Slack Card Visual Preview */}
-        <div className="p-4 rounded-2xl bg-[#1A1D21] border border-zinc-700/80 space-y-3 font-sans text-xs shadow-inner">
+        <div data-dark-preview="true" className="dark-ui-preview p-4 rounded-2xl bg-[#1A1D21] border border-zinc-700/80 space-y-3 font-sans text-xs shadow-inner">
           <div className="flex items-center justify-between text-zinc-400 text-[11px] pb-2 border-b border-zinc-700/60">
             <div className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -510,8 +510,8 @@ export const IntegrationsView: React.FC = () => {
 
           <div className="pl-3 border-l-4 border-indigo-500 space-y-2">
             <div className="font-bold text-white text-xs flex items-center gap-2">
-              <span className="text-white">🚀 LoopKeeper Executive Commitment Digest</span>
-              <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-indigo-500/30 text-indigo-300 border border-indigo-500/50 font-bold">
+              <span className="text-white font-bold">🚀 LoopKeeper Executive Commitment Digest</span>
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-indigo-500/30 text-indigo-300 border border-indigo-500/50 font-bold">
                 Vector AI 91.4%
               </span>
             </div>
@@ -550,15 +550,15 @@ export const IntegrationsView: React.FC = () => {
       </div>
 
       {/* Security & Boundary Notice */}
-      <div className="p-5 rounded-3xl glass-panel border border-zinc-800 flex items-start gap-4 shadow-lg">
+      <div className="p-5 rounded-3xl glass-panel border border-slate-200 dark:border-zinc-800 flex items-start gap-4 shadow-lg">
         <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400 shrink-0 border border-indigo-500/20">
           <ShieldAlertIcon size={22} />
         </div>
         <div className="space-y-1">
-          <h4 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+          <h4 className="text-sm font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
             Read-Only Principle & Persistent OAuth Storage
           </h4>
-          <p className="text-xs text-zinc-300 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
             LoopKeeper communicates with external meeting providers and Jira via persistent, encrypted client authorization tokens stored locally in your browser workspace. Your authenticated connection remains active even after refreshing the page or restarting your browser session.
           </p>
         </div>
