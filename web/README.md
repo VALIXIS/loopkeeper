@@ -1,32 +1,35 @@
-# React + TypeScript + Vite
+# ⚡ LoopKeeper Web Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+**React 18 + TypeScript + Vite + Tailwind CSS + 3D Canvas Engine**
 
-Currently, two official plugins are available:
+This is the primary web portal for **LoopKeeper** — an AI-powered Meeting Accountability & Delivery Verification Engine.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🚀 Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+### Install Dependencies
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Production Build & Type-Check
+```bash
+npm run build
+```
+
+---
+
+## 📁 Key Web Features
+
+1. **3D Knowledge Graph Holodeck**: Fullscreen 3D vector lineage visualization (`/accountability?tab=graph`).
+2. **Role-Based Access Control**: Manager portal (Subhash & Jyothsna) vs restricted employee portal.
+3. **AI Copilot Chatbot**: Real-time natural language action execution and meeting join assistant.
+4. **Meeting Studio**: Live audio/transcript capture with speech diarization and Google Meet URL generation.
+5. **Workload & Drift Radar**: Capacity rebalancing and deadline postponement tracking.
