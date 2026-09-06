@@ -13,6 +13,9 @@ interface AuthContextType {
   isLoginModalOpen: boolean;
   openLoginModal: () => void;
   closeLoginModal: () => void;
+  isAuthenticated: boolean;
+  login: (emailOrUsername: string, password?: string) => boolean;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +23,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [employeesList, setEmployeesList] = useState<Employee[]>(MOCK_EMPLOYEES);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    const savedAuth = localStorage.getItem('loopkeeper_authenticated');
+    return savedAuth !== 'false';
+  });
+
   const [currentUser, setCurrentUser] = useState<Employee>(() => {
     const saved = localStorage.getItem('loopkeeper_user_id');
     if (saved) {
@@ -45,11 +53,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('loopkeeper_user_id', currentUser.id);
   }, [currentUser]);
 
+  useEffect(() => {
+    localStorage.setItem('loopkeeper_authenticated', isAuthenticated ? 'true' : 'false');
+  }, [isAuthenticated]);
+
   const switchUser = (employeeId: string) => {
     const found = employeesList.find(e => e.id === employeeId);
     if (found) {
       setCurrentUser(found);
+      setIsAuthenticated(true);
     }
+  };
+
+  const login = (emailOrUsername: string, password?: string): boolean => {
+    const query = emailOrUsername.trim().toLowerCase();
+    const found = employeesList.find(
+      e => e.email.toLowerCase() === query || e.name.toLowerCase() === query
+    );
+    if (found) {
+      if (password) {
+        console.log(`[Auth] User ${found.name} authenticated with provided password.`);
+      }
+      setCurrentUser(found);
+      setIsAuthenticated(true);
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    localStorage.setItem('loopkeeper_authenticated', 'false');
   };
 
   const openLoginModal = () => setIsLoginModalOpen(true);
@@ -66,7 +100,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isManager,
         isLoginModalOpen,
         openLoginModal,
-        closeLoginModal
+        closeLoginModal,
+        isAuthenticated,
+        login,
+        logout
       }}
     >
       {children}

@@ -11,6 +11,7 @@ import {
 
 } from './Icons';
 
+import { LogOutIcon } from './Icons';
 import { useAuth } from '../../context/AuthContext';
 
 interface SidebarItem {
@@ -24,7 +25,7 @@ interface SidebarItem {
 
 export const Sidebar: React.FC = () => {
   const { actionItems } = useApp();
-  const { isManager, currentUser } = useAuth();
+  const { isManager, currentUser, logout } = useAuth();
   const { route, navigate } = useRouter();
 
   const userItems = isManager
@@ -155,21 +156,34 @@ export const Sidebar: React.FC = () => {
         )}
       </div>
 
-      <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-white/[0.07] text-[11px] text-slate-400 space-y-1.5 shadow-sm">
-        <div className="flex items-center justify-between">
-          <span className="text-slate-400">Execution Engine</span>
-          <span className="font-mono text-cyan-400 text-[10px] font-bold">Active Verification</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-slate-400">Jira Integration</span>
-          <span className="font-mono text-emerald-400 text-[10px] font-bold">REST API v3 Proxy</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-slate-400">Data Boundary</span>
-          <span className="font-mono text-indigo-300 text-[10px] font-bold">Read-Only Enforced</span>
+      <div className="pt-3 border-t border-white/[0.08] space-y-2 mt-4">
+        <button
+          onClick={() => logout()}
+          className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 border border-rose-500/30 text-xs font-bold transition-all shadow-md group"
+          title="Sign out of current user session"
+        >
+          <div className="flex items-center gap-2">
+            <LogOutIcon size={16} className="text-rose-400 group-hover:scale-110 transition-transform" />
+            <span>Sign Out Session</span>
+          </div>
+          <span className="text-[10px] font-mono opacity-75">🔒 Logout</span>
+        </button>
+
+        <div className="p-3 rounded-xl bg-slate-900/60 border border-white/[0.07] text-[11px] text-slate-400 space-y-1 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400 font-medium">Session Role</span>
+            <span className="font-mono text-cyan-400 text-[10px] font-bold">
+              {isManager ? '👑 MANAGER' : '👤 EMPLOYEE'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400 font-medium">Active User</span>
+            <span className="font-mono text-slate-200 text-[10px] font-bold truncate max-w-[100px]">
+              {currentUser.name}
+            </span>
+          </div>
         </div>
       </div>
     </aside>
   );
 };
-

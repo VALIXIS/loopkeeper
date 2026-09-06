@@ -156,13 +156,26 @@ const MainLayout: React.FC = () => {
   );
 };
 
+import { LoginPage } from './components/auth/LoginPage';
+import { useAuth } from './context/AuthContext';
+
+const AppContent: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  return <MainLayout />;
+};
+
 export function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <AppProvider>
           <RouterProvider>
-            <MainLayout />
+            <AppContent />
           </RouterProvider>
         </AppProvider>
       </AuthProvider>
